@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 42 - 14-10-2015 - Improved move sorting for captures
 // Build 41 - 14-10-2015 - Fixed a bug regarding PV generation
 // Build 40 - 14-10-2015 - Added latemove reduction to pvs, moderate increase in search depth
 // Build 39 - 14-10-2015 - Made modifications to reduction depth in latemove reduction

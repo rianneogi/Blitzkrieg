@@ -595,11 +595,11 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),capturedpiece);
 		if(x>=0) //if it is a good capture
 		{
-			score += 300000;
+			score += 300000 + PieceMaterial[getSquare2Piece(capturedpiece)];
 		}
 		else //bad capture
 		{
-			score -= 100000;
+			score += -100000 + PieceMaterial[getSquare2Piece(capturedpiece)];
 		}
 	}
 	else if(special==PIECE_PAWN) //enpassant are also captures
@@ -607,11 +607,11 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),SQUARE_WHITEPAWN);
 		if(x>=0)
 		{
-			score += 350000;
+			score += 350000 + PieceMaterial[getSquare2Piece(capturedpiece)];
 		}
 		else
 		{
-			score -= 100000;
+			score += -100000 + PieceMaterial[getSquare2Piece(capturedpiece)];
 		}
 	}
 	else
