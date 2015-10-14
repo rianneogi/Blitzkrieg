@@ -118,9 +118,9 @@ Move Engine::IterativeDeepening()
 		//firstguess = val;
 		timer.Stop();
 		cout << "info score cp " << score << " depth " << i << " nodes " << nodes << " nps " << getNPS(nodes,timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
-		for(int i = line.size()-1;i>=0;i--)
+		for(int j = line.size()-1;j>=0;j--)
 		{
-			cout << line.at(i).toString() << " ";
+			cout << line.at(j).toString() << " ";
 		}
 		cout << endl;
 		PrincipalVariation = line;
@@ -476,7 +476,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		}
 		else if(i>=4 && depth>=3 && capturedpiece==SQUARE_EMPTY && special==PIECE_NONE && !alpharaised) //latemove reduction
 		{
-			score = -AlphaBeta(depth - 3, -beta, -alpha, m, variation, cannull, dopv);
+			int reductiondepth = 2;
+			if (i >= 8) reductiondepth++;
+			if (i >= 12) reductiondepth++;
+			if (depth >= 6) reductiondepth++;
+			if (depth >= 9) reductiondepth++;
+			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, variation, cannull, dopv);
 			//cout << "latemove" << endl;
 			if(score>alpha)
 			{
