@@ -123,6 +123,10 @@ Move Engine::IterativeDeepening()
 			cout << line.at(j).toString() << " ";
 		}
 		cout << endl;
+		if (i == 1)
+		{
+			cout << "info string ERROR" << endl;;
+		}
 		PrincipalVariation = line;
 	}
 	Move bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
@@ -337,10 +341,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	}
 
 	int bound = TT_ALPHA;
-	//vector<Move> dummyline;
-	//dummyline.reserve(128);
-	//vector<Move>* lineptr;
-	//lineptr.reserve(128);
+	/*vector<Move> dummyline;
+	dummyline.reserve(128);*/
+	/*vector<Move> lineptr;
+	lineptr.reserve(128);*/
+	vector<Move> line;
+	line.reserve(128);
 	Move m;
 	int score = 0;
 
@@ -376,7 +382,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		m = CONS_NULLMOVE;
 		ply++;
 		pos.forceMove(m);
-        score = -AlphaBeta(depth-R-1,-beta,-beta+1,m,variation,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
+        score = -AlphaBeta(depth-R-1,-beta,-beta+1,m,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
         pos.unmakeMove(m);
 		if(score >= beta)
@@ -388,7 +394,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 	//futility pruning
 	bool futilityprune = false; 
-	if(depth<3 && !pos.underCheck(pos.turn) && (LeafEval(alpha,beta) + FutilityMargin[depth] <= alpha))
+	if(depth<3 && !pos.underCheck(pos.turn) && ((LeafEval(alpha,beta) + FutilityMargin[depth]) <= alpha))
 	{
 		futilityprune = true;
 	}
@@ -410,11 +416,11 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		pos.generateMoves(vec);
     }
 	movegentime.Stop();
-	//vector<Move> line;
-	//line.reserve(128);
+	/*vector<Move> line;
+	line.reserve(128);*/
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
-		//line.clear();
+		line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
 		m = getHighestScoringMove(vec,i);
@@ -435,26 +441,22 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		foundlegal = true;
 		ply++;
 		score = 0;
-		//if(popcnt(pos.Pieces[COLOR_WHITE][PIECE_QUEEN])+popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN])>9 || popcnt(pos.Pieces[COLOR_BLACK][PIECE_QUEEN])+popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN])>9)
-		//{
-		//	x.display(0);
-		//	pos.display(0);
-		//	printBitset(x.Pieces[COLOR_BLACK][PIECE_PAWN]);
-		//	cout << "\n";
-		//	printBitset(pos.Pieces[COLOR_BLACK][PIECE_PAWN]);
-		//	cout << m.toString() << endl;
-		//	cout << lastmove.toString() << endl;
-		//	for(int i = 0;i<pos.movelist.size();i++)
-		//	{
-		//		cout << pos.movelist.at(i).toString() << " " << endl;
-		//	}
-		//	cout << "";
-		//	//pos.unmakeMove(m);
-		//	//return beta;
-		//}
 
 		int capturedpiece = m.getCapturedPiece();
 		int special = m.getSpecial();
+
+		int reductiondepth = 1;
+		if (depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+			&& !pos.underCheck(pos.turn)
+			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
+			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
+		{
+			reductiondepth++;
+			if(i >= 8) reductiondepth++;
+			if (i >= 12) reductiondepth++;
+			if (depth >= 6) reductiondepth++;
+			if (depth >= 9) reductiondepth++;
+		}
 
 		//futility pruning
 		//if(futilityprune && capturedpiece==SQUARE_EMPTY && (special==PIECE_NONE || special==PIECE_KING)
@@ -467,54 +469,32 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
-			score = -AlphaBeta(depth-1,-alpha-1,-alpha,m,variation,cannull,false);
-			if(score>alpha && score<beta) //check for failure
+			score = -AlphaBeta(max(depth-reductiondepth,0),-alpha-1,-alpha,m,&line, true,false);
+			if(score>alpha) //check for failure
 			{
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, variation, cannull, true); //research
+				line.clear();
+				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, true); //research
 				//cout << "pv research" << endl;
 			}
 		}
-		else if(i>=4 && depth>=3 && capturedpiece==SQUARE_EMPTY && special==PIECE_NONE && !alpharaised) //latemove reduction
+		else if(!alpharaised) //latemove reduction
 		{
-			int reductiondepth = 2;
-			if (i >= 8) reductiondepth++;
-			if (i >= 12) reductiondepth++;
-			if (depth >= 6) reductiondepth++;
-			if (depth >= 9) reductiondepth++;
-			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, variation, cannull, dopv);
+			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, &line, true, dopv);
 			//cout << "latemove" << endl;
 			if(score>alpha)
 			{
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, variation, cannull, dopv);
+				line.clear();
+				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
 				//cout << "latemove research" << endl;
 			}
 		}
 		else
 		{
-			score = -AlphaBeta(depth - 1, -beta, -alpha, m, variation, cannull, dopv);
+			score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
 		}
 		ply--;
 		pos.unmakeMove(m);
-		//if(popcnt(pos.Pieces[COLOR_WHITE][PIECE_QUEEN])+popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN])>9 || popcnt(pos.Pieces[COLOR_BLACK][PIECE_QUEEN])+popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN])>9)
-		//{
-		//	x.display(0);
-		//	pos.display(0);
-		//	printBitset(x.Pieces[COLOR_BLACK][PIECE_PAWN]);
-		//	cout << "\n";
-		//	printBitset(pos.Pieces[COLOR_BLACK][PIECE_PAWN]);
-		//	cout << m.toString() << endl;
-		//	cout << lastmove.toString() << endl;
-		//	for(int i = 0;i<pos.movelist.size();i++)
-		//	{
-		//		cout << pos.movelist.at(i).toString() << " " << endl;
-		//	}
-		//	for(int i = 0;i<line.size();i++)
-		//	{
-		//		cout << line.at(i).toString() << " " << endl;
-		//	}
-		//	cout << "";
-		//	//return beta;
-		//}
+
 		if(score>=beta)
 		{
 			Table.Save(pos.TTKey,depth,score,TT_BETA,m);
@@ -533,7 +513,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			alpha = score;
 			alpharaised = true;
 			alphamove = m;
-			//*variation = line;
+			*variation = line;
 		}
 		//else
 		//{
