@@ -15,6 +15,8 @@
 ///BUGS
 
 ///BUILDS
+// Build 44 - 16-10-2015 - Added forward pruning
+// Build 43 - 15-10-2015 - Now stores already-calculated SEE evaluations in a vector so we dont need to recalculate
 // Build 42 - 14-10-2015 - Improved move sorting for captures
 // Build 41 - 14-10-2015 - Fixed a bug regarding PV generation
 // Build 40 - 14-10-2015 - Added latemove reduction to pvs, moderate increase in search depth

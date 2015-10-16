@@ -10,9 +10,14 @@ int Engine::QuiescenceSearch(int alpha,int beta,Move lastmove)
 	}
 	if(lastmove.getCapturedPiece()!=0)
 	{
-		vector<Move> vec;
+		vector<Move> vec; //generate moves
 		vec.reserve(128);
 		pos.generateMoves(vec);
+
+		vector<int> scores; //generate move scores
+		scores.reserve(128);
+		generateCaptureScores(vec, scores);
+
 		//movesort(vec,0);
 		int to = lastmove.getTo();
 		//int max = CONS_NEGINF;
@@ -21,7 +26,7 @@ int Engine::QuiescenceSearch(int alpha,int beta,Move lastmove)
 		int score = 0;
 		for(int i = 0;i<vec.size();i++)
 		{
-			m = getHighestScoringMove(vec,i);
+			m = getHighestScoringMove(vec,scores,i);
 			if(m.getTo() == to) //capturing a piece that just captured a piece in the last move
 			{
 				if(!pos.makeMove(m))
@@ -81,15 +86,21 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 	}
 	Move m;
 	int score = 0;
-    vector<Move> vec;
+
+    vector<Move> vec; //generate moves
 	vec.reserve(128);
 	movegentime.Start();
 	pos.generateCaptures(vec);
 	movegentime.Stop();
+
+	vector<int> scores; //generate move scores
+	scores.reserve(128);
+	generateCaptureScores(vec, scores);
+
 	int material = getBoardMaterial();
 	for(int i = 0;i<vec.size();i++)
 	{
-		m = getHighestScoringMove(vec,i);
+		m = getHighestScoringMove(vec,scores,i);
 		int special = m.getSpecial();
 		int captured = m.getCapturedPiece();
 		if((stand_pat + PieceMaterial[getSquare2Piece(captured)] + 200 < alpha) && //delta pruning

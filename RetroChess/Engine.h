@@ -54,8 +54,9 @@ class Engine
 	int think(int depth,int alpha,int beta,vector<Move>* variation);
 	int AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv);
 	void movesort(vector<Move>& moves,int depth);
-	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
-	unsigned long long getMoveScore(const Move& m);
+	Move getHighestScoringMove(vector<Move>& moves, vector<int>& scores,int currentmove);
+	unsigned long long getMoveScore(const Move& m, int movescore);
+	void generateCaptureScores(vector<Move>& moves, vector<int>& scores);
 	void ageHistoryTable();
 	void checkup();
 	void setKiller(Move m,int depth);

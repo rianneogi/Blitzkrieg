@@ -5,6 +5,8 @@
 jmp_buf env;
 
 int FutilityMargin[3] = {0,300,600};
+int ForwardPruningMargin[3] = { 0,1000,1500 };
+int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
 
 unsigned int HistoryScores[64][64];
 unsigned int ButterflyScores[64][64];
@@ -81,6 +83,7 @@ Move Engine::IterativeDeepening()
 		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << endl;
 		return PrincipalVariation.at(PrincipalVariation.size()-1);
 	}
+	
 	for(int i = 2;i<=MAXDEPTH;i++)
 	{
 		//mr = think(i,CONS_NEGINF,CONS_INF);
@@ -92,7 +95,7 @@ Move Engine::IterativeDeepening()
 		//}
 		int low = 8;
 		int high = 8;
-		//if(i==4) DEBUG=true;
+
 		while(true)
 		{
 			//line = deque<Move>();
@@ -153,47 +156,6 @@ int Engine::think(int depth,int alpha,int beta,vector<Move>* variation)
 	int pvsize = PrincipalVariation.size();
 	int rootturn = pos.turn;
 	vector<Move>* lineptr;
-	//lineptr.reserve(128);
-	//if(pvsize!=0 && depth>pvsize) //search pv first
-	//{
-	//	deque<Move> line;
-	//	for(int i = 0;i<pvsize;i++)
-	//	{
-	//      ply++;
-	//		m = PrincipalVariation.at(i);
-	//		pos.forceMove(PrincipalVariation.at(i));
-	//	}
-	//	if(pos.turn==rootturn)
-	//	{
-	//		score = AlphaBeta(depth-pvsize,-beta,-alpha,m,&line,true,true);
-	//	}
-	//	else
-	//	{
-	//		score = -AlphaBeta(depth-pvsize,-beta,-alpha,m,&line,true,true);
-	//	}
-	//	for(int i = pvsize-1;i>=0;i--)
-	//	{
-	//      ply--;
-	//		pos.unmakeMove(PrincipalVariation.at(i));
-	//	}
-	//	if(score >= beta)
-	//	{
-	//		return beta;
-	//	}
-	//	if(score > alpha)
-	//	{
-	//		alpha = score;
-	//		alphamove = PrincipalVariation.at(0);
-	//		lineptr = line;
-	//	}
-	//}
-	//if(lineptr.size()!=0)
-	//{
-	//	for(int i = pvsize-1;i>=0;i--)
-	//	{
-	//		lineptr.push_front(PrincipalVariation.at(i));
-	//	}
-	//}
 	vector<Move> line;
 	line.reserve(128);
 	score = AlphaBeta(depth,alpha,beta,CONS_NULLMOVE,&line,true,true);
@@ -207,56 +169,6 @@ int Engine::think(int depth,int alpha,int beta,vector<Move>* variation)
 		lineptr = &line;
 		alphamove = lineptr->at(lineptr->size()-1);
 	}
-	//deque<Move> dummyline;
-	//bool foundpv = false;
-	//bool latemove = true;
-	//for(unsigned int i = 0;i<vec.size();i++) //search
-	//{
-	//	if(!(vec.at(i)==historymove))
-	//	{
-	//		m = vec.at(i);
-	//		pos.forceMove(m);
-	//		int score = 0;
-	//		if(foundpv) //principal variation search
-	//		{
-	//			score = -AlphaBeta(depth-1,-alpha-1,-alpha,m,&dummyline);
-	//			if(score>alpha && score<beta) //check for failure
-	//			{
-	//				score = -AlphaBeta(depth-1,-beta,-alpha,m,&line); //research
-	//				//cout << "pv research" << endl;
-	//			}
-	//		}
-	//		else if(i>=4 && depth>=3 && m.getCapturedPiece()==0 && m.getSpecial()==PIECE_NONE && latemove) //latemove reduction
-	//		{
-	//			score = -AlphaBeta(depth-3,-beta,-alpha,m,&dummyline);
-	//			//cout << "latemove" << endl;
-	//			if(score>alpha)
-	//			{
-	//				score = -AlphaBeta(depth-1,-beta,-alpha,m,&line);
-	//			//cout << "latemove research" << endl;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			score = -AlphaBeta(depth-1,-beta,-alpha,m,&line);
-	//		}
-	//		pos.unmakeMove(m);
-	//		if(score >= beta)
-	//		{
-	//			return beta;
-	//		}
-	//		if(score>alpha)
-	//		{
-	//			bound = TT_EXACT;
-	//			alpha = score;
-	//			alphamove = m;
-	//			lineptr = &line;
-	//			foundpv = true;
-	//			latemove = false;
-	//		}
-	//	}
-	//}
-	//Table.Save(pos.TTKey,depth,score,bound,alphamove);
 	if(!(alphamove==CONS_NULLMOVE))
 	{
 		variation = lineptr;
@@ -267,38 +179,6 @@ int Engine::think(int depth,int alpha,int beta,vector<Move>* variation)
 
 int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv)
 {
-	//int status = pos.getGameStatus();
-	//if(status!=STATUS_NOTOVER)
-	//{
-	//	if(status==STATUS_BLACKMATED || status==STATUS_WHITEMATED)
-	//	{
-	//		if(alpha>CONS_MATED)
-	//			return alpha;
-	//		return CONS_MATED; //mate
-	//	}
-	//	if(status==STATUS_STALEMATE)
-	//	{
-	//		if(alpha>=CONS_DRAW)
-	//			return alpha;
-	//		if(beta<=CONS_DRAW)
-	//			return beta;
-	//		return CONS_DRAW; //stalemate
-	//	}
-	//}
-
-	/*vector<Move> vec = pos.generateMoves();
-	if(vec.size()==0)
-	{
-		if(pos.underCheck(pos.turn))
-		{
-			return CONS_MATED;
-		}
-		else
-		{
-			return CONS_DRAW;
-		}
-	}*/
-
 	if(pos.underCheck(pos.turn)) //check extension
 	{
 		depth++;
@@ -350,33 +230,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	Move m;
 	int score = 0;
 
-	//razoring
-	//int fscore = LeafEval() + 150;
-	//if((depth == 3) && (fscore <= alpha) && (pos.getColorPieces(getOpponent(pos.turn)) > 3)) 
-	//{
-	//	depth = 2;
-	//}
-	//
-	//more razoring
-	/*if(depth<=3 && depth>=2)
-	{
-		int fscore = LeafEval() + 300;
-		if (fscore < beta) 
-		{
-			deque<Move> line;
-			int newfscore = AlphaBeta(1,alpha,beta,CONS_NULLMOVE,&line);
-			if (newfscore < beta)
-			{
-				*variation = line;
-				return max(newfscore,fscore);
-			}
-		}
-	}*/
+	bool underCheck = pos.underCheck(pos.turn);
 
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-    if(cannull && depth>=3 && pos.underCheck(pos.turn)==false && pieceCount>6) //not endgame
+    if(cannull && depth>=3 && underCheck==false && pieceCount>6) //not endgame
     {
 		int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
 		m = CONS_NULLMOVE;
@@ -392,9 +251,16 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		}
     }
 
+	int leafeval = LeafEval(alpha, beta);
+	if (depth < 3 && !underCheck && ((leafeval + ForwardPruningMargin[depth]) <= alpha)) //large forward pruning
+	{
+		return alpha;
+	}
+
 	//futility pruning
 	bool futilityprune = false; 
-	if(depth<3 && !pos.underCheck(pos.turn) && ((LeafEval(alpha,beta) + FutilityMargin[depth]) <= alpha))
+	
+	if(depth<8 && !underCheck && ((leafeval + SmallPruningMargin[depth]) <= alpha))
 	{
 		futilityprune = true;
 	}
@@ -418,12 +284,15 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	movegentime.Stop();
 	/*vector<Move> line;
 	line.reserve(128);*/
+	vector<int> scores;
+	scores.reserve(128);
+	generateCaptureScores(vec, scores);
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
 		line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
-		m = getHighestScoringMove(vec,i);
+		m = getHighestScoringMove(vec,scores,i);
 		//Position x = pos; //debug
 		/*if(ply==0)
 		{
@@ -446,6 +315,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		int special = m.getSpecial();
 
 		int reductiondepth = 1;
+
+		//if (depth < 8 && LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha) //small forward pruning
+		//{
+		//	reductiondepth++;
+		//}
+
 		if (depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
@@ -457,15 +332,6 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			if (depth >= 6) reductiondepth++;
 			if (depth >= 9) reductiondepth++;
 		}
-
-		//futility pruning
-		//if(futilityprune && capturedpiece==SQUARE_EMPTY && (special==PIECE_NONE || special==PIECE_KING)
-		//	&& !pos.underCheck(pos.turn))
-		//{
-		//	ply--;
-		//	pos.unmakeMove(m);
-		//	continue; //prune away non-capture, non-promotion moves in futility pruning
-		//}
 
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
@@ -490,7 +356,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		}
 		else
 		{
-			score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
+			score = -AlphaBeta(max(0,depth - reductiondepth), -beta, -alpha, m, &line, true, dopv);
 		}
 		ply--;
 		pos.unmakeMove(m);
@@ -571,7 +437,28 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	return alpha;
 }
 
-unsigned long long Engine::getMoveScore(const Move& m)
+void Engine::generateCaptureScores(vector<Move>& moves, vector<int>& scores)
+{
+	for (int i = 0;i < moves.size();i++)
+	{
+		Move m = moves.at(i);
+		int cap = m.getCapturedPiece();
+		if (cap != SQUARE_EMPTY)
+		{
+			scores.push_back(StaticExchangeEvaluation(m.getTo(), m.getFrom(), m.getMovingPiece(), cap));
+		}
+		else if (m.getSpecial() == PIECE_PAWN)
+		{
+			scores.push_back(StaticExchangeEvaluation(m.getTo(), m.getFrom(), m.getMovingPiece(), SQUARE_WHITEPAWN));
+		}
+		else
+		{
+			scores.push_back(0);
+		}
+	}
+}
+
+unsigned long long Engine::getMoveScore(const Move& m, int movescore)
 {
 	int from = m.getFrom();
 	int to = m.getTo();
@@ -592,26 +479,27 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{
-		int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),capturedpiece);
+		//int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),capturedpiece);
+		int x = movescore;
 		if(x>=0) //if it is a good capture
 		{
-			score += 300000 + PieceMaterial[getSquare2Piece(capturedpiece)];
+			score += 300000 + x;
 		}
 		else //bad capture
 		{
-			score += -100000 + PieceMaterial[getSquare2Piece(capturedpiece)];
+			score += -100000 + x;
 		}
 	}
 	else if(special==PIECE_PAWN) //enpassant are also captures
 	{
-		int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),SQUARE_WHITEPAWN);
+		int x = movescore;
 		if(x>=0)
 		{
-			score += 350000 + PieceMaterial[getSquare2Piece(capturedpiece)];
+			score += 350000 + x;
 		}
 		else
 		{
-			score += -100000 + PieceMaterial[getSquare2Piece(capturedpiece)];
+			score += -100000 + x;
 		}
 	}
 	else
@@ -626,24 +514,27 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	return score;
 }
 
-Move Engine::getHighestScoringMove(vector<Move>& moves,int currentmove)
+Move Engine::getHighestScoringMove(vector<Move>& moves, vector<int>& scores, int currentmove)
 {
 	sorttime.Start();
 	int bigmove = currentmove;
-	unsigned long long bigscore = getMoveScore(moves.at(currentmove));
+	unsigned long long bigscore = getMoveScore(moves.at(currentmove), scores.at(currentmove));
 	unsigned long long x;
 	for(int i = currentmove+1;i<moves.size();i++)
 	{
-		x = getMoveScore(moves.at(i));
+		x = getMoveScore(moves.at(i), scores.at(i));
 		if(x>bigscore)
 		{
 			bigscore = x;
 			bigmove = i;
 		}
 	}
-	Move m = moves.at(bigmove);
+	Move m = moves.at(bigmove); //swap move
 	moves.at(bigmove) = moves.at(currentmove);
 	moves.at(currentmove) = m;
+	int sc = scores.at(bigmove); //swamp score
+	scores.at(bigmove) = scores.at(currentmove);
+	scores.at(currentmove) = sc;
 	/*if(m.getSpecial()==PIECE_PAWN)
 	{
 		cout << "info string ep at " << currentmove << endl;
