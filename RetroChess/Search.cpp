@@ -321,7 +321,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			reductiondepth++;
 		}
 
-		if (!alpharaised && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if ((!alpharaised || dopv) && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
