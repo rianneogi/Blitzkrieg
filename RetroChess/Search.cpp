@@ -179,7 +179,8 @@ int Engine::think(int depth,int alpha,int beta,vector<Move>* variation)
 
 int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv)
 {
-	if(pos.underCheck(pos.turn)) //check extension
+	bool underCheck = pos.underCheck(pos.turn);
+	if(underCheck) //check extension
 	{
 		depth++;
 	}
@@ -229,8 +230,6 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	line.reserve(128);
 	Move m;
 	int score = 0;
-
-	bool underCheck = pos.underCheck(pos.turn);
 
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
@@ -321,12 +320,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			reductiondepth++;
 		}
 
-		if ((!alpharaised || dopv) && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if (!alpharaised && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
 		{
-			reductiondepth++;
+			reductiondepth += 2;
 			if(i >= 8) reductiondepth++;
 			if (i >= 12) reductiondepth++;
 			if (depth >= 6) reductiondepth++;

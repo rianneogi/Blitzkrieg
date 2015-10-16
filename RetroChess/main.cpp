@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 49 - 17-10-2015 - Undid last change, increased latemove reduction base depth from 1 to 2
 // Build 48 - 17-10-2015 - Now does a depth reduction in pvs even if alpha isnt raised
 // Build 47 - 16-10-2015 - Increased max depth for futility and large forward pruning to 4
 // Build 46 - 16-10-2015 - Added futility pruning for depth==1 and removed the SEE evaluations vector optimization
