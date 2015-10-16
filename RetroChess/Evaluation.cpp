@@ -280,6 +280,7 @@ int Engine::LeafEval(int alpha,int beta)
 	Bitset ColorPieces[2];
 	int KingAttackUnits[2]={0,0};
 	int MinorsOnBackRank[2]={0,0};
+	int MinorPieceCount[2] = { 0,0 };
 
 	for(int i = 0;i<2;i++) //king safety
 	{
@@ -290,6 +291,7 @@ int Engine::LeafEval(int alpha,int beta)
 		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
                          pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
                          pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
+		MinorPieceCount[i] = popcnt(pos.Pieces[i][PIECE_KNIGHT] | pos.Pieces[i][PIECE_BISHOP]);
 
 		if(!isEG)
 		{
@@ -505,6 +507,10 @@ int Engine::LeafEval(int alpha,int beta)
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
 				sideeval[i] += KnightOutpostBonus;
+				if (MinorPieceCount[getOpponent(i)] == 0)
+				{
+					sideeval[i] += KnightOutpostBonus; //double bonus if there are no opponent minor pieces
+				}
 			}
 
 			//knight attacks near opposing king
@@ -535,6 +541,10 @@ int Engine::LeafEval(int alpha,int beta)
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
 				sideeval[i] += BishopOutpostBonus;
+				if (MinorPieceCount[getOpponent(i)] == 0)
+				{
+					sideeval[i] += BishopOutpostBonus; //double bonus if there are no opponent minor pieces
+				}
 			}
 
 			//bishop attacks near opposing king
@@ -611,6 +621,10 @@ int Engine::getBoardMaterial()
 int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 {
 	capt = getSquare2Piece(capt);
+	if (PieceMaterial[capt] >= PieceMaterial[movpiece])
+	{
+		return PieceMaterial[capt] - PieceMaterial[movpiece];
+	}
 	int gain[100],d=0;
     Bitset occ = pos.OccupiedSq;
     Bitset occ90 = pos.OccupiedSq90;

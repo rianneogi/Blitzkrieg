@@ -260,10 +260,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//futility pruning
 	bool futilityprune = false; 
 	
-	if(depth<8 && !underCheck && ((leafeval + SmallPruningMargin[depth]) <= alpha))
+	/*if(depth<8 && !underCheck && ((leafeval + SmallPruningMargin[depth]) <= alpha))
 	{
 		futilityprune = true;
-	}
+	}*/
 
 	//movesort(vec,depth);
 	bool alpharaised = false;
@@ -316,10 +316,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		//if (depth < 8 && LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha) //small forward pruning
-		//{
-		//	reductiondepth++;
-		//}
+		if (depth < 8 && LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha) //small forward pruning
+		{
+			reductiondepth++;
+		}
 
 		if (depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)

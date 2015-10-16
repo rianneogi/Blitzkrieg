@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 45 - 16-10-2015 - Removed futility pruning in favor of small forward pruning and improved evaluation for minor piece outposts
 // Build 44 - 16-10-2015 - Added forward pruning
 // Build 43 - 15-10-2015 - Now stores already-calculated SEE evaluations in a vector so we dont need to recalculate
 // Build 42 - 14-10-2015 - Improved move sorting for captures
