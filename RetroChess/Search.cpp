@@ -4,8 +4,8 @@
 
 jmp_buf env;
 
-int FutilityMargin[3] = {0,300,600};
-int ForwardPruningMargin[3] = { 0,1000,1500 };
+int FutilityMargin[4] = {0,100,100,500};
+int ForwardPruningMargin[4] = { 0,1000,1000,1500};
 int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
 
 unsigned int HistoryScores[64][64];
@@ -252,7 +252,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
     }
 
 	int leafeval = LeafEval(alpha, beta);
-	if (depth < 3 && !underCheck && ((leafeval + ForwardPruningMargin[depth]) <= alpha)) //large forward pruning
+	if (depth < 4 && !underCheck && ((leafeval + ForwardPruningMargin[depth]) <= alpha)) //large forward pruning
 	{
 		return alpha;
 	}
@@ -260,7 +260,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//futility pruning
 	bool futilityprune = false; 
 	
-	if (depth == 1 && !underCheck && (leafeval + 100) <= alpha) //futility pruning
+	if (depth < 4 && !underCheck && ((leafeval + FutilityMargin[depth]) <= alpha)) //futility pruning
 	{
 		futilityprune = true;
 	}
@@ -316,12 +316,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		if (depth < 8 && LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha) //small forward pruning
+		if (depth < 8 && LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha) //small forward razoring
 		{
 			reductiondepth++;
 		}
 
-		if (!dopv && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if (!alpharaised && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
@@ -343,20 +343,16 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 				//cout << "pv research" << endl;
 			}
 		}
-		else if(!alpharaised) //latemove reduction
+		else //latemove reduction
 		{
 			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, &line, true, dopv);
 			//cout << "latemove" << endl;
-			if(score>alpha)
+			if(score>alpha && reductiondepth>1)
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
 				//cout << "latemove research" << endl;
 			}
-		}
-		else
-		{
-			score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
 		}
 		ply--;
 		pos.unmakeMove(m);
