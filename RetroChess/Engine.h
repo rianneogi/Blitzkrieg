@@ -54,15 +54,15 @@ class Engine
 	int think(int depth,int alpha,int beta,vector<Move>* variation);
 	int AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv);
 	void movesort(vector<Move>& moves,int depth);
-	Move getHighestScoringMove(vector<Move>& moves, vector<int>& scores,int currentmove);
-	unsigned long long getMoveScore(const Move& m, int movescore);
+	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
+	unsigned long long getMoveScore(const Move& m);
 	void generateCaptureScores(vector<Move>& moves, vector<int>& scores);
-	void ageHistoryTable();
+	//void ageHistoryTable();
 	void checkup();
 	void setKiller(Move m,int depth);
 
 	//Quiescence.cpp
-	int QuiescenceSearch(int alpha,int beta,Move lastmove);
+	//int QuiescenceSearch(int alpha,int beta,Move lastmove);
 	int QuiescenceSearchStandPat(int alpha,int beta,Move lastmove);
 	int StaticExchangeEvaluation(int to, int from,int movpiece,int capt);
 	int StaticExchangeEvaluation2(Move m);

@@ -1,58 +1,5 @@
 #include "Engine.h"
 
-int Engine::QuiescenceSearch(int alpha,int beta,Move lastmove)
-{
-	nodes++;
-	if(nodes%CheckupNodeCount==0)
-	{
-		checkup();
-		//nodes = 0;
-	}
-	if(lastmove.getCapturedPiece()!=0)
-	{
-		vector<Move> vec; //generate moves
-		vec.reserve(128);
-		pos.generateMoves(vec);
-
-		vector<int> scores; //generate move scores
-		scores.reserve(128);
-		generateCaptureScores(vec, scores);
-
-		//movesort(vec,0);
-		int to = lastmove.getTo();
-		//int max = CONS_NEGINF;
-		bool change = false;
-		Move m;
-		int score = 0;
-		for(int i = 0;i<vec.size();i++)
-		{
-			m = getHighestScoringMove(vec,scores,i);
-			if(m.getTo() == to) //capturing a piece that just captured a piece in the last move
-			{
-				if(!pos.makeMove(m))
-				{
-					continue;
-				}
-				ply++;
-				score = -QuiescenceSearch(-beta,-alpha,m);
-				pos.unmakeMove(m);
-				ply--;
-				if(score>=beta)
-					return score;
-				if(score>alpha)
-				{
-					alpha = score;
-					change = true;
-				}
-			}
-		}
-		if(change)
-			return alpha;
-		return LeafEval(alpha,beta);
-	}
-	return LeafEval(alpha,beta);
-}
-
 int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 {
 	quisctime.Start();
@@ -93,14 +40,14 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 	pos.generateCaptures(vec);
 	movegentime.Stop();
 
-	vector<int> scores; //generate move scores
-	scores.reserve(128);
-	generateCaptureScores(vec, scores);
+	//vector<int> scores; //generate move scores
+	//scores.reserve(128);
+	//generateCaptureScores(vec, scores);
 
 	int material = getBoardMaterial();
 	for(int i = 0;i<vec.size();i++)
 	{
-		m = getHighestScoringMove(vec,scores,i);
+		m = getHighestScoringMove(vec,i);
 		int special = m.getSpecial();
 		int captured = m.getCapturedPiece();
 		if((stand_pat + PieceMaterial[getSquare2Piece(captured)] + 200 < alpha) && //delta pruning

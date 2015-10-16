@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 46 - 16-10-2015 - Added futility pruning for depth==1 and removed the SEE evaluations vector optimization
 // Build 45 - 16-10-2015 - Removed futility pruning in favor of small forward pruning and improved evaluation for minor piece outposts
 // Build 44 - 16-10-2015 - Added forward pruning
 // Build 43 - 15-10-2015 - Now stores already-calculated SEE evaluations in a vector so we dont need to recalculate

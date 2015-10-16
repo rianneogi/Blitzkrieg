@@ -260,10 +260,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//futility pruning
 	bool futilityprune = false; 
 	
-	/*if(depth<8 && !underCheck && ((leafeval + SmallPruningMargin[depth]) <= alpha))
+	if (depth == 1 && !underCheck && (leafeval + 100) <= alpha) //futility pruning
 	{
 		futilityprune = true;
-	}*/
+	}
 
 	//movesort(vec,depth);
 	bool alpharaised = false;
@@ -284,15 +284,15 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	movegentime.Stop();
 	/*vector<Move> line;
 	line.reserve(128);*/
-	vector<int> scores;
+	/*vector<int> scores;
 	scores.reserve(128);
-	generateCaptureScores(vec, scores);
+	generateCaptureScores(vec, scores);*/
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
 		line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
-		m = getHighestScoringMove(vec,scores,i);
+		m = getHighestScoringMove(vec,i);
 		//Position x = pos; //debug
 		/*if(ply==0)
 		{
@@ -321,7 +321,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			reductiondepth++;
 		}
 
-		if (depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if (!dopv && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
@@ -335,7 +335,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
-			score = -AlphaBeta(max(depth-reductiondepth,0),-alpha-1,-alpha,m,&line, true,false);
+			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, &line, true, false);
 			if(score>alpha) //check for failure
 			{
 				line.clear();
@@ -356,7 +356,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		}
 		else
 		{
-			score = -AlphaBeta(max(0,depth - reductiondepth), -beta, -alpha, m, &line, true, dopv);
+			score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
 		}
 		ply--;
 		pos.unmakeMove(m);
@@ -458,20 +458,21 @@ void Engine::generateCaptureScores(vector<Move>& moves, vector<int>& scores)
 	}
 }
 
-unsigned long long Engine::getMoveScore(const Move& m, int movescore)
+unsigned long long Engine::getMoveScore(const Move& m)
 {
 	int from = m.getFrom();
 	int to = m.getTo();
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
 	unsigned long long score = 100000;
-	/*if(ply < PrincipalVariation.size())
+	if(ply < PrincipalVariation.size())
 	{
 		if(m==PrincipalVariation.at(ply))
 		{
 			score += 600000;
+			return score;
 		}
-	}*/
+	}
 	if(m==Table.getBestMove(pos.TTKey)) //history best move is always first, give it a big advantage of 400000
 	{
 		score += 400000;
@@ -479,8 +480,8 @@ unsigned long long Engine::getMoveScore(const Move& m, int movescore)
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{
-		//int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),capturedpiece);
-		int x = movescore;
+		int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),capturedpiece);
+		//int x = movescore;
 		if(x>=0) //if it is a good capture
 		{
 			score += 300000 + x;
@@ -492,7 +493,7 @@ unsigned long long Engine::getMoveScore(const Move& m, int movescore)
 	}
 	else if(special==PIECE_PAWN) //enpassant are also captures
 	{
-		int x = movescore;
+		int x = StaticExchangeEvaluation(to, from, m.getMovingPiece(), capturedpiece);
 		if(x>=0)
 		{
 			score += 350000 + x;
@@ -514,15 +515,15 @@ unsigned long long Engine::getMoveScore(const Move& m, int movescore)
 	return score;
 }
 
-Move Engine::getHighestScoringMove(vector<Move>& moves, vector<int>& scores, int currentmove)
+Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 {
 	sorttime.Start();
 	int bigmove = currentmove;
-	unsigned long long bigscore = getMoveScore(moves.at(currentmove), scores.at(currentmove));
+	unsigned long long bigscore = getMoveScore(moves.at(currentmove));
 	unsigned long long x;
 	for(int i = currentmove+1;i<moves.size();i++)
 	{
-		x = getMoveScore(moves.at(i), scores.at(i));
+		x = getMoveScore(moves.at(i));
 		if(x>bigscore)
 		{
 			bigscore = x;
@@ -532,13 +533,9 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, vector<int>& scores, int
 	Move m = moves.at(bigmove); //swap move
 	moves.at(bigmove) = moves.at(currentmove);
 	moves.at(currentmove) = m;
-	int sc = scores.at(bigmove); //swamp score
-	scores.at(bigmove) = scores.at(currentmove);
-	scores.at(currentmove) = sc;
-	/*if(m.getSpecial()==PIECE_PAWN)
-	{
-		cout << "info string ep at " << currentmove << endl;
-	}*/
+	//int sc = scores.at(bigmove); //swamp score
+	//scores.at(bigmove) = scores.at(currentmove);
+	//scores.at(currentmove) = sc;
 	return m;
 	sorttime.Stop();
 }
