@@ -80,7 +80,7 @@ Move Engine::IterativeDeepening()
 			pos.takebackMove();
 			takeback--;
 		}
-		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << endl;
+		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds() << endl;
 		return PrincipalVariation.at(PrincipalVariation.size()-1);
 	}
 	
@@ -126,15 +126,11 @@ Move Engine::IterativeDeepening()
 			cout << line.at(j).toString() << " ";
 		}
 		cout << endl;
-		if (i == 1)
-		{
-			cout << "info string ERROR" << endl;;
-		}
 		PrincipalVariation = line;
 	}
 	Move bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
 	cout << "Nodes: " << nodes << endl;
-	cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << endl;
+	cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
 	//cout << bestmove.toString() << " " << firstguess << endl;
 	return bestmove;
 }
@@ -281,6 +277,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		pos.generateMoves(vec);
     }
 	movegentime.Stop();
+	//cout << "info string " << movegentime.time << endl;
 	/*vector<Move> line;
 	line.reserve(128);*/
 	/*vector<int> scores;
@@ -315,7 +312,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		if (depth < 8 && LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha) //small forward razoring
+		if (depth < 8 && (LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha)) //small forward razoring
 		{
 			reductiondepth++;
 		}
@@ -325,17 +322,19 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
 		{
-			reductiondepth += 2;
-			if(i >= 8) reductiondepth++;
-			if (i >= 12) reductiondepth++;
-			if (depth >= 6) reductiondepth++;
-			if (depth >= 9) reductiondepth++;
+			reductiondepth ++;
+			if (i >= 8 && depth >= 6)
+			{
+				reductiondepth++;
+				if (i >= 12 && depth >= 9) 
+					reductiondepth++;
+			}
 		}
-
+		
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
 			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, &line, true, false);
-			if(score>alpha) //check for failure
+			if(score>alpha && score < beta) //check for failure
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, true); //research
@@ -346,7 +345,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		{
 			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, &line, true, dopv);
 			//cout << "latemove" << endl;
-			if(score>alpha && reductiondepth>1)
+			if(score>alpha && score < beta && reductiondepth>1)
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
@@ -551,8 +550,11 @@ void Engine::movesort(vector<Move>& moves,int depth)
 		}
 		int from = m.getFrom();
 		int to = m.getTo();
-		if((from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo()) 
-			|| (from==KillerMoves[1][ply].getFrom() && to==KillerMoves[1][ply].getTo()))
+		if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo())
+		{
+			score.at(i) += 250000;
+		}
+		else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
 		{
 			score.at(i) += 200000;
 		}

@@ -400,11 +400,11 @@ int Engine::LeafEval(int alpha,int beta)
 	/*int lazy;
 	if(pos.turn==COLOR_WHITE)
 	{
-		lazy = eval;
+		lazy = sideeval[COLOR_WHITE]-sideeval[COLOR_BLACK];
 	}
 	else
 	{
-		lazy = -eval;
+		lazy = sideeval[COLOR_BLACK] - sideeval[COLOR_WHITE];
 	}
 	if((lazy + LazyEval1 < alpha) || (lazy - LazyEval1 > beta))
 	{
@@ -597,9 +597,10 @@ int Engine::LeafEval(int alpha,int beta)
 	neteval += sideeval[COLOR_WHITE];
 	neteval -= sideeval[COLOR_BLACK];
 
-	evaltime.Stop();
 	if(pos.turn==COLOR_BLACK)
 		return -neteval;
+
+	evaltime.Stop();
 	return neteval;
 }
 

@@ -15,6 +15,8 @@
 ///BUGS
 
 ///BUILDS
+// Build 51 - 17-10-2015 - Move ordering now orders Killer Move 1 above Killer Move 2 instead of ordering both equally
+// Build 50 - 17-10-2015 - Undid last change, reduced latemove reduction a bit
 // Build 49 - 17-10-2015 - Undid last change, increased latemove reduction base depth from 1 to 2
 // Build 48 - 17-10-2015 - Now does a depth reduction in pvs even if alpha isnt raised
 // Build 47 - 16-10-2015 - Increased max depth for futility and large forward pruning to 4
@@ -125,6 +127,10 @@ int main(int argc, char* args[])
     Interface i = Interface();
 	try{
     i.start();
-	}catch(exception e) {cout << e.what() << endl;}
+	}catch(exception e) 
+	{
+		cout << e.what() << endl;
+		cout << "info string " << e.what() << endl;
+	}
     return 0;
 }
