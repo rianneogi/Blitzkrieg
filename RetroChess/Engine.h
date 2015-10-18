@@ -26,13 +26,19 @@ class Engine
     public:
     Position pos;
     Move historymove;
-	int nodes;
-	Clock timer;
 
 	int myColor;
 	vector<Move> PrincipalVariation;
 	Move KillerMoves[2][100];
 	int ply;
+
+	int nodes;
+	int prunednodes;
+	int futilitynodes;
+	int betacutoff_counter;
+	int betacutoff_sum;
+
+	Clock timer;
 
 	Clock evaltime;
 	Clock sorttime;

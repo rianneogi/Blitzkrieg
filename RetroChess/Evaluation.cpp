@@ -13,8 +13,10 @@ int BishopPairBonus = 45;
 int KnightPairBonus = -5;
 int RookPairBonus = 10;
 
-int KnightOutpostBonus = 25;
-int BishopOutpostBonus = 10;
+//int KnightOutpostBonus = 25;
+//int BishopOutpostBonus = 10;
+int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 };
+int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 10, 6};
 
 int QueenOutEarlyPenalty = 20; //penalty for queens not on back rank for every minor on back rank
 
@@ -135,7 +137,7 @@ int PieceSqValues[7][64] =
 	   0,  0,  0,  0,  0,  0,  0,  0},
 
 	{ 35, 30,-10,-20,-20, 15, 30, 35, //king
-	   0, 20,  0,-30,-30,  0, 15,  0,
+	  10, 20,  0,-30,-30,  0, 15, 10,
 	   0,-10,-20,-40,-40,-20,-10,  0,
 	 -10,-20,-40,-50,-50,-40,-20,-10,
 	 -60,-60,-60,-60,-60,-60,-60,-60,
@@ -432,7 +434,7 @@ int Engine::LeafEval(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if(getAboveBits(i,k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
 			{
-				sideeval[i] -= DoubledPawnPenalty[getFile(k)];
+				sideeval[i] -= DoubledPawnPenalty[getFile(getColorMirror(i,k))];
 			}
 			if((getAboveAndAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if the pawn is a passer
 			{
@@ -440,7 +442,7 @@ int Engine::LeafEval(int alpha,int beta)
 			}
 			if((getSideBits(k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there are no friendly pawns on the adjacent files
 			{
-				sideeval[i] -= IsolatedPawnPenalty[getFile(k)];
+				sideeval[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i,k))];
 			}
 			if(pos.Squares[getColorMirror(i,getPlus8(getColorMirror(i,k)))]!=SQUARE_EMPTY) //checks if pawn is blocked
 			{
@@ -506,10 +508,10 @@ int Engine::LeafEval(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				sideeval[i] += KnightOutpostBonus;
+				sideeval[i] += KnightOutpostBonus[getRank(getColorMirror(i,k))];
 				if (MinorPieceCount[getOpponent(i)] == 0)
 				{
-					sideeval[i] += KnightOutpostBonus; //double bonus if there are no opponent minor pieces
+					sideeval[i] += KnightOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
 				}
 			}
 
@@ -540,10 +542,10 @@ int Engine::LeafEval(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				sideeval[i] += BishopOutpostBonus;
+				sideeval[i] += BishopOutpostBonus[getRank(getColorMirror(i, k))];
 				if (MinorPieceCount[getOpponent(i)] == 0)
 				{
-					sideeval[i] += BishopOutpostBonus; //double bonus if there are no opponent minor pieces
+					sideeval[i] += BishopOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
 				}
 			}
 
@@ -591,7 +593,7 @@ int Engine::LeafEval(int alpha,int beta)
 
 	for(int i = 0;i<2;i++)
 	{
-		sideeval[i] -= SafetyTable[KingAttackUnits[i]];
+		sideeval[i] -= SafetyTable[min(99,KingAttackUnits[i])];
 	}
 
 	neteval += sideeval[COLOR_WHITE];
@@ -1073,8 +1075,8 @@ int Engine::Trace(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				eval += ColorFactor[i]*KnightOutpostBonus;
-				cout << ColorFactor[i]*KnightOutpostBonus << " for knight outpost " << Int2Sq(k) << endl;
+				eval += ColorFactor[i]*KnightOutpostBonus[getRank(getColorMirror(i,k))];
+				cout << ColorFactor[i]* KnightOutpostBonus[getRank(getColorMirror(i, k))] << " for knight outpost " << Int2Sq(k) << endl;
 			}
 
 			//knight attacks near opposing king
@@ -1102,8 +1104,8 @@ int Engine::Trace(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				eval += ColorFactor[i]*BishopOutpostBonus;
-				cout << ColorFactor[i]*BishopOutpostBonus << " for bishop outpost " << Int2Sq(k) << endl;
+				eval += ColorFactor[i]* BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				cout << ColorFactor[i]* BishopOutpostBonus[getRank(getColorMirror(i, k))] << " for bishop outpost " << Int2Sq(k) << endl;
 			}
 
 			//bishop attacks near opposing king

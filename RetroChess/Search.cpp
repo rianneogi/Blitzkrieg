@@ -38,6 +38,10 @@ Move Engine::IterativeDeepening()
 
 	//init
 	nodes = 0;
+	prunednodes = 0;
+	futilitynodes = 0;
+	betacutoff_counter = 0;
+	betacutoff_sum = 0;
 	ply = 0;
 	for(int i = 0;i<2;i++)
 	{
@@ -80,7 +84,9 @@ Move Engine::IterativeDeepening()
 			pos.takebackMove();
 			takeback--;
 		}
-		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds() << endl;
+		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
+		cout << ", Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
+		cout << ", Avg. beta cutoff location: " << ((double)betacutoff_sum / betacutoff_counter) << endl;
 		return PrincipalVariation.at(PrincipalVariation.size()-1);
 	}
 	
@@ -247,16 +253,20 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
     }
 
 	int leafeval = LeafEval(alpha, beta);
-	if (depth < 4 && !underCheck && ((leafeval + ForwardPruningMargin[depth]) <= alpha)) //large forward pruning
+	if (depth < 4 && !underCheck && 
+		(((leafeval + ForwardPruningMargin[depth]) <= alpha))) //large forward pruning
 	{
+		prunednodes++;
 		return alpha;
 	}
 
 	//futility pruning
 	bool futilityprune = false; 
 	
-	if (depth < 4 && !underCheck && ((leafeval + FutilityMargin[depth]) <= alpha)) //futility pruning
+	if (depth < 4 && !underCheck && 
+		(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
 	{
+		futilitynodes++;
 		futilityprune = true;
 	}
 
@@ -312,7 +322,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		if (depth < 8 && (LeafEval(alpha, beta) + SmallPruningMargin[depth] < alpha)) //small forward razoring
+		if (depth < 8 && ((LeafEval(alpha, beta) + SmallPruningMargin[depth]) < alpha)) //small forward razoring
 		{
 			reductiondepth++;
 		}
@@ -363,6 +373,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 				HistoryScores[m.getFrom()][m.getTo()]+=depth*depth;
 				setKiller(m,depth);
 			}
+			betacutoff_counter++;
+			betacutoff_sum += i+1;
 			return beta; //fail hard beta cutoff
 		}
 		else if(score>alpha)
