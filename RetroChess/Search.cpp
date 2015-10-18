@@ -15,7 +15,7 @@ int MAXTIME = 1000;
 int MAXDEPTH = 100;
 int CheckupNodeCount = 16384;
 
-Move Engine::IterativeDeepening()
+Move Engine::IterativeDeepening(int movetime)
 {
 	int status = pos.getGameStatus();
 	if(status!=STATUS_NOTOVER)
@@ -63,6 +63,8 @@ Move Engine::IterativeDeepening()
 	movegentime.Reset();
 	quisctime.Reset();
 	timer.Reset();
+
+	MAXTIME = movetime;
 
 	vector<Move> line;
 	line.reserve(128);

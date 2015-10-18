@@ -56,7 +56,7 @@ class Engine
 	void unmakeMove(Move const& m);
 	
 	//Search.cpp
-	Move IterativeDeepening();
+	Move IterativeDeepening(int movetime);
 	int think(int depth,int alpha,int beta,vector<Move>* variation);
 	int AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv);
 	void movesort(vector<Move>& moves,int depth);

@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 53 - 18-10-2015 - Added time management
 // Build 52 - 18-10-2015 - Now evaluates outposts depending on rank, changed king field to include squares adj. to king also
 // Build 51 - 17-10-2015 - Move ordering now orders Killer Move 1 above Killer Move 2 instead of ordering both equally
 // Build 50 - 17-10-2015 - Undid last change, reduced latemove reduction a bit

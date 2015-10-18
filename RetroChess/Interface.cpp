@@ -46,7 +46,38 @@ void Interface::UCI()
 		}
 		else if(s=="go")
 		{
-			Move m = e1.IterativeDeepening();
+			int time = 1000;
+			for (int i = 2;;i++)
+			{
+				s = getStringToken(str, ' ', i);
+				if (s == "movetime")
+				{
+					time = atoi(getStringToken(str, ' ', i+1).c_str());
+					i++;
+				}
+				if (s == "wtime")
+				{
+					if (e1.pos.turn == 0)
+					{
+						time = atoi(getStringToken(str, ' ', i + 1).c_str());
+						time /= 30;
+					}
+					i++;
+				}
+				if (s == "btime")
+				{
+					if (e1.pos.turn == 1)
+					{
+						time = atoi(getStringToken(str, ' ', i + 1).c_str());
+						time /= 30;
+					}
+					i++;
+				}
+				if (s == "")
+					break;
+			}
+			
+			Move m = e1.IterativeDeepening(time);
 			cout << "bestmove " << m.toString() << endl;
 			//e1.pos.forceMove(m);
 		}
@@ -122,7 +153,7 @@ void Interface::Winboard()
 		else if(s=="go")
 		{
 			side = e1.pos.turn;
-			Move m = e1.IterativeDeepening();
+			Move m = e1.IterativeDeepening(1000);
 			cout << "move " << m.toString() << endl;
 		}
 		else if(s=="quit")
@@ -414,7 +445,7 @@ void Interface::think()
 {
 	Clock c;
 	c.Start();
-	e1.IterativeDeepening();
+	e1.IterativeDeepening(1000);
 	c.Stop();
 	cout << "Time taken: " << c.ElapsedMilliseconds() << endl;
 }
