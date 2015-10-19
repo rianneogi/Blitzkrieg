@@ -1,3 +1,11 @@
+#include <iostream>
+#include <conio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "Interface.h"
+
+using namespace std;
+
 ///TODO
 // Use arrays instead of vectors to improve speed
 // check ep
@@ -14,7 +22,12 @@
 // FIXED - Bug regarding sliding piece move generation
 ///BUGS
 
+string ENGINENAME = "RetroChess";
+string ENGINEAUTHOR = "Rian Neogi";
+const int ENGINEVERSION = 57;
+
 ///BUILDS
+// Build 57 - 19-10-2015 - Increase attack weights alot
 // Build 56 - 19-10-2015 - Reduced attack weights a bit
 // Build 55 - 19-10-2015 - Readded Killer Moves
 // Build 54 - 19-10-2015 - Removed Killer Moves, fixed ColoredSquares and added bonus eval for outposts protected by a pawn
@@ -111,18 +124,6 @@
 // Original BetaChess with only prevmove to trace back for unmakeMove()
 //   -Doesn't work because after using unmakeMove() to go back, you don't know the previous move
 ///HISTORY
-
-#include <iostream>
-#include <conio.h>
-#include <stdlib.h>
-#include <time.h>
-#include "Interface.h"
-
-using namespace std;
-
-string ENGINENAME = "RetroChess";
-string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 55;
 
 int main(int argc, char* args[])
 {
