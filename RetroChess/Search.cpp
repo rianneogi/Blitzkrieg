@@ -36,6 +36,11 @@ Move Engine::IterativeDeepening(int movetime)
 		}
 	}
 
+	vector<Move> moves;
+	pos.generateMoves(moves);
+	if (moves.size() == 1) //only 1 legal move
+		return moves.at(0);
+
 	//init
 	nodes = 0;
 	prunednodes = 0;
@@ -272,11 +277,17 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
     }
 
 	int leafeval = LeafEval(alpha, beta);
-	if (depth < 4 && !underCheck && 
+	if (ply!=0 && depth < 4 && !underCheck && 
 		(((leafeval + ForwardPruningMargin[depth]) <= alpha))) //large forward pruning
 	{
 		prunednodes++;
-		return alpha;
+		return (leafeval + ForwardPruningMargin[depth]);
+	}
+
+	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - 200 * depth) >= beta))
+	{
+		prunednodes++;
+		return (leafeval - 200 * depth);
 	}
 
 	//futility pruning
