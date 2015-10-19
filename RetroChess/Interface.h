@@ -4,6 +4,10 @@
 #include "Engine.h"
 #include "Board.h"
 
+extern const int ENGINEVERSION;
+extern string ENGINENAME;
+extern string ENGINEAUTHOR;
+
 class Interface
 {
     public:

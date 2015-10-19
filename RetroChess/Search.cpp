@@ -385,7 +385,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
 			{
 				HistoryScores[m.getFrom()][m.getTo()]+=depth*depth;
-				//setKiller(m,depth);
+				setKiller(m,depth);
 			}
 			betacutoff_counter++;
 			betacutoff_sum += i+1;

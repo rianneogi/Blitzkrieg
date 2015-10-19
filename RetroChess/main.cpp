@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 56 - 19-10-2015 - Reduced attack weights a bit
 // Build 55 - 19-10-2015 - Readded Killer Moves
 // Build 54 - 19-10-2015 - Removed Killer Moves, fixed ColoredSquares and added bonus eval for outposts protected by a pawn
 // Build 53 - 18-10-2015 - Added time management
@@ -118,6 +119,10 @@
 #include "Interface.h"
 
 using namespace std;
+
+string ENGINENAME = "RetroChess";
+string ENGINEAUTHOR = "Rian Neogi";
+const int ENGINEVERSION = 55;
 
 int main(int argc, char* args[])
 {

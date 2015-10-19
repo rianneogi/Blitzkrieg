@@ -22,9 +22,10 @@ Interface::~Interface()
 
 void Interface::UCI()
 {
-	cout << "id name BetaChess" << endl;
-	cout << "id author Rian Neogi" << endl;
+	cout << "id name " << ENGINENAME << endl;
+	cout << "id author " << ENGINEAUTHOR << endl;
 	cout << "uciok" << endl;
+	cout << "info string " << ENGINENAME << " " << ENGINEVERSION << endl;
 	string str = "";
 	char cp[1000];
 	while(true)
