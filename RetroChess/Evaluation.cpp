@@ -282,7 +282,6 @@ int Engine::LeafEval(int alpha,int beta)
 	Bitset ColorPieces[2];
 	int KingAttackUnits[2]={0,0};
 	int MinorsOnBackRank[2]={0,0};
-	int MinorPieceCount[2] = { 0,0 };
 
 	for(int i = 0;i<2;i++) //king safety
 	{
@@ -293,7 +292,6 @@ int Engine::LeafEval(int alpha,int beta)
 		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
                          pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
                          pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
-		MinorPieceCount[i] = popcnt(pos.Pieces[i][PIECE_KNIGHT] | pos.Pieces[i][PIECE_BISHOP]);
 
 		if(!isEG)
 		{
@@ -420,8 +418,8 @@ int Engine::LeafEval(int alpha,int beta)
 		b = pos.Pieces[i][PIECE_PAWN];
 		int pawncount = popcnt(b);
 		int pawncountcolor[2];
-		pawncountcolor[COLOR_WHITE] = popcnt(b&0x55AA55AA55AA55AA);
-		pawncountcolor[COLOR_BLACK] = popcnt(b&0xAA55AA55AA55AA55);
+		pawncountcolor[COLOR_WHITE] = popcnt(b&ColoredSquares[COLOR_WHITE]);
+		pawncountcolor[COLOR_BLACK] = popcnt(b&ColoredSquares[COLOR_BLACK]);
 		if(!b) //penalty for having no pawns
 		{
 			sideeval[i] -= NoPawnsPenalty;
@@ -508,11 +506,21 @@ int Engine::LeafEval(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				sideeval[i] += KnightOutpostBonus[getRank(getColorMirror(i,k))];
-				if (MinorPieceCount[getOpponent(i)] == 0)
+				int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
+				int piececolor = SquareColor[k];
+				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
 				{
-					sideeval[i] += KnightOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
+					outpostbonus += KnightOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
 				}
+				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
+				{
+					outpostbonus += (KnightOutpostBonus[getRank(getColorMirror(i, k))] / 2); //extra bonus if defended by a pawn
+				}
+				if (isEG)
+				{
+					outpostbonus /= 2; //half bonus in endgames
+				}
+				sideeval[i] += outpostbonus;
 			}
 
 			//knight attacks near opposing king
@@ -542,19 +550,31 @@ int Engine::LeafEval(int alpha,int beta)
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				sideeval[i] += BishopOutpostBonus[getRank(getColorMirror(i, k))];
-				if (MinorPieceCount[getOpponent(i)] == 0)
+				int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				int piececolor = SquareColor[k];
+				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
 				{
-					sideeval[i] += BishopOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
+					outpostbonus += BishopOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
 				}
+				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
+				{
+					outpostbonus += BishopOutpostBonus[getRank(getColorMirror(i, k))]/2; //extra bonus if defended by a pawn
+				}
+				if (isEG)
+				{
+					outpostbonus /= 2;
+				}
+				sideeval[i] += outpostbonus;
 			}
 
 			//bishop attacks near opposing king
 			Bitset m = getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
 			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
 			m &= m^ColorPieces[i];
+
 			sideeval[i] += BishopMobility[popcnt(m)];
 			sideeval[i] += BishopPawnSameColor[pawncountcolor[SquareColor[k]]]; //bishop pawn same color adjustment
+
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
 

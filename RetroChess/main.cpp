@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 54 - 19-10-2015 - Removed Killer Moves, fixed ColoredSquares and added bonus eval for outposts protected by a pawn
 // Build 53 - 18-10-2015 - Added time management
 // Build 52 - 18-10-2015 - Now evaluates outposts depending on rank, changed king field to include squares adj. to king also
 // Build 51 - 17-10-2015 - Move ordering now orders Killer Move 1 above Killer Move 2 instead of ordering both equally

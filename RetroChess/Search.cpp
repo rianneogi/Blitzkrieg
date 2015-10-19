@@ -89,7 +89,13 @@ Move Engine::IterativeDeepening(int movetime)
 		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
 		cout << ", Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
 		cout << ", Avg. beta cutoff location: " << ((double)betacutoff_sum / betacutoff_counter) << endl;
-		return PrincipalVariation.at(PrincipalVariation.size()-1);
+		if (PrincipalVariation.size() <= 0)
+		{
+			cout << "info string ERROR: pv size is 0\n";
+			return CONS_NULLMOVE;
+			
+		}
+		return PrincipalVariation.at(PrincipalVariation.size() - 1);
 	}
 	
 	for(int i = 2;i<=MAXDEPTH;i++)
@@ -136,10 +142,15 @@ Move Engine::IterativeDeepening(int movetime)
 		cout << endl;
 		PrincipalVariation = line;
 	}
-	Move bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
 	cout << "Nodes: " << nodes << endl;
 	cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
 	//cout << bestmove.toString() << " " << firstguess << endl;
+	if (PrincipalVariation.size() <= 0)
+	{
+		cout << "info string ERROR: principal variation size is 0\n";
+		return CONS_NULLMOVE;
+	}
+	Move bestmove = PrincipalVariation.at(PrincipalVariation.size() - 1);
 	return bestmove;
 }
 
@@ -373,7 +384,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
 			{
 				HistoryScores[m.getFrom()][m.getTo()]+=depth*depth;
-				setKiller(m,depth);
+				//setKiller(m,depth);
 			}
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
@@ -513,11 +524,14 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	else
 	{
-		if(((from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo())  //if it is a killer move
-			|| (from==KillerMoves[1][ply].getFrom() && to==KillerMoves[1][ply].getTo())))
-		{
-			score += 200000;
-		}
+		//if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo()) //if its a killer move
+		//{
+		//	score += 250000;
+		//}
+		//else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
+		//{
+		//	score += 200000;
+		//}
 		score += HistoryScores[from][to]; //sort the rest by history
 	}
 	return score;
@@ -548,47 +562,47 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 	sorttime.Stop();
 }
 
-void Engine::movesort(vector<Move>& moves,int depth)
-{
-	vector<double> score;
-	for(unsigned int i = 0;i<moves.size();i++)
-	{
-		Move m = moves.at(i);
-		score.push_back((HistoryScores[m.getFrom()][m.getTo()]*1.0));
-		if(ply < PrincipalVariation.size())
-		{
-			if(m==PrincipalVariation.at(ply))
-			{
-				score.at(i) += 400000;
-			}
-		}
-		int from = m.getFrom();
-		int to = m.getTo();
-		if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo())
-		{
-			score.at(i) += 250000;
-		}
-		else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
-		{
-			score.at(i) += 200000;
-		}
-	}
-	for(unsigned int i = 0;i<moves.size();i++)
-	{
-		for(unsigned int j = 0;j<moves.size()-1-i;j++)
-		{
-			if(score.at(j)<score.at(j+1))
-			{
-				int tmp = score.at(j);
-				score.at(j) = score.at(j+1);
-				score.at(j+1) = tmp;
-				Move mov = moves.at(j);
-				moves.at(j) = moves.at(j+1);
-				moves.at(j+1) = mov;
-			}
-		}
-	}
-}
+//void Engine::movesort(vector<Move>& moves,int depth)
+//{
+//	vector<double> score;
+//	for(unsigned int i = 0;i<moves.size();i++)
+//	{
+//		Move m = moves.at(i);
+//		score.push_back((HistoryScores[m.getFrom()][m.getTo()]*1.0));
+//		if(ply < PrincipalVariation.size())
+//		{
+//			if(m==PrincipalVariation.at(ply))
+//			{
+//				score.at(i) += 400000;
+//			}
+//		}
+//		int from = m.getFrom();
+//		int to = m.getTo();
+//		if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo())
+//		{
+//			score.at(i) += 250000;
+//		}
+//		else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
+//		{
+//			score.at(i) += 200000;
+//		}
+//	}
+//	for(unsigned int i = 0;i<moves.size();i++)
+//	{
+//		for(unsigned int j = 0;j<moves.size()-1-i;j++)
+//		{
+//			if(score.at(j)<score.at(j+1))
+//			{
+//				int tmp = score.at(j);
+//				score.at(j) = score.at(j+1);
+//				score.at(j+1) = tmp;
+//				Move mov = moves.at(j);
+//				moves.at(j) = moves.at(j+1);
+//				moves.at(j+1) = mov;
+//			}
+//		}
+//	}
+//}
 
 void Engine::checkup()
 {
