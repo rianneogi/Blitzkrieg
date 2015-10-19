@@ -15,6 +15,7 @@
 ///BUGS
 
 ///BUILDS
+// Build 55 - 19-10-2015 - Readded Killer Moves
 // Build 54 - 19-10-2015 - Removed Killer Moves, fixed ColoredSquares and added bonus eval for outposts protected by a pawn
 // Build 53 - 18-10-2015 - Added time management
 // Build 52 - 18-10-2015 - Now evaluates outposts depending on rank, changed king field to include squares adj. to king also
@@ -127,6 +128,7 @@ int main(int argc, char* args[])
 	evalinit();
 	TTinit();
     cout << "Initialization done" << endl;
+
     Interface i = Interface();
 	try{
     i.start();

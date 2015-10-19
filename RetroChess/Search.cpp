@@ -306,6 +306,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	/*vector<int> scores;
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
+	//int epmade = 0;
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
 		line.clear();
@@ -388,6 +389,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			}
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
+			/*if (epmade == 1)
+			{
+				cout << "info string beta cutoff: " << m.toString() << " " << beta << endl;
+			}*/
 			return beta; //fail hard beta cutoff
 		}
 		else if(score>alpha)
@@ -399,6 +404,15 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			alpharaised = true;
 			alphamove = m;
 			*variation = line;
+			/*if (epmade == 1)
+			{
+				cout << "info string alpha raised again: " << m.toString() << " " << alpha << endl;
+			}
+			else if (m.getSpecial() == PIECE_PAWN)
+			{
+				cout << "info string alpha raised 1: " << m.toString() << " " << alpha << endl;
+				epmade = 1;
+			}*/
 		}
 		//else
 		//{
@@ -451,6 +465,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	{
 		//*variation = lineptr;
 		variation->push_back(alphamove);
+		/*if (alphamove.getSpecial() == PIECE_PAWN)
+		{
+			cout << "info string ep pushed" << endl;
+		}*/
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
 	return alpha;
@@ -524,14 +542,14 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	else
 	{
-		//if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo()) //if its a killer move
-		//{
-		//	score += 250000;
-		//}
-		//else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
-		//{
-		//	score += 200000;
-		//}
+		if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo()) //if its a killer move
+		{
+			score += 250000;
+		}
+		else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
+		{
+			score += 200000;
+		}
 		score += HistoryScores[from][to]; //sort the rest by history
 	}
 	return score;

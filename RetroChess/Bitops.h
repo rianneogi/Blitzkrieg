@@ -25,7 +25,7 @@ extern string debugstring;
 
 typedef unsigned long long Bitset;
 
-extern Bitset ColoredSquares[2];
+extern Bitset ColoredSquares[2]; //light squares and dark squares
 
 extern Bitset Pos2Bit[64];
 
