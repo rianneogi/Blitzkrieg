@@ -15,6 +15,16 @@ int MAXTIME = 1000;
 int MAXDEPTH = 100;
 int CheckupNodeCount = 16384;
 
+inline int getRazorMargin(int depth)
+{
+	return (512 + 32*depth);
+}
+
+inline int getFutilityMargin(int depth)
+{
+	return (200 * depth);
+}
+
 Move Engine::IterativeDeepening(int movetime)
 {
 	int status = pos.getGameStatus();
@@ -98,7 +108,6 @@ Move Engine::IterativeDeepening(int movetime)
 		{
 			cout << "info string ERROR: pv size is 0\n";
 			return CONS_NULLMOVE;
-			
 		}
 		return PrincipalVariation.at(PrincipalVariation.size() - 1);
 	}
@@ -277,24 +286,30 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
     }
 
 	int leafeval = LeafEval(alpha, beta);
-	if (ply!=0 && depth < 4 && !underCheck && 
-		(((leafeval + ForwardPruningMargin[depth]) <= alpha))) //large forward pruning
-	{
-		prunednodes++;
-		return (leafeval + ForwardPruningMargin[depth]);
-	}
+	//if (ply!=0 && depth < 4 && !underCheck && 
+	//	(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
+	//{
+	//	prunednodes++;
+	//	if (depth <= 1 && leafeval + getRazorMargin(3) <= alpha)
+	//		return QuiescenceSearchStandPat(alpha, beta, lastmove);
 
-	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - 200 * depth) >= beta))
+	//	int ralpha = alpha - getRazorMargin(depth);
+	//	int v = QuiescenceSearchStandPat(ralpha, ralpha+1, lastmove);
+	//	if (v <= ralpha)
+	//		return v;
+	//}
+
+	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
 		prunednodes++;
-		return (leafeval - 200 * depth);
+		return getFutilityMargin(depth);
 	}
 
 	//futility pruning
 	bool futilityprune = false; 
 	
-	if (depth < 4 && !underCheck && 
-		(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
+	if (depth < 7 && !underCheck && 
+		(((leafeval + 100*depth) <= alpha))) //futility pruning
 	{
 		futilitynodes++;
 		futilityprune = true;
@@ -330,16 +345,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		//dummyline.clear();
 		//m = vec.at(i);
 		m = getHighestScoringMove(vec,i);
-		//Position x = pos; //debug
-		/*if(ply==0)
-		{
-			cout << "info currmove " << m.toString() << endl;
-		}*/
-		/*if(ply==0)
-		{
-			cout << m.toString() << "\n";
-			_getch();
-		}*/
+
 		if(!pos.makeMove(m))
 		{
 			continue;
@@ -363,13 +369,14 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
 		{
-			reductiondepth ++;
+			reductiondepth += 2;
+			/*reductiondepth ++;
 			if (i >= 8 && depth >= 6)
 			{
 				reductiondepth++;
 				if (i >= 12 && depth >= 9) 
 					reductiondepth++;
-			}
+			}*/
 		}
 		
 		if(dopv && alpharaised && depth>=3) //principal variation search
@@ -410,7 +417,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			{
 				cout << "info string beta cutoff: " << m.toString() << " " << beta << endl;
 			}*/
-			return beta; //fail hard beta cutoff
+			return score; //fail soft beta cutoff
 		}
 		else if(score>alpha)
 		{

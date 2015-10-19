@@ -21,11 +21,11 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 	int stand_pat = LeafEval(alpha,beta);
 	if(stand_pat >= beta) //standpat
 	{
-		return beta;
+		return stand_pat;
 	}
-	if(stand_pat < alpha-PieceMaterial[PIECE_QUEEN]) //big delta pruning
+	if(stand_pat <= alpha-PieceMaterial[PIECE_QUEEN]) //big delta pruning
 	{
-		return alpha;
+		return stand_pat;
 	}
 	if(alpha < stand_pat)
 	{
@@ -67,7 +67,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 		pos.unmakeMove(m);
 		ply--;
 		if(score >= beta)
-			return beta;
+			return score;
 		if(alpha < score)
 			alpha = score;
 	}
