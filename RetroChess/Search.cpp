@@ -107,29 +107,35 @@ Move Engine::IterativeDeepening(int movetime)
 		//	cout << "Aspiration fail " << mr.eval << endl;
 		//	mr = think(i,CONS_NEGINF,CONS_INF);
 		//}
-		int low = 8;
-		int high = 8;
+		//int low = 8;
+		//int high = 8;
+
+		int delta = 16;
+		int alpha = max(score - delta, int(CONS_NEGINF));
+		int beta = min(score + delta, int(CONS_INF));
 
 		while(true)
 		{
 			//line = deque<Move>();
 			ply = 0;
-			//val = think(i,score - low,score + high,&line); //aspiration search
-			val = AlphaBeta(i,score - low,score + high,CONS_NULLMOVE,&line,true,true);
-			//cout << mr.move.toString() << " " << mr.eval << endl;
-			if(val <= score - low)
+			
+			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,&line,true,true);
+			
+			if(val <= alpha)
 			{
-				low = low << 1;
-				//cout << "Value is " << val <<" Aspiration fail low set to " << low << endl;
-				//high = 1;
+				beta = (alpha + beta) / 2;
+				alpha = max(score - delta, int(CONS_NEGINF));
+				//low = low << 1;
 			}
-			else if(val >= score + high)
+			else if(val >= beta)
 			{
-				high = high << 1;
-				//cout << "Value is " << val << " Aspiration fail high set to " << high << endl;
-				//low = 1;
+				alpha = (alpha + beta) / 2;
+				beta = min(score + delta, int(CONS_INF));
+				//high = high << 1;
 			}
 			else break;
+
+			delta += delta / 2;
 		}
         score = val;
 		//firstguess = val;

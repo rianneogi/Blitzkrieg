@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "RetroChess";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 57;
+const int ENGINEVERSION = 58;
 
 ///BUILDS
+// Build 58 - 19-10-2015 - Changed aspiration search algorithm
 // Build 57 - 19-10-2015 - Increase attack weights alot
 // Build 56 - 19-10-2015 - Reduced attack weights a bit
 // Build 55 - 19-10-2015 - Readded Killer Moves

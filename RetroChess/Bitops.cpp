@@ -609,8 +609,8 @@ void datainit()
 	{
 		for(int i = 0;i<64;i++)
 		{
-			KingShield1[col][i] = KingMoves[i];
-			KingShield2[col][i] = KingMoves[i];
+			KingShield1[col][i] = KingMoves[i]&Pos2Bit[i];
+			KingShield2[col][i] = KingMoves[i]&Pos2Bit[i];
 			if(col==COLOR_WHITE)
 			{
 				if(i<55)
