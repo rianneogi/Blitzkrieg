@@ -18,7 +18,16 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 			return alpha;
 		return val;
 	}*/
-	int stand_pat = LeafEval(alpha,beta);
+	int stand_pat = 0;
+	int probe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	if (probe != CONS_TTUNKNOWN)
+	{
+		stand_pat = probe; //use TT probe as leafeval
+	}
+	else
+	{
+		stand_pat = LeafEval(alpha, beta);
+	} 
 	if(stand_pat >= beta) //standpat
 	{
 		return stand_pat;

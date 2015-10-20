@@ -250,13 +250,13 @@ int PieceSqValuesEG[7][64] =
 
 int Engine::LeafEval(int alpha,int beta)
 {
-	evaltime.Start();
 	nodes++;
 	if(nodes%CheckupNodeCount==0)
 	{
 		checkup();
 		//nodes = 0;
 	}
+	evaltime.Start();
 	int neteval = 0;
 	int sideeval[2]={0,0};
 	//Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];

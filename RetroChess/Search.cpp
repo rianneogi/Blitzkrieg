@@ -290,7 +290,16 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		}
     }
 
-	int leafeval = LeafEval(alpha, beta);
+	int leafeval = 0;
+	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	if (leafevalprobe != CONS_TTUNKNOWN)
+	{
+		leafeval = probe; //use TT probe as a better leafeval
+	}
+	else
+	{
+		leafeval = LeafEval(alpha, beta);
+	}
 	//if (ply!=0 && depth < 4 && !underCheck && 
 	//	(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
 	//{
@@ -370,7 +379,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			reductiondepth++;
 		}
 
-		if (!alpharaised && depth>=3 && i>=6 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if (depth>=3 && i>=6 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction

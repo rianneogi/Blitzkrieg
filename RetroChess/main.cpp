@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "RetroChess";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 61;
+const int ENGINEVERSION = 62;
 
 ///BUILDS
+// Build 62 - 20-10-2015 - LMR now happens even if alpha was raised and current move count is greater than or equal to 6
+//							, now uses probe as leafeval(in margin checking) if possible
 // Build 61 - 19-10-2015 - Improved futility threshold
 // Build 60 - 19-10-2015 - Changed everything to fail soft, improved beta futility pruning and changed LMR to be constant 2
 // Build 59 - 19-10-2015 - Added forward pruning w.r.t. beta
