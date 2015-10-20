@@ -55,8 +55,12 @@ Move Engine::IterativeDeepening(int movetime)
 	nodes = 0;
 	prunednodes = 0;
 	futilitynodes = 0;
+
 	betacutoff_counter = 0;
 	betacutoff_sum = 0;
+	alphaimprovement_counter = 0;
+	alphaimprovement_sum = 0;
+
 	ply = 0;
 	for(int i = 0;i<2;i++)
 	{
@@ -103,7 +107,8 @@ Move Engine::IterativeDeepening(int movetime)
 		}
 		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
 		cout << ", Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
-		cout << ", Avg. beta cutoff location: " << ((double)betacutoff_sum / betacutoff_counter) << endl;
+		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
+		cout << ", Avg. alpha: " << ((double)alphaimprovement_sum / alphaimprovement_counter) << endl;
 		if (PrincipalVariation.size() <= 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
@@ -308,8 +313,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//futility pruning
 	bool futilityprune = false; 
 	
-	if (depth < 7 && !underCheck && 
-		(((leafeval + 100*depth) <= alpha))) //futility pruning
+	if (depth < 4 && !underCheck && 
+		(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
 	{
 		futilitynodes++;
 		futilityprune = true;
@@ -319,6 +324,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	bool alpharaised = false;
 	bool foundlegal = false;
 	Move alphamove = CONS_NULLMOVE;
+	int finalalpha = -1;
 	//vec = pos.generateMoves();
 	vector<Move> vec;
 	vec.reserve(128);
@@ -359,17 +365,17 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		if (depth < 8 && ((LeafEval(alpha, beta) + SmallPruningMargin[depth]) < alpha)) //small forward razoring
+		if (depth < 8 && ((LeafEval(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
 		{
 			reductiondepth++;
 		}
 
-		if (!alpharaised && depth>=3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if (!alpharaised && depth>=3 && i>=6 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
 		{
-			reductiondepth += 2;
+			reductiondepth += depth/3;
 			/*reductiondepth ++;
 			if (i >= 8 && depth >= 6)
 			{
@@ -428,6 +434,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			alpharaised = true;
 			alphamove = m;
 			*variation = line;
+			finalalpha = i;
 			/*if (epmade == 1)
 			{
 				cout << "info string alpha raised again: " << m.toString() << " " << alpha << endl;
@@ -489,10 +496,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	{
 		//*variation = lineptr;
 		variation->push_back(alphamove);
-		/*if (alphamove.getSpecial() == PIECE_PAWN)
-		{
-			cout << "info string ep pushed" << endl;
-		}*/
+		alphaimprovement_counter++;
+		alphaimprovement_sum += finalalpha;
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
 	return alpha;

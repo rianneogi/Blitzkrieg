@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "RetroChess";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 60;
+const int ENGINEVERSION = 61;
 
 ///BUILDS
+// Build 61 - 19-10-2015 - Improved futility threshold
 // Build 60 - 19-10-2015 - Changed everything to fail soft, improved beta futility pruning and changed LMR to be constant 2
 // Build 59 - 19-10-2015 - Added forward pruning w.r.t. beta
 // Build 58 - 19-10-2015 - Changed aspiration search algorithm, undid last change

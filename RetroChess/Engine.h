@@ -37,6 +37,8 @@ class Engine
 	int futilitynodes;
 	int betacutoff_counter;
 	int betacutoff_sum;
+	int alphaimprovement_counter;
+	int alphaimprovement_sum;
 
 	Clock timer;
 
