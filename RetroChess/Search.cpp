@@ -58,8 +58,9 @@ Move Engine::IterativeDeepening(int movetime)
 
 	betacutoff_counter = 0;
 	betacutoff_sum = 0;
-	alphaimprovement_counter = 0;
-	alphaimprovement_sum = 0;
+	/*alpha_counter = 0;
+	alphalast_sum = 0;
+	alphafirst_sum = 0;*/
 
 	ply = 0;
 	for(int i = 0;i<2;i++)
@@ -91,7 +92,7 @@ Move Engine::IterativeDeepening(int movetime)
 	PrincipalVariation.reserve(128);
 	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,CONS_NULLMOVE,&line,false,false);
 	//int score = think(1,CONS_NEGINF,CONS_INF,&line);
-	PrincipalVariation = line;
+	//PrincipalVariation = line;
 	int val = 0;
 	timer.Start();
 	int takeback = 0;
@@ -108,7 +109,8 @@ Move Engine::IterativeDeepening(int movetime)
 		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
 		cout << ", Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
 		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
-		cout << ", Avg. alpha: " << ((double)alphaimprovement_sum / alphaimprovement_counter) << endl;
+		cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
+		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter) << endl;
 		if (PrincipalVariation.size() <= 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
@@ -316,7 +318,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
 		prunednodes++;
-		return getFutilityMargin(depth);
+		return (leafeval-getFutilityMargin(depth));
 	}
 
 	//futility pruning
@@ -334,6 +336,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	bool foundlegal = false;
 	Move alphamove = CONS_NULLMOVE;
 	int finalalpha = -1;
+	int firstalpha = -1;
 	//vec = pos.generateMoves();
 	vector<Move> vec;
 	vec.reserve(128);
@@ -354,6 +357,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 	//int epmade = 0;
+	/*vector<Move> quietmoves;
+	quietmoves.reserve(128);*/
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
 		line.clear();
@@ -379,20 +384,28 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			reductiondepth++;
 		}
 
-		if (depth>=3 && i>=6 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		if (!alpharaised && depth >= 3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
 		{
-			reductiondepth += depth/3;
-			/*reductiondepth ++;
-			if (i >= 8 && depth >= 6)
-			{
-				reductiondepth++;
-				if (i >= 12 && depth >= 9) 
-					reductiondepth++;
-			}*/
+			reductiondepth ++;
 		}
+
+		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+		//	&& !pos.underCheck(pos.turn)
+		//	&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
+		//	&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
+		//{
+		//	reductiondepth += 2;
+		//	/*reductiondepth ++;
+		//	if (i >= 8 && depth >= 6)
+		//	{
+		//		reductiondepth++;
+		//		if (i >= 12 && depth >= 9) 
+		//			reductiondepth++;
+		//	}*/
+		//}
 		
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
@@ -423,42 +436,37 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			Table.Save(pos.TTKey,depth,score,TT_BETA,m);
 			if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
 			{
-				HistoryScores[m.getFrom()][m.getTo()]+=depth*depth;
-				setKiller(m,depth);
+				setKiller(m, depth);
+				int bonus = depth*depth;
+				HistoryScores[m.getFrom()][m.getTo()]+=bonus;
+				/*for (int i = 0;i < quietmoves.size();i++)
+				{
+					HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()] -= bonus;
+				}*/
 			}
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
-			/*if (epmade == 1)
-			{
-				cout << "info string beta cutoff: " << m.toString() << " " << beta << endl;
-			}*/
 			return score; //fail soft beta cutoff
 		}
 		else if(score>alpha)
 		{
-			//if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
-				//ButterflyScores[m.getFrom()][m.getTo()]++;
 			bound = TT_EXACT;
 			alpha = score;
 			alpharaised = true;
 			alphamove = m;
 			*variation = line;
-			finalalpha = i;
-			/*if (epmade == 1)
+
+			if (firstalpha == -1)
 			{
-				cout << "info string alpha raised again: " << m.toString() << " " << alpha << endl;
+				firstalpha = i;
 			}
-			else if (m.getSpecial() == PIECE_PAWN)
-			{
-				cout << "info string alpha raised 1: " << m.toString() << " " << alpha << endl;
-				epmade = 1;
-			}*/
+			finalalpha = i;
 		}
-		//else
-		//{
-			//if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
-				//ButterflyScores[m.getFrom()][m.getTo()]++;
-		//}
+
+		/*if (capturedpiece == PIECE_NONE && special == PIECE_NONE)
+		{
+			quietmoves.push_back(m);
+		}*/
 	}
 	if(!foundlegal)
 	{
@@ -481,7 +489,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			{
 				if(pos.underCheck(pos.turn))
 				{
-					return CONS_MATED;
+					return CONS_MATED-ply;
 				}
 				else
 				{
@@ -505,8 +513,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	{
 		//*variation = lineptr;
 		variation->push_back(alphamove);
-		alphaimprovement_counter++;
-		alphaimprovement_sum += finalalpha;
+		//HistoryScores[alphamove.getFrom()][alphamove.getTo()] += depth+finalalpha;
+		alpha_counter++;
+		alphalast_sum += (finalalpha + 1);
+		alphafirst_sum += (firstalpha + 1);
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
 	return alpha;

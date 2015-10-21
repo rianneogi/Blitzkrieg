@@ -7,6 +7,12 @@ Engine::Engine()
 	myColor = COLOR_WHITE;
     pos = Position();
 	historymove = Move();
+
+	alphafirst_sum = 0;
+	alphalast_sum = 0;
+	alpha_counter = 0;
+	betacutoff_counter = 0;
+	betacutoff_sum = 0;
 }
 
 Engine::Engine(int col)
@@ -14,6 +20,12 @@ Engine::Engine(int col)
 	myColor = col;
 	pos = Position();
 	historymove = Move();
+
+	alphafirst_sum = 0;
+	alphalast_sum = 0;
+	alpha_counter = 0;
+	betacutoff_counter = 0;
+	betacutoff_sum = 0;
 }
 
 Engine::Engine(int col,Position const& p)
@@ -21,6 +33,12 @@ Engine::Engine(int col,Position const& p)
 	myColor = col;
     pos = p;
 	historymove = Move();
+
+	alphafirst_sum = 0;
+	alphalast_sum = 0;
+	alpha_counter = 0;
+	betacutoff_counter = 0;
+	betacutoff_sum = 0;
 }
 
 Engine::Engine(int col,Position const& p,Move const& prevmove)
@@ -28,6 +46,12 @@ Engine::Engine(int col,Position const& p,Move const& prevmove)
 	myColor = col;
     pos = p;
 	historymove = Move();
+
+	alphafirst_sum = 0;
+	alphalast_sum = 0;
+	alpha_counter = 0;
+	betacutoff_counter = 0;
+	betacutoff_sum = 0;
 }
 
 Engine::~Engine()

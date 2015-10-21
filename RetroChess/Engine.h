@@ -32,13 +32,14 @@ class Engine
 	Move KillerMoves[2][100];
 	int ply;
 
-	int nodes;
-	int prunednodes;
-	int futilitynodes;
-	int betacutoff_counter;
-	int betacutoff_sum;
-	int alphaimprovement_counter;
-	int alphaimprovement_sum;
+	unsigned long long nodes;
+	unsigned long long prunednodes;
+	unsigned long long futilitynodes;
+	unsigned long long betacutoff_counter;
+	unsigned long long betacutoff_sum;
+	unsigned long long alpha_counter;
+	unsigned long long alphalast_sum;
+	unsigned long long alphafirst_sum;
 
 	Clock timer;
 
