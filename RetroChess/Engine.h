@@ -25,10 +25,11 @@ class Engine
 {
     public:
     Position pos;
-    Move historymove;
 
 	int myColor;
-	vector<Move> PrincipalVariation;
+	//vector<Move> PrincipalVariation;
+	Move PrincipalVariation[128];
+	int PvSize;
 	Move KillerMoves[2][100];
 	int ply;
 
@@ -60,8 +61,8 @@ class Engine
 	
 	//Search.cpp
 	Move IterativeDeepening(int movetime);
-	int think(int depth,int alpha,int beta,vector<Move>* variation);
-	int AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv);
+	//int think(int depth,int alpha,int beta,vector<Move>* variation);
+	int AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bool dopv);
 	void movesort(vector<Move>& moves,int depth);
 	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
 	unsigned long long getMoveScore(const Move& m);

@@ -86,17 +86,18 @@ Move Engine::IterativeDeepening(int movetime)
 
 	MAXTIME = movetime;
 
-	vector<Move> line;
-	line.reserve(128);
-	PrincipalVariation = vector<Move>();
-	PrincipalVariation.reserve(128);
-	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,CONS_NULLMOVE,&line,false,false);
+	/*vector<Move> line;
+	line.reserve(128);*/
+	//PrincipalVariation = vector<Move>();
+	//PrincipalVariation.reserve(128);
+	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,CONS_NULLMOVE,false,false);
 	//int score = think(1,CONS_NEGINF,CONS_INF,&line);
 	//PrincipalVariation = line;
 	int val = 0;
 	timer.Start();
 	int takeback = 0;
 	int initialmovenumber = pos.movelist.size();
+	Move bestmove = CONS_NULLMOVE;
 	//cout << "takeback set " << takeback << " " << PrincipalVariation.size() << endl;
 	takeback = setjmp(env);
 	if(takeback!=0)
@@ -111,12 +112,12 @@ Move Engine::IterativeDeepening(int movetime)
 		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
 		cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter) << endl;
-		if (PrincipalVariation.size() <= 0)
+		if (PvSize <= 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
 			return CONS_NULLMOVE;
 		}
-		return PrincipalVariation.at(PrincipalVariation.size() - 1);
+		return bestmove;
 	}
 	
 	for(int i = 2;i<=MAXDEPTH;i++)
@@ -131,6 +132,12 @@ Move Engine::IterativeDeepening(int movetime)
 		//int low = 8;
 		//int high = 8;
 
+		for (int i = 0;i < 128;i++)
+		{
+			PrincipalVariation[i] = CONS_NULLMOVE;
+		}
+		PvSize = 0;
+
 		int delta = 16;
 		int alpha = max(score - delta, int(CONS_NEGINF));
 		int beta = min(score + delta, int(CONS_INF));
@@ -140,7 +147,7 @@ Move Engine::IterativeDeepening(int movetime)
 			//line = deque<Move>();
 			ply = 0;
 			
-			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,&line,true,true);
+			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,true,true);
 			//cout << "asp. " << alpha << " " << beta << endl;
 			
 			if(val <= alpha)
@@ -165,64 +172,27 @@ Move Engine::IterativeDeepening(int movetime)
 		//firstguess = val;
 		timer.Stop();
 		cout << "info score cp " << score << " depth " << i << " nodes " << nodes << " nps " << getNPS(nodes,timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
-		for(int j = line.size()-1;j>=0;j--)
+		for(int j = 0;j<PvSize;j++)
 		{
-			cout << line.at(j).toString() << " ";
+			cout << PrincipalVariation[j].toString() << " ";
 		}
 		cout << endl;
-		PrincipalVariation = line;
+		bestmove = PrincipalVariation[0];
+		//PrincipalVariation = line;
 	}
 	cout << "Nodes: " << nodes << endl;
 	cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
 	//cout << bestmove.toString() << " " << firstguess << endl;
-	if (PrincipalVariation.size() <= 0)
+	if (PvSize <= 0)
 	{
 		cout << "info string ERROR: principal variation size is 0\n";
 		return CONS_NULLMOVE;
 	}
-	Move bestmove = PrincipalVariation.at(PrincipalVariation.size() - 1);
+	//Move bestmove = PrincipalVariation[0];
 	return bestmove;
 }
 
-int Engine::think(int depth,int alpha,int beta,vector<Move>* variation)
-{
-	Move alphamove=CONS_NULLMOVE;
-	int bound=TT_ALPHA;
-	/*if(depth==0)
-		return LeafEval();*/
-
-	vector<Move> vec;
-	vec.reserve(128);
-	pos.generateMoves(vec);
-	//movesort(vec,depth);
-
-	int score = 0;
-	Move m;
-	int pvsize = PrincipalVariation.size();
-	int rootturn = pos.turn;
-	vector<Move>* lineptr;
-	vector<Move> line;
-	line.reserve(128);
-	score = AlphaBeta(depth,alpha,beta,CONS_NULLMOVE,&line,true,true);
-	if(score >= beta)
-	{
-		return beta;
-	}
-	if(score > alpha)
-	{
-		alpha = score;
-		lineptr = &line;
-		alphamove = lineptr->at(lineptr->size()-1);
-	}
-	if(!(alphamove==CONS_NULLMOVE))
-	{
-		variation = lineptr;
-	}
-	//variation->push_front(alphamove);
-	return alpha;
-}
-
-int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv)
+int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bool dopv)
 {
 	if (alpha > beta)
 	{
@@ -261,7 +231,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		Move ttbestmove = Table.getBestMove(pos.TTKey);
 		if (!(ttbestmove == CONS_NULLMOVE) && (!dopv || (probe>alpha && probe<beta)))
 		{
-			variation->push_back(ttbestmove);
+			//variation->push_back(ttbestmove);
+			PrincipalVariation[ply] = ttbestmove;
+			PvSize = ply;
 			return probe;
 		}
 		/*else if(ply!=0)
@@ -275,8 +247,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	dummyline.reserve(128);*/
 	/*vector<Move> lineptr;
 	lineptr.reserve(128);*/
-	vector<Move> line;
-	line.reserve(128);
+	/*vector<Move> line;
+	line.reserve(128);*/
 	Move m;
 	int score = 0;
 
@@ -289,7 +261,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		m = CONS_NULLMOVE;
 		ply++;
 		pos.forceMove(m);
-        score = -AlphaBeta(depth-R-1,-beta,-beta+1,m,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
+        score = -AlphaBeta(depth-R-1,-beta,-beta+1,m,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
         pos.unmakeMove(m);
 		if(score >= beta)
@@ -367,7 +339,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	int bestscore = CONS_NEGINF;
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
-		line.clear();
+		//line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
 		m = getHighestScoringMove(vec,i);
@@ -415,22 +387,22 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
-			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, &line, true, false);
+			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, true, false);
 			if(score>alpha && score < beta) //check for failure
 			{
-				line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, true); //research
+				//line.clear();
+				score = -AlphaBeta(depth - 1, -beta, -alpha, m, true, true); //research
 				//cout << "pv research" << endl;
 			}
 		}
 		else //latemove reduction
 		{
-			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, &line, true, dopv);
+			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, true, dopv);
 			//cout << "latemove" << endl;
 			if(score>alpha && score < beta && reductiondepth>1)
 			{
-				line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
+				//line.clear();
+				score = -AlphaBeta(depth - 1, -beta, -alpha, m, true, dopv);
 				//cout << "latemove research" << endl;
 			}
 		}
@@ -463,7 +435,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 				alpha = score;
 				alpharaised = true;
 				alphamove = m;
-				*variation = line;
+				//*variation = line;
 
 				if (firstalpha == -1)
 				{
@@ -523,7 +495,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	if(!(alphamove==CONS_NULLMOVE))
 	{
 		//*variation = lineptr;
-		variation->push_back(alphamove);
+		//variation->push_back(alphamove);
+		PrincipalVariation[ply] = alphamove;
+		if (ply > PvSize || depth==1) PvSize = ply;
 		//HistoryScores[alphamove.getFrom()][alphamove.getTo()] += depth+finalalpha;
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);
@@ -561,9 +535,9 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
 	unsigned long long score = 100000;
-	if(ply < PrincipalVariation.size())
+	if(ply < PvSize)
 	{
-		if(m==PrincipalVariation.at(ply))
+		if(m==PrincipalVariation[ply])
 		{
 			score += 600000;
 			return score;
