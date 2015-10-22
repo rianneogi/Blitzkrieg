@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "RetroChess";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 63;
+const int ENGINEVERSION = 64;
 
 ///BUILDS
+// Build 64 - 22-10-2015 - Made everything fail soft in AlphaBeta function, readded razoring
 // Build 63 - 21-10-2015 - Fixed a bug with forward pruning, reduced reduction depth in LMR, removed negative history bonus for quiet moves
 // Build 62 - 20-10-2015 - LMR now happens even if alpha was raised and current move count is greater than or equal to 6
 //							, now uses probe as leafeval(in margin checking) if possible

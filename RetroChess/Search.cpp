@@ -67,7 +67,7 @@ Move Engine::IterativeDeepening(int movetime)
 	{
 		for(int j = 0;j<100;j++)
 		{
-			KillerMoves[i][j]=CONS_NULLMOVE;
+			KillerMoves[i][j] = CONS_NULLMOVE;
 		}
 	}
 	for(unsigned int i = 0;i<64;i++) //ages the history table
@@ -141,17 +141,20 @@ Move Engine::IterativeDeepening(int movetime)
 			ply = 0;
 			
 			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,&line,true,true);
+			//cout << "asp. " << alpha << " " << beta << endl;
 			
 			if(val <= alpha)
 			{
 				beta = (alpha + beta) / 2;
 				alpha = max(score - delta, int(CONS_NEGINF));
+				//cout << "val is " << val << endl;
 				//low = low << 1;
 			}
 			else if(val >= beta)
 			{
 				alpha = (alpha + beta) / 2;
 				beta = min(score + delta, int(CONS_INF));
+				//cout << "val is " << val << endl;
 				//high = high << 1;
 			}
 			else break;
@@ -221,6 +224,10 @@ int Engine::think(int depth,int alpha,int beta,vector<Move>* variation)
 
 int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv)
 {
+	if (alpha > beta)
+	{
+		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
+	}
 	bool underCheck = pos.underCheck(pos.turn);
 	if(underCheck) //check extension
 	{
@@ -302,18 +309,18 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	{
 		leafeval = LeafEval(alpha, beta);
 	}
-	//if (ply!=0 && depth < 4 && !underCheck && 
-	//	(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
-	//{
-	//	prunednodes++;
-	//	if (depth <= 1 && leafeval + getRazorMargin(3) <= alpha)
-	//		return QuiescenceSearchStandPat(alpha, beta, lastmove);
+	if (ply!=0 && depth < 4 && !underCheck && 
+		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
+	{
+		prunednodes++;
+		if (depth <= 1 && leafeval + getRazorMargin(3) <= alpha)
+			return QuiescenceSearchStandPat(alpha, beta, lastmove);
 
-	//	int ralpha = alpha - getRazorMargin(depth);
-	//	int v = QuiescenceSearchStandPat(ralpha, ralpha+1, lastmove);
-	//	if (v <= ralpha)
-	//		return v;
-	//}
+		int ralpha = alpha - getRazorMargin(depth);
+		int v = QuiescenceSearchStandPat(ralpha, ralpha+1, lastmove);
+		if (v <= ralpha)
+			return v;
+	}
 
 	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
@@ -324,12 +331,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//futility pruning
 	bool futilityprune = false; 
 	
-	if (depth < 4 && !underCheck && 
-		(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
-	{
-		futilitynodes++;
-		futilityprune = true;
-	}
+	//if (depth < 4 && !underCheck && 
+	//	(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
+	//{
+	//	futilitynodes++;
+	//	futilityprune = true;
+	//}
 
 	//movesort(vec,depth);
 	bool alpharaised = false;
@@ -350,15 +357,14 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		pos.generateMoves(vec);
     }
 	movegentime.Stop();
-	//cout << "info string " << movegentime.time << endl;
 	/*vector<Move> line;
 	line.reserve(128);*/
 	/*vector<int> scores;
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
-	//int epmade = 0;
 	/*vector<Move> quietmoves;
 	quietmoves.reserve(128);*/
+	int bestscore = CONS_NEGINF;
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
 		line.clear();
@@ -438,7 +444,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			{
 				setKiller(m, depth);
 				int bonus = depth*depth;
-				HistoryScores[m.getFrom()][m.getTo()]+=bonus;
+				HistoryScores[m.getFrom()][m.getTo()] += bonus;
 				/*for (int i = 0;i < quietmoves.size();i++)
 				{
 					HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()] -= bonus;
@@ -448,19 +454,24 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			betacutoff_sum += i+1;
 			return score; //fail soft beta cutoff
 		}
-		else if(score>alpha)
+		else if(score>bestscore)
 		{
-			bound = TT_EXACT;
-			alpha = score;
-			alpharaised = true;
-			alphamove = m;
-			*variation = line;
-
-			if (firstalpha == -1)
+			bestscore = score;
+			if (score > alpha)
 			{
-				firstalpha = i;
+				bound = TT_EXACT;
+				alpha = score;
+				alpharaised = true;
+				alphamove = m;
+				*variation = line;
+
+				if (firstalpha == -1)
+				{
+					firstalpha = i;
+				}
+				finalalpha = i;
+
 			}
-			finalalpha = i;
 		}
 
 		/*if (capturedpiece == PIECE_NONE && special == PIECE_NONE)
@@ -519,7 +530,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		alphafirst_sum += (firstalpha + 1);
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
-	return alpha;
+	return bestscore;
 }
 
 void Engine::generateCaptureScores(vector<Move>& moves, vector<int>& scores)

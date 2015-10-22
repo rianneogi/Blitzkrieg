@@ -60,9 +60,9 @@ int TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
             if(hash->bound == TT_EXACT)
                 return hash->score;
             if(hash->bound == TT_ALPHA && hash->score <= alpha)
-                return alpha;
+                return hash->score;
             if(hash->bound == TT_BETA && hash->score >= beta)
-                return beta;
+                return hash->score;
         }
     }
     return CONS_TTUNKNOWN;
