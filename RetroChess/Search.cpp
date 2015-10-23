@@ -98,6 +98,10 @@ Move Engine::IterativeDeepening(int movetime)
 	int takeback = 0;
 	int initialmovenumber = pos.movelist.size();
 	Move bestmove = CONS_NULLMOVE;
+	for (int i = 0;i < 128;i++)
+	{
+		PrincipalVariation[i] = CONS_NULLMOVE;
+	}
 	//cout << "takeback set " << takeback << " " << PrincipalVariation.size() << endl;
 	takeback = setjmp(env);
 	if(takeback!=0)
@@ -112,7 +116,7 @@ Move Engine::IterativeDeepening(int movetime)
 		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
 		cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter) << endl;
-		if (PvSize <= 0)
+		if (PvSize < 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
 			return CONS_NULLMOVE;
@@ -132,11 +136,7 @@ Move Engine::IterativeDeepening(int movetime)
 		//int low = 8;
 		//int high = 8;
 
-		for (int i = 0;i < 128;i++)
-		{
-			PrincipalVariation[i] = CONS_NULLMOVE;
-		}
-		PvSize = 0;
+		PvSize = -1;
 
 		int delta = 16;
 		int alpha = max(score - delta, int(CONS_NEGINF));
@@ -172,7 +172,7 @@ Move Engine::IterativeDeepening(int movetime)
 		//firstguess = val;
 		timer.Stop();
 		cout << "info score cp " << score << " depth " << i << " nodes " << nodes << " nps " << getNPS(nodes,timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
-		for(int j = 0;j<PvSize;j++)
+		for(int j = 0;j<=PvSize;j++)
 		{
 			cout << PrincipalVariation[j].toString() << " ";
 		}
@@ -183,7 +183,7 @@ Move Engine::IterativeDeepening(int movetime)
 	cout << "Nodes: " << nodes << endl;
 	cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
 	//cout << bestmove.toString() << " " << firstguess << endl;
-	if (PvSize <= 0)
+	if (PvSize < 0)
 	{
 		cout << "info string ERROR: principal variation size is 0\n";
 		return CONS_NULLMOVE;
@@ -194,7 +194,7 @@ Move Engine::IterativeDeepening(int movetime)
 
 int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bool dopv)
 {
-	if (alpha > beta)
+	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
@@ -229,12 +229,19 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
 		Move ttbestmove = Table.getBestMove(pos.TTKey);
-		if (!(ttbestmove == CONS_NULLMOVE) && (!dopv || (probe>alpha && probe<beta)))
+		if ((!dopv || (probe > alpha && probe<beta)))
 		{
-			//variation->push_back(ttbestmove);
-			PrincipalVariation[ply] = ttbestmove;
-			PvSize = ply;
-			return probe;
+			if (!(ttbestmove == CONS_NULLMOVE))
+			{
+				//variation->push_back(ttbestmove);
+				PrincipalVariation[ply] = ttbestmove;
+				PvSize = ply;
+				return probe;
+			}
+			else if (ply != 0)
+			{
+				return probe;
+			}
 		}
 		/*else if(ply!=0)
 		{
@@ -535,14 +542,14 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
 	unsigned long long score = 100000;
-	if(ply < PvSize)
-	{
+	//if(ply < PvSize)
+	//{
 		if(m==PrincipalVariation[ply])
 		{
 			score += 600000;
 			return score;
 		}
-	}
+	//}
 	if(m==Table.getBestMove(pos.TTKey)) //history best move is always first, give it a big advantage of 400000
 	{
 		score += 400000;

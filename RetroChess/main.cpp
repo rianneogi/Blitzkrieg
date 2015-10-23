@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "RetroChess";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 65;
+const int ENGINEVERSION = 66;
 
 ///BUILDS
+// Build 66 - 23-10-2015 - A Hash hit will now return the probe even if best move is null
+// Build 65 - 22-10-2015 - Made Principal Variation an array instead of vector
 // Build 64 - 22-10-2015 - Made everything fail soft in AlphaBeta function, readded razoring, removed futility capture pruning
 // Build 63 - 21-10-2015 - Fixed a bug with forward pruning, reduced reduction depth in LMR, removed negative history bonus for quiet moves
 // Build 62 - 20-10-2015 - LMR now happens even if alpha was raised and current move count is greater than or equal to 6
