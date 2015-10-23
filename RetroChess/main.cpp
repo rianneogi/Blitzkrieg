@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "RetroChess";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 66;
+const int ENGINEVERSION = 67;
 
 ///BUILDS
+// Build 67 - 23-10-2015 - Now does razoring and pruning before null move search
 // Build 66 - 23-10-2015 - A Hash hit will now return the probe even if best move is null
 // Build 65 - 22-10-2015 - Made Principal Variation an array instead of vector
 // Build 64 - 22-10-2015 - Made everything fail soft in AlphaBeta function, readded razoring, removed futility capture pruning

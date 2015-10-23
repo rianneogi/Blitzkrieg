@@ -249,6 +249,35 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		}*/
 	}
 
+	int leafeval = 0;
+	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	if (leafevalprobe != CONS_TTUNKNOWN)
+	{
+		leafeval = probe; //use TT probe as a better leafeval
+	}
+	else
+	{
+		leafeval = LeafEval(alpha, beta);
+	}
+	if (ply != 0 && depth < 4 && !underCheck &&
+		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
+	{
+		prunednodes++;
+		if (depth <= 1 && leafeval + getRazorMargin(3) <= alpha)
+			return QuiescenceSearchStandPat(alpha, beta, lastmove);
+
+		int ralpha = alpha - getRazorMargin(depth);
+		int v = QuiescenceSearchStandPat(ralpha, ralpha + 1, lastmove);
+		if (v <= ralpha)
+			return v;
+	}
+
+	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
+	{
+		prunednodes++;
+		return (leafeval - getFutilityMargin(depth));
+	}
+
 	int bound = TT_ALPHA;
 	/*vector<Move> dummyline;
 	dummyline.reserve(128);*/
@@ -262,7 +291,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-    if(cannull && depth>=3 && underCheck==false && pieceCount>6) //not endgame
+	if (cannull && depth >= 3 && underCheck == false && pieceCount>6 && leafeval >= beta) //not endgame
     {
 		int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
 		m = CONS_NULLMOVE;
@@ -276,36 +305,11 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			//cout << "Null move cutoff " << beta << endl;
 			return beta;
 		}
+		//if (score < CONS_NEGINF + 1000) //score is so bad, we are in danger, so increase depth
+		//{
+		//	depth++;
+		//}
     }
-
-	int leafeval = 0;
-	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
-	if (leafevalprobe != CONS_TTUNKNOWN)
-	{
-		leafeval = probe; //use TT probe as a better leafeval
-	}
-	else
-	{
-		leafeval = LeafEval(alpha, beta);
-	}
-	if (ply!=0 && depth < 4 && !underCheck && 
-		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
-	{
-		prunednodes++;
-		if (depth <= 1 && leafeval + getRazorMargin(3) <= alpha)
-			return QuiescenceSearchStandPat(alpha, beta, lastmove);
-
-		int ralpha = alpha - getRazorMargin(depth);
-		int v = QuiescenceSearchStandPat(ralpha, ralpha+1, lastmove);
-		if (v <= ralpha)
-			return v;
-	}
-
-	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
-	{
-		prunednodes++;
-		return (leafeval-getFutilityMargin(depth));
-	}
 
 	//futility pruning
 	bool futilityprune = false; 
@@ -424,6 +428,16 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 				setKiller(m, depth);
 				int bonus = depth*depth;
 				HistoryScores[m.getFrom()][m.getTo()] += bonus;
+				if (HistoryScores[m.getFrom()][m.getTo()] > 200000) //prevent overflow of history values
+				{
+					for (int i = 0;i < 64;i++)
+					{
+						for (int j = 0;j < 64;j++)
+						{
+							HistoryScores[i][j] /= 2;
+						}
+					}
+				}
 				/*for (int i = 0;i < quietmoves.size();i++)
 				{
 					HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()] -= bonus;
