@@ -9,6 +9,7 @@ int CONS_TTUNKNOWN = -32767;
 
 
 TranspositionTable Table(4194304);
+//TranspositionTable Table(65536);
 int SizeMinusOne = 4194303;
 
 TranspositionTable::TranspositionTable(unsigned long long s)

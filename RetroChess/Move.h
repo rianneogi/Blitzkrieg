@@ -34,6 +34,7 @@ class Move
     Bitset getBQC() const;
 	Bitset getEP() const;
 	string toString() const;
+	bool isNullMove() const;
 };
 
 struct MoveReturn
@@ -45,6 +46,7 @@ struct MoveReturn
 
 void sortMoves(vector<Move>& moves,int turn);
 Move String2Move(const string& s); 
+Move createNullMove(int epsquare);
 
 extern Move CONS_NULLMOVE;
 

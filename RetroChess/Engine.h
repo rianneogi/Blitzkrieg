@@ -30,6 +30,7 @@ class Engine
 	//vector<Move> PrincipalVariation;
 	Move PrincipalVariation[128];
 	int PvSize;
+	int PvPly;
 	Move KillerMoves[2][100];
 	int ply;
 
@@ -41,6 +42,7 @@ class Engine
 	unsigned long long alpha_counter;
 	unsigned long long alphalast_sum;
 	unsigned long long alphafirst_sum;
+	unsigned long long tthitcount;
 
 	Clock timer;
 

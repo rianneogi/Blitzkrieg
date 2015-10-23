@@ -58,6 +58,7 @@ Move Engine::IterativeDeepening(int movetime)
 
 	betacutoff_counter = 0;
 	betacutoff_sum = 0;
+	tthitcount = 0;
 	/*alpha_counter = 0;
 	alphalast_sum = 0;
 	alphafirst_sum = 0;*/
@@ -111,11 +112,13 @@ Move Engine::IterativeDeepening(int movetime)
 			pos.takebackMove();
 			takeback--;
 		}
-		cout << "info string Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
-		cout << ", Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
+		cout << "info string ";
+		//cout << "Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
+		cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
 		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
 		cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
-		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter) << endl;
+		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);
+		cout << ", TT hits: " << tthitcount << ": " << (((double)tthitcount / nodes) * 100) << "%" << endl;
 		if (PvSize < 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
@@ -137,6 +140,7 @@ Move Engine::IterativeDeepening(int movetime)
 		//int high = 8;
 
 		PvSize = -1;
+		PvPly = -1;
 
 		int delta = 16;
 		int alpha = max(score - delta, int(CONS_NEGINF));
@@ -177,6 +181,11 @@ Move Engine::IterativeDeepening(int movetime)
 			cout << PrincipalVariation[j].toString() << " ";
 		}
 		cout << endl;
+		/*for (int j = line.size()-1;j >=0;j--)
+		{
+			cout << line.at(j).toString() << " ";
+		}
+		cout << endl;*/
 		bestmove = PrincipalVariation[0];
 		//PrincipalVariation = line;
 	}
@@ -194,10 +203,12 @@ Move Engine::IterativeDeepening(int movetime)
 
 int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bool dopv)
 {
+	int tablekey = pos.TTKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
+
 	bool underCheck = pos.underCheck(pos.turn);
 	if(underCheck) //check extension
 	{
@@ -206,7 +217,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 
 	if(depth==0)
 	{
+		int ttqs = pos.TTKey;
 		int value = QuiescenceSearchStandPat(alpha,beta,lastmove); //go to quiescence
+		if (ttqs != pos.TTKey)
+		{
+			cout << "info string ERROR: TT key quiescence fail" << endl;
+		}
 		//Table.Save(pos.TTKey,0,value,TT_EXACT,CONS_NULLMOVE);
 		return value;
 	}
@@ -228,18 +244,38 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	if (probe != CONS_TTUNKNOWN)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
-		Move ttbestmove = Table.getBestMove(pos.TTKey);
-		if ((!dopv || (probe > alpha && probe<beta)))
+		if (ply != 0 && (!dopv || (probe > alpha && probe<beta)))
 		{
-			if (!(ttbestmove == CONS_NULLMOVE))
+			Move ttbestmove = Table.getBestMove(pos.TTKey);
+			if (!ttbestmove.isNullMove())
 			{
 				//variation->push_back(ttbestmove);
 				PrincipalVariation[ply] = ttbestmove;
 				PvSize = ply;
+				PvPly = ply;
+				vector<Move> vec;
+				vec.reserve(128);
+				pos.generateMoves(vec);
+				int flag = 0;
+				for (int i = 0;i < vec.size();i++)
+				{
+					if (vec.at(i) == ttbestmove && ttbestmove!=CONS_NULLMOVE)
+					{
+						flag = 1;
+						break;
+					}
+				}
+				if (flag == 0)
+				{
+					cout << "info string ERROR: ILL EAGLE " << ttbestmove.toString() << endl;
+				}
+				tthitcount++;
 				return probe;
 			}
 			else if (ply != 0)
 			{
+				PvSize = ply - 1;
+				PvPly = ply;
 				return probe;
 			}
 		}
@@ -293,17 +329,24 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	int pieceCount = popcnt(Pieces);
 	if (cannull && depth >= 3 && underCheck == false && pieceCount>6 && leafeval >= beta) //not endgame
     {
-		int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
-		m = CONS_NULLMOVE;
+		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
+		int R = ((823 + 67 * depth) / 256 + std::min((leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
+		m = createNullMove(pos.epsquare);
 		ply++;
+		int ttkeynull = pos.TTKey;
 		pos.forceMove(m);
-        score = -AlphaBeta(depth-R-1,-beta,-beta+1,m,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
+        score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,m,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
         pos.unmakeMove(m);
+		if (ttkeynull != pos.TTKey)
+		{
+			cout << "info string ERROR: Null TT fail" << endl;
+			_getch();
+		}
 		if(score >= beta)
 		{
 			//cout << "Null move cutoff " << beta << endl;
-			return beta;
+			return score;
 		}
 		//if (score < CONS_NEGINF + 1000) //score is so bad, we are in danger, so increase depth
 		//{
@@ -353,6 +396,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		//line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
+		int tablekey2 = pos.TTKey;
 		m = getHighestScoringMove(vec,i);
 
 		if(!pos.makeMove(m))
@@ -419,6 +463,18 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		}
 		ply--;
 		pos.unmakeMove(m);
+
+		if (tablekey2 != pos.TTKey)
+		{
+			cout << "info string TT Error at " << m.toString() << " " << ply << " " << PvSize << endl;
+			cout << "info string ";
+			for (int i = 0;i < PvSize;i++)
+			{
+				cout << PrincipalVariation[i].toString() << " ";
+			}
+			cout << endl;
+			//_getch();
+		}
 
 		if(score>=beta)
 		{
@@ -513,18 +569,30 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			}
 		}
 	}
-	if(!(alphamove==CONS_NULLMOVE))
+	if(!alphamove.isNullMove())
 	{
-		//*variation = lineptr;
 		//variation->push_back(alphamove);
 		PrincipalVariation[ply] = alphamove;
-		if (ply > PvSize || depth==1) PvSize = ply;
+		if (ply > PvSize || depth == 1)
+		{
+			PvSize = ply;
+			PvPly = ply;
+		}
+		else if (ply == PvPly - 1)
+		{
+			PrincipalVariation[ply] = alphamove;
+			PvPly = ply;
+		}
 		//HistoryScores[alphamove.getFrom()][alphamove.getTo()] += depth+finalalpha;
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);
 		alphafirst_sum += (firstalpha + 1);
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
+	if (pos.TTKey != tablekey)
+	{
+		cout << "info string ERROR: TT key doesnt match" << endl;
+	}
 	return bestscore;
 }
 

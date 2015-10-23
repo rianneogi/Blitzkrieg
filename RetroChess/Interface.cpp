@@ -170,7 +170,7 @@ void Interface::Winboard()
 		else
 		{
 			Move m = String2Move(s);
-			if(m!=CONS_NULLMOVE)
+			if(!m.isNullMove())
 			{
 				vector<Move> moves;
 				moves.reserve(128);
@@ -470,7 +470,7 @@ void Interface::makeMove()
     cin >> s;
 	if(s=="null")
 	{
-		board.makeMove(CONS_NULLMOVE);
+		board.makeMove(createNullMove(board.pos.epsquare));
 		return;
 	}
     //cout << endl;

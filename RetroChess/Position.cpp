@@ -126,7 +126,7 @@ void Position::forceMove(Move const& m)
 		cout << "made " << m.toString() << endl;*/
 	movelist.push_back(m);
 	hashlist.push_back(TTKey);
-	if(m==CONS_NULLMOVE) //nullmove
+	if(m.isNullMove()) //nullmove
 	{
 		turn = getOpponent(turn);
 		if(epsquare!=0)
@@ -393,7 +393,7 @@ void Position::forceMove(Move const& m)
 	TTKey ^= TT_ColorKey;	
 }
 
-bool Position::makeMove(Move const& m) //deprecated
+bool Position::makeMove(Move const& m)
 {
     forceMove(m);
 	if(!underCheck(getOpponent(turn)))
@@ -410,7 +410,7 @@ void Position::unmakeMove(Move const& m)
 		cout << "unmade " << m.toString() << endl;*/
 	movelist.pop_back();
 	hashlist.pop_back();
-	if(m==CONS_NULLMOVE) //nullmove
+	if(m.isNullMove()) //nullmove
 	{
 		turn = getOpponent(turn);
 		TTKey ^= TT_ColorKey;

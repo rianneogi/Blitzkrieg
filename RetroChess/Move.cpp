@@ -372,6 +372,24 @@ string Move::toString() const
 	return (Int2Sq(getFrom()) + Int2Sq(getTo()) + s);
 }
 
+bool Move::isNullMove() const
+{
+	if (getTo() == 0 && getFrom() == 0)
+		return true;
+	return false;
+}
+
+Move createNullMove(int epsquare)
+{
+	Move m(0, 0, 0, 0, 0, 0, 0, 0, 0, epsquare);
+	/*cout << m.getEP() << endl;
+	if (m.getEP() != epsquare)
+	{
+		cout << "info string null move generation error" << endl;
+	}*/
+	return m;
+}
+
 Move String2Move(const string& s)
 {
 	int to=0,from=0,sp=PIECE_NONE;
