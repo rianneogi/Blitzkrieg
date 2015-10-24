@@ -174,6 +174,12 @@ Move::Move(Bitset f,Bitset t,Bitset m,Bitset c,Bitset s,Bitset wk,Bitset wq,Bits
 	data |= ep << 28;
 }
 
+Move Move::operator=(Move const& m)
+{
+	data = m.data;
+	return *this;
+}
+
 bool Move::operator==(Move const& m) const
 {
 	return (data==m.data);

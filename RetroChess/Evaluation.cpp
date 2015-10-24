@@ -43,7 +43,7 @@ int KingAdjHalfOpenFilePenalty = 12; //penalty for king being adjacent to half o
 int KingAdjOpenFilePenalty = 26; //penalty for king being adjacent to open files
 int KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiopen file with a rook on it
 int KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
-int AttackWeights[6] = {1,2,2,2,4,0};
+int AttackWeights[6] = {1,3,3,3,4,0};
 int KingBetweenRooksPenalty = 30;
 //int NoPawnShieldPenalty = 15;
 
@@ -644,10 +644,10 @@ int Engine::getBoardMaterial()
 int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 {
 	capt = getSquare2Piece(capt);
-	if (PieceMaterial[capt] >= PieceMaterial[movpiece])
+	/*if (PieceMaterial[capt] >= PieceMaterial[movpiece])
 	{
 		return PieceMaterial[capt] - PieceMaterial[movpiece];
-	}
+	}*/
 	int gain[100],d=0;
     Bitset occ = pos.OccupiedSq;
     Bitset occ90 = pos.OccupiedSq90;
@@ -707,77 +707,77 @@ int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 	return gain[0];
 }
 
-int Engine::StaticExchangeEvaluation2(Move m)
-{
-	//cout << "see " << m.toString() << endl;
-	int value = 0;
-	if(m.getSpecial()!=PIECE_PAWN)
-	{
-		value = MaterialValues[getSquare2Piece(m.getCapturedPiece())+1];
-	}
-	else
-	{
-		value = MaterialValues[SQUARE_WHITEPAWN];
-	}
-	pos.forceMove(m);
-	int piece = pos.getSmallestAttacker2(pos.turn,m.getTo());
-	if(piece!=PIECE_NONE)
-	{
-		Move mov = pos.makeCapture(piece,m.getTo());
-		//cout << "move " << mov.toString() << endl;
-		//int piece = mov.getMovingPiece();
-		if(mov!=CONS_NULLMOVE)
-		{
-			value -= StaticExchangeEvaluation2(mov);
-		}
-	}
-	pos.unmakeMove(m);
-	return value;
-}
-
-int Engine::StaticExchangeEvaluation(Move m)
-{
-	//cout << "see " << m.toString() << endl;
-	int value = 0;
-	if(m.getSpecial()!=PIECE_PAWN)
-	{
-		value = MaterialValues[getSquare2Piece(m.getCapturedPiece())+1];
-	}
-	else
-	{
-		value = MaterialValues[SQUARE_WHITEPAWN];
-	}
-	pos.forceMove(m);
-	Move mov = pos.getSmallestAttacker(pos.turn,m.getTo());
-	if(mov!=CONS_NULLMOVE)
-	{
-		//cout << "move " << mov.toString() << endl;
-		int piece = mov.getMovingPiece();
-		if(piece!=PIECE_NONE)
-		{
-			value -= StaticExchangeEvaluation(mov);
-		}
-	}
-	pos.unmakeMove(m);
-	return value;
-}
-
-int Engine::StaticExchangeEvaluation(int square,int side)
-{
-	int value = 0;
-	int piece = pos.getSmallestAttacker2(side,square);
-	if(piece!=PIECE_NONE)
-	{
-		Move m = pos.makeCapture(piece,square);
-		if(m!=CONS_NULLMOVE)
-		{
-			pos.forceMove(m);
-			value = max(0,MaterialValues[piece] - StaticExchangeEvaluation(square,getOpponent(side)));
-			pos.unmakeMove(m);
-		}
-	}
-	return value;
-}
+//int Engine::StaticExchangeEvaluation2(Move m)
+//{
+//	//cout << "see " << m.toString() << endl;
+//	int value = 0;
+//	if(m.getSpecial()!=PIECE_PAWN)
+//	{
+//		value = MaterialValues[getSquare2Piece(m.getCapturedPiece())+1];
+//	}
+//	else
+//	{
+//		value = MaterialValues[SQUARE_WHITEPAWN];
+//	}
+//	pos.forceMove(m);
+//	int piece = pos.getSmallestAttacker2(pos.turn,m.getTo());
+//	if(piece!=PIECE_NONE)
+//	{
+//		Move mov = pos.makeCapture(piece,m.getTo());
+//		//cout << "move " << mov.toString() << endl;
+//		//int piece = mov.getMovingPiece();
+//		if(mov!=CONS_NULLMOVE)
+//		{
+//			value -= StaticExchangeEvaluation2(mov);
+//		}
+//	}
+//	pos.unmakeMove(m);
+//	return value;
+//}
+//
+//int Engine::StaticExchangeEvaluation(Move m)
+//{
+//	//cout << "see " << m.toString() << endl;
+//	int value = 0;
+//	if(m.getSpecial()!=PIECE_PAWN)
+//	{
+//		value = MaterialValues[getSquare2Piece(m.getCapturedPiece())+1];
+//	}
+//	else
+//	{
+//		value = MaterialValues[SQUARE_WHITEPAWN];
+//	}
+//	pos.forceMove(m);
+//	Move mov = pos.getSmallestAttacker(pos.turn,m.getTo());
+//	if(mov!=CONS_NULLMOVE)
+//	{
+//		//cout << "move " << mov.toString() << endl;
+//		int piece = mov.getMovingPiece();
+//		if(piece!=PIECE_NONE)
+//		{
+//			value -= StaticExchangeEvaluation(mov);
+//		}
+//	}
+//	pos.unmakeMove(m);
+//	return value;
+//}
+//
+//int Engine::StaticExchangeEvaluation(int square,int side)
+//{
+//	int value = 0;
+//	int piece = pos.getSmallestAttacker2(side,square);
+//	if(piece!=PIECE_NONE)
+//	{
+//		Move m = pos.makeCapture(piece,square);
+//		if(m!=CONS_NULLMOVE)
+//		{
+//			pos.forceMove(m);
+//			value = max(0,MaterialValues[piece] - StaticExchangeEvaluation(square,getOpponent(side)));
+//			pos.unmakeMove(m);
+//		}
+//	}
+//	return value;
+//}
 
 void evalinit()
 {

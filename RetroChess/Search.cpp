@@ -223,6 +223,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		{
 			cout << "info string ERROR: TT key quiescence fail" << endl;
 		}
+		if (value > alpha && value < beta)
+			PvSize = ply - 1;
 		//Table.Save(pos.TTKey,0,value,TT_EXACT,CONS_NULLMOVE);
 		return value;
 	}
@@ -253,13 +255,13 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 				PrincipalVariation[ply] = ttbestmove;
 				PvSize = ply;
 				PvPly = ply;
-				vector<Move> vec;
+				/*vector<Move> vec;
 				vec.reserve(128);
 				pos.generateMoves(vec);
 				int flag = 0;
 				for (int i = 0;i < vec.size();i++)
 				{
-					if (vec.at(i) == ttbestmove && ttbestmove!=CONS_NULLMOVE)
+					if (vec.at(i) == ttbestmove)
 					{
 						flag = 1;
 						break;
@@ -268,7 +270,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 				if (flag == 0)
 				{
 					cout << "info string ERROR: ILL EAGLE " << ttbestmove.toString() << endl;
-				}
+				}*/
 				tthitcount++;
 				return probe;
 			}
@@ -327,10 +329,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-	if (cannull && depth >= 3 && underCheck == false && pieceCount>6 && leafeval >= beta) //not endgame
+	if (cannull && depth >= 3 && underCheck == false && pieceCount>6 //not endgame
+		//&& leafeval >= beta
+		) 
     {
 		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
-		int R = ((823 + 67 * depth) / 256 + std::min((leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
+		int R = ((823 + 67 * depth) / 256 + std::min(max(0,leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
 		ply++;
 		int ttkeynull = pos.TTKey;
@@ -348,10 +352,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			//cout << "Null move cutoff " << beta << endl;
 			return score;
 		}
-		//if (score < CONS_NEGINF + 1000) //score is so bad, we are in danger, so increase depth
-		//{
-		//	depth++;
-		//}
+		if (score < CONS_NEGINF + 1000) //score is so bad, we are in danger, so increase depth
+		{
+			depth++;
+		}
     }
 
 	//futility pruning
@@ -403,6 +407,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		{
 			continue;
 		}
+		if (vec.size() == 1) //singular extension, only 1 legal move, so extend
+		{
+			depth++; 
+		}
 		foundlegal = true;
 		ply++;
 		score = 0;
@@ -417,12 +425,14 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			reductiondepth++;
 		}
 
-		if (!alpharaised && depth >= 3 && i>=4 && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
-			&& !pos.underCheck(pos.turn)
+		if (depth >= 3 && i>=4 
+			&& !alpharaised
+			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE && !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
-			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())) //latemove reduction
+			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())
+			) //latemove reduction
 		{
-			reductiondepth ++;
+			reductiondepth++;
 		}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
@@ -578,11 +588,11 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			PvSize = ply;
 			PvPly = ply;
 		}
-		else if (ply == PvPly - 1)
+		/*else if (ply == PvPly - 1)
 		{
 			PrincipalVariation[ply] = alphamove;
 			PvPly = ply;
-		}
+		}*/
 		//HistoryScores[alphamove.getFrom()][alphamove.getTo()] += depth+finalalpha;
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);

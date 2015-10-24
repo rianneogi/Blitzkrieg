@@ -27,6 +27,7 @@ string ENGINEAUTHOR = "Rian Neogi";
 const int ENGINEVERSION = 68;
 
 ///BUILDS
+// Build 69 - 24-10-2015 - Added null move extensions and singular extensions, increase AttackWeights of minor pieces and rook by 1
 // Build 68 - 23-10-2015 - Fixed a bug regarding TTKey changing with null moves
 // Build 67 - 23-10-2015 - Now does razoring and pruning before null move search
 // Build 66 - 23-10-2015 - A Hash hit will now return the probe even if best move is null

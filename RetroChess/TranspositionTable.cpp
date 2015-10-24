@@ -72,7 +72,9 @@ int TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
 Move TranspositionTable::getBestMove(Bitset key)
 {
 	HashEntry* hash = &entries[key&SizeMinusOne];
-	return hash->bestmove;
+	if(key==hash->key)
+		return hash->bestmove;
+	return CONS_NULLMOVE;
 }
 
 void TTinit()
