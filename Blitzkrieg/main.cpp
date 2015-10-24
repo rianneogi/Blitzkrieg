@@ -22,9 +22,9 @@ using namespace std;
 // FIXED - Bug regarding sliding piece move generation
 ///BUGS
 
-string ENGINENAME = "RetroChess";
+string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 68;
+const int ENGINEVERSION = 69;
 
 ///BUILDS
 // Build 69 - 24-10-2015 - Added null move extensions and singular extensions, increase AttackWeights of minor pieces and rook by 1
