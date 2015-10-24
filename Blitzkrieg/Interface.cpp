@@ -264,6 +264,13 @@ void Interface::start()
         {
             help();
         }
+		else if (s == "perft")
+		{
+			string s2;
+			cin >> s2;
+			int pdepth = atoi(s2.c_str());
+			cout << e1.perft(pdepth) << endl;
+		}
         else if(s=="exit" || s=="quit")
         {
             exit();

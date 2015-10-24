@@ -75,8 +75,8 @@ Move Engine::IterativeDeepening(int movetime)
 	{
 		for(unsigned int j = 0;j<64;j++)
 		{
-			HistoryScores[i][j] /= 8;
-			ButterflyScores[i][j] /= 8;
+			HistoryScores[i][j] /= 2;
+			ButterflyScores[i][j] /= 2;
 		}
 	}
 	evaltime.Reset();
@@ -207,6 +207,36 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
+	}
+
+	Bitset tttest = 0x0;
+	for (int i = 0;i<64;i++)
+	{
+		if (pos.Squares[i] != SQUARE_EMPTY)
+		{
+			tttest ^= TT_PieceKey[getSquare2Color(pos.Squares[i])][getSquare2Piece(pos.Squares[i])][i];
+			//cout << "ZOR " << i << " " << getSquare2Color(pos.Squares[i]) << " " << getSquare2Piece(pos.Squares[i]) << endl;
+		}
+	}
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<2;j++)
+		{
+			if (pos.castling[i][j]==1)
+				tttest ^= TT_CastlingKey[i][j];
+			//cout << "CASTLE " << i << " " << j << endl;
+		}
+	}
+	tttest ^= TT_EPKey[pos.epsquare];
+	//cout << "EP " << pos.epsquare << endl;
+	if (pos.turn == COLOR_BLACK)
+		tttest ^= TT_ColorKey;
+	if (pos.TTKey != tttest)
+	{
+		cout << "info string ERROR: TT consistency error" << endl;
+		pos.display(0);
+		cout << pos.TTKey << " " << tttest << endl;
+		_getch();
 	}
 
 	bool underCheck = pos.underCheck(pos.turn);
@@ -774,6 +804,28 @@ void Engine::setKiller(Move m,int depth)
 		KillerMoves[0][ply] = m;
 		//cout << "Killer set: " << m.toString() << endl;
 	}
+}
+
+unsigned long long Engine::perft(int depth)
+{
+	if (depth == 0) return 1;
+	vector<Move> vec;
+	vec.reserve(128);
+	pos.generateMoves(vec);
+	unsigned long long count = 0;
+	for (int i = 0;i < vec.size();i++)
+	{
+		Move m = vec.at(i);
+		if (pos.makeMove(m))
+		{
+			//cout << "counting " << m.toString() << " at depth " << depth << endl;
+			//pos.display(0);
+			//_getch();
+			count += perft(depth - 1);
+			pos.unmakeMove(m);
+		}
+	}
+	return count;
 }
 
 void searchinit()

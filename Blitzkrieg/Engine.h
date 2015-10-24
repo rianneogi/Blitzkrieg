@@ -73,6 +73,8 @@ class Engine
 	void checkup();
 	void setKiller(Move m,int depth);
 
+	unsigned long long perft(int depth);
+
 	//Quiescence.cpp
 	//int QuiescenceSearch(int alpha,int beta,Move lastmove);
 	int QuiescenceSearchStandPat(int alpha,int beta,Move lastmove);
