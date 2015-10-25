@@ -107,12 +107,14 @@ inline int getSquareColor(int n)
 
 inline Bitset getPos2Bit(int n)
 {
-    return Pos2Bit[n];
+    //return Pos2Bit[n];
+	return (1ULL << n);
 }
 
 inline int getOpponent(int n)
 {
-	return Opponent[n];
+	//return Opponent[n];
+	return !n;
 }
 
 inline int getSquare2Piece(int n)
@@ -133,10 +135,12 @@ inline int getPiece2Square(int n,int turn)
 inline int getPlus8(int n)
 {
 	return Plus8[n];
+	//return n + 8;
 }
 
 inline int getMinus8(int n)
 {
+	//return n - 8;
 	return Minus8[n];
 }
 
@@ -168,6 +172,7 @@ inline int getturn135(int n)
 inline int getturn180(int n)
 {
     return turn180[n];
+	//return 63 - n;
 }
 
 inline int getturn270(int n)

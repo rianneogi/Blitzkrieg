@@ -24,14 +24,19 @@ int QueenOutEarlyPenalty = 20; //penalty for queens not on back rank for every m
 int BishopMobility[16]  = {-12, -4,  0,  2,  4,  4,  6,  6,  8,  8, 10, 10, 12, 14, 16};
 int RookMobility[16]  = {-8,-4, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8};
 int KnightMobility[9] = {-12, -8,  0,  4,  8, 10, 12, 14, 16};
+int QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
  
 // adjustments to piece values depending on number of pawns
-int KnightAdj[9] = {-20,-16,-12, -8, -4,  0,  4,  8, 12};
-int BishopAdj[9] = {0,0,0,0,0,0,0,0,0};
-int RookAdj[9] =   {15,12, 9, 6, 3, 0,-3,-6,-9};
+int KnightPawnAdj[9] = {-20,-16,-12, -8, -4,  0,  4,  8, 12};
+int KnightOppPawnAdj[9] = { -20,-16,-12,-8,-4,0,4,8,12 };
+int BishopPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
+int BishopOppPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
+int RookPawnAdj[9] =   {15,12, 9, 6, 3, 0,-3,-6,-9};
+int RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
 
 //adjustments to bishop values depending on number of pawns on same color square as bishop
 int BishopPawnSameColor[9] = {15,12,9,6,3,0,-3,-6,-9};
+int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
 
 //King Safety
 int PawnShield1Bonus = 15;
@@ -62,7 +67,7 @@ int SafetyTable[100] = {
 
 //Pawn Structure
 int NoPawnsPenalty = 32;
-int DoubledPawnPenalty[8] = {13,17,20,23,23,20,17,13};
+int DoubledPawnPenalty[8] = {6,8,10,15,15,10,8,6};
 int IsolatedPawnPenalty[8] = {7,10,18,30,30,18,10,7};
 int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0,
 						     5, 10, 10, 10, 10, 10, 10,  5,
@@ -95,12 +100,12 @@ int PieceSqValues[7][64] =
 	  -4,  0,  0,-10,-10,  0,  0, -4,
 	  -6, -2,  2, 14, 14,  5, -2, -6,
 	  -8, -4,  4, 40, 40, 15, -4, -8,
-	 -10, -6,  4, 15, 15, 10, -6,-10,
+	 -10, -6,  4, 20, 20, 10, -6,-10,
 	 -12, -8, 10, 12, 12, 10, -8,-12,
 	   0,  0,  0,  0,  0,  0,  0,  0,
 	   0,  0,  0,  0,  0,  0,  0,  0},
 
-	{-30,-25, -8, -8, -8, -8,-25,-30, //knight
+	{-20,-12, -8, -8, -8, -8,-12,-20, //knight
 	  -6,  0,  4,  6,  6,  4,  0, -6,
 	  -5,  6, 10, 12, 12, 10,  6, -5,
 	  -5,  6, 14, 18, 18, 14,  6, -5,
@@ -248,21 +253,49 @@ int PieceSqValuesEG[7][64] =
 //	lua_close(L);
 //}
 
-int Engine::LeafEval(int alpha,int beta)
+int Engine::LeafEval(int alpha, int beta)
 {
 	nodes++;
-	if(nodes%CheckupNodeCount==0)
+	if (nodes%CheckupNodeCount == 0)
 	{
 		checkup();
 		//nodes = 0;
 	}
 	evaltime.Start();
-	int neteval = 0;
+
+	Bitset ColorPieces[2];
+	for (int i = 0;i < 2;i++)
+	{
+		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
+			pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
+			pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
+	}
+
+	if (ColorPieces[COLOR_WHITE] == 2 && ColorPieces[COLOR_BLACK] == 2) //2 piece endgame
+	{
+		if (popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN]) == 0 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN]) == 0) //no pawns
+		{
+			if (popcnt(pos.Pieces[COLOR_WHITE][PIECE_QUEEN]) == 0 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_QUEEN]) == 0) //no queens
+			{
+				return 0; //draw
+			}
+		}
+	}
+	if (ColorPieces[COLOR_WHITE] == 1 && ColorPieces[COLOR_BLACK] == 3 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT]) == 2)
+	{
+		return 0; //2 knights cant force checkmate
+	}
+	if (ColorPieces[COLOR_BLACK] == 1 && ColorPieces[COLOR_WHITE] == 3 && popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT]) == 2)
+	{
+		return 0; //2 knights cant force checkmate
+	}
+
+	int neteval = getBoardMaterial();
 	int sideeval[2]={0,0};
 	//Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	//int pieceCount = popcnt(Pieces);
 	bool isEG = false;
-	if(getBoardMaterial() <= EndgameMaterial)
+	if(neteval <= EndgameMaterial)
 	{
 		isEG = true;
 	}
@@ -270,7 +303,7 @@ int Engine::LeafEval(int alpha,int beta)
 	//Material eval
 	for(int i = 0;i<64;i++)
 	{
-		neteval += MaterialValues[pos.Squares[i]];
+		//neteval += MaterialValues[pos.Squares[i]];
 		if(isEG)
 		    neteval += PieceSqEG[pos.Squares[i]][i];
 		else
@@ -279,9 +312,10 @@ int Engine::LeafEval(int alpha,int beta)
 
 	Bitset b = 0x0;
 	Bitset KingField[2];
-	Bitset ColorPieces[2];
-	int KingAttackUnits[2]={0,0};
-	int MinorsOnBackRank[2]={0,0};
+	int KingAttackUnits[2] = { 0,0 };
+	int MinorsOnBackRank[2] = { 0,0 };
+	int PawnCount[2] = { 0,0 }; //number of pawns per side
+	int PawnCountColor[2][2] = { {0,0},{0,0} }; //number of pawns on a square of a certain color per side, PawnCountColor[side][squarecolor]
 
 	for(int i = 0;i<2;i++) //king safety
 	{
@@ -289,9 +323,6 @@ int Engine::LeafEval(int alpha,int beta)
 		unsigned long k = 0;
 		_BitScanForward64(&k,b);
 		KingField[i] = getKingField(i,k);
-		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
-                         pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
-                         pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
 
 		if(!isEG)
 		{
@@ -412,50 +443,57 @@ int Engine::LeafEval(int alpha,int beta)
 	}*/
 
 	//Positional evaluation
-	for(int i = 0;i<2;i++)
+	//Pawn Evaluation
+	for (int i = 0;i < 2;i++)
 	{
-		//Pawns
 		b = pos.Pieces[i][PIECE_PAWN];
-		int pawncount = popcnt(b);
-		int pawncountcolor[2];
-		pawncountcolor[COLOR_WHITE] = popcnt(b&ColoredSquares[COLOR_WHITE]);
-		pawncountcolor[COLOR_BLACK] = popcnt(b&ColoredSquares[COLOR_BLACK]);
-		if(!b) //penalty for having no pawns
+		PawnCount[i] = popcnt(b);
+		PawnCountColor[i][COLOR_WHITE] = popcnt(b&ColoredSquares[COLOR_WHITE]);
+		PawnCountColor[i][COLOR_BLACK] = popcnt(b&ColoredSquares[COLOR_BLACK]);
+		if (!b) //penalty for having no pawns
 		{
 			sideeval[i] -= NoPawnsPenalty;
 		}
-		while(b)
+		while (b)
 		{
 			//int k = firstOf(b);
 			unsigned long k = 0;
-			_BitScanForward64(&k,b);
+			_BitScanForward64(&k, b);
 			b ^= getPos2Bit(k);
-			if(getAboveBits(i,k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
+			if (getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
 			{
-				sideeval[i] -= DoubledPawnPenalty[getFile(getColorMirror(i,k))];
+				sideeval[i] -= DoubledPawnPenalty[getFile(getColorMirror(i, k))];
 			}
-			if((getAboveAndAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if the pawn is a passer
+			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
-				sideeval[i] += PassedPawnBonus[getColorMirror(i,k)];
+				sideeval[i] += PassedPawnBonus[getColorMirror(i, k)];
 			}
-			if((getSideBits(k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there are no friendly pawns on the adjacent files
+			if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
-				sideeval[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i,k))];
+				sideeval[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
 			}
-			if(pos.Squares[getColorMirror(i,getPlus8(getColorMirror(i,k)))]!=SQUARE_EMPTY) //checks if pawn is blocked
+			//if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] != SQUARE_EMPTY) //checks if pawn is blocked
+			//{
+			//	sideeval[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
+			//}
+			if (pos.OccupiedSq&getPos2Bit(getPlus8(getColorMirror(i, k)))) //checks if pawn is blocked
 			{
-				sideeval[i] -= BlockedPawnPenalty[getColorMirror(i,k)];
+				sideeval[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
 			}
-
 			//pawn attacks near opposing king
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&getPawnAttacks(i,k))*AttackWeights[PIECE_PAWN];
-			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&getPawnAttacks(i,k))*AttackWeights[PIECE_PAWN];
+			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)] & getPawnAttacks(i, k))*AttackWeights[PIECE_PAWN];
 		}
+	}
 
+	//Other pieces
+	for (int i = 0;i < 2;i++)
+	{
 		//Rooks
 		b = pos.Pieces[i][PIECE_ROOK];
 		int rookcount = popcnt(b);
-		sideeval[i] += RookAdj[pawncount]*rookcount; //adjustment for pawns
+		sideeval[i] += RookPawnAdj[PawnCount[i]]*rookcount; //adjustment for pawns
+		sideeval[i] += RookOppPawnAdj[PawnCount[getOpponent(i)]] * rookcount;
 		if(rookcount >= 2) //Pair Bonus
 		{
 			sideeval[i] += RookPairBonus;
@@ -494,7 +532,8 @@ int Engine::LeafEval(int alpha,int beta)
 		//Knights
 		b = pos.Pieces[i][PIECE_KNIGHT];
 		int knightcount = popcnt(b);
-		sideeval[i] += KnightAdj[pawncount]*knightcount; //adjustment for pawns
+		sideeval[i] += KnightPawnAdj[PawnCount[i]]*knightcount; //adjustment for pawns
+		sideeval[i] += KnightOppPawnAdj[PawnCount[getOpponent(i)]] * knightcount;
 		if(popcnt(b) >= 2)
 		{
 			sideeval[i] += KnightPairBonus;
@@ -538,7 +577,8 @@ int Engine::LeafEval(int alpha,int beta)
 		//Bishops
 		b = pos.Pieces[i][PIECE_BISHOP];
 		int bishopcount = popcnt(b);
-		sideeval[i] += BishopAdj[pawncount]*bishopcount; //adjustment for pawns
+		sideeval[i] += BishopPawnAdj[PawnCount[i]]*bishopcount; //adjustment for pawns
+		sideeval[i] += BishopOppPawnAdj[PawnCount[getOpponent(i)]] * bishopcount;
 		if(popcnt(b) >= 2)
 		{
 			sideeval[i] += BishopPairBonus;
@@ -573,7 +613,7 @@ int Engine::LeafEval(int alpha,int beta)
 			m &= m^ColorPieces[i];
 
 			sideeval[i] += BishopMobility[popcnt(m)];
-			sideeval[i] += BishopPawnSameColor[pawncountcolor[SquareColor[k]]]; //bishop pawn same color adjustment
+			sideeval[i] += BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]]; //bishop pawn same color adjustment
 
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
@@ -598,6 +638,9 @@ int Engine::LeafEval(int alpha,int beta)
 			m |= getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
 			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
 			m &= m^ColorPieces[i];
+
+			sideeval[i] += QueenMobility[popcnt(m)]; //mobility factor
+
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN];
 			KingAttackUnits[getOpponent(i)] += long(popcnt(KingField[getOpponent(i)]&m))*AttackWeights[PIECE_QUEEN];
 
@@ -629,7 +672,7 @@ int Engine::LeafEval(int alpha,int beta)
 int Engine::getBoardMaterial()
 {
 	int eval = 0;
-	for(int i = 0;i<64;i++)
+	/*for(int i = 0;i<64;i++)
 	{
 		if(pos.Squares[i]!=SQUARE_EMPTY)
 		{
@@ -637,7 +680,18 @@ int Engine::getBoardMaterial()
 			if(pc!=PIECE_KING)
 				eval += MaterialValues[pc];
 		}
-	}
+	}*/
+	eval += popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN])*PieceMaterial[PIECE_PAWN];
+	eval += popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT])*PieceMaterial[PIECE_KNIGHT];
+	eval += popcnt(pos.Pieces[COLOR_WHITE][PIECE_BISHOP])*PieceMaterial[PIECE_BISHOP];
+	eval += popcnt(pos.Pieces[COLOR_WHITE][PIECE_ROOK])*PieceMaterial[PIECE_ROOK];
+	eval += popcnt(pos.Pieces[COLOR_WHITE][PIECE_QUEEN])*PieceMaterial[PIECE_QUEEN];
+
+	eval -= popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN])*PieceMaterial[PIECE_PAWN];
+	eval -= popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT])*PieceMaterial[PIECE_KNIGHT];
+	eval -= popcnt(pos.Pieces[COLOR_BLACK][PIECE_BISHOP])*PieceMaterial[PIECE_BISHOP];
+	eval -= popcnt(pos.Pieces[COLOR_BLACK][PIECE_ROOK])*PieceMaterial[PIECE_ROOK];
+	eval -= popcnt(pos.Pieces[COLOR_BLACK][PIECE_QUEEN])*PieceMaterial[PIECE_QUEEN];
 	return eval;
 }
 
@@ -1046,7 +1100,7 @@ int Engine::Trace(int alpha,int beta)
 		//Rooks
 		b = pos.Pieces[i][PIECE_ROOK];
 		int rookcount = popcnt(b);
-		eval += ColorFactor[i]*RookAdj[pawncount]*rookcount; //adjustment for pawns
+		eval += ColorFactor[i]*RookPawnAdj[pawncount]*rookcount; //adjustment for pawns
 		if(rookcount >= 2) //Pair Bonus
 		{
 			eval += ColorFactor[i]*RookPairBonus;
@@ -1082,7 +1136,7 @@ int Engine::Trace(int alpha,int beta)
 		//Knights
 		b = pos.Pieces[i][PIECE_KNIGHT];
 		int knightcount = popcnt(b);
-		eval += ColorFactor[i]*KnightAdj[pawncount]*knightcount; //adjustment for pawns
+		eval += ColorFactor[i]*KnightPawnAdj[pawncount]*knightcount; //adjustment for pawns
 		if(popcnt(b) >= 2)
 		{
 			eval += ColorFactor[i]*KnightPairBonus;
@@ -1111,7 +1165,7 @@ int Engine::Trace(int alpha,int beta)
 		//Bishops
 		b = pos.Pieces[i][PIECE_BISHOP];
 		int bishopcount = popcnt(b);
-		eval += ColorFactor[i]*BishopAdj[pawncount]*bishopcount; //adjustment for pawns
+		eval += ColorFactor[i]*BishopPawnAdj[pawncount]*bishopcount; //adjustment for pawns
 		if(popcnt(b) >= 2)
 		{
 			eval += ColorFactor[i]*BishopPairBonus;

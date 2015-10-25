@@ -27,6 +27,7 @@ Position::Position()
         OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq>>i)%2);
         Squares[i] = SQUARE_EMPTY;
     }
+
     for(int i = 0;i<2;i++)
     {
         for(int j = 0;j<6;j++)
@@ -55,7 +56,6 @@ Position::Position()
         }
     }
     epsquare = 0;
-
 
 	TTKey = 0x0;
 	for(int i = 0;i<64;i++)
@@ -764,9 +764,9 @@ void Position::generateMoves(vector<Move>& moves)
 				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_WHITE] | getPos2Bit(epsquare));
 		}*/
 		if(epsquare==0)
-			x = PawnAttacks[turn][n]&(ColorPieces[Opponent[turn]]);
+			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)]);
 		else
-			x = PawnAttacks[turn][n]&(ColorPieces[Opponent[turn]] | Pos2Bit[epsquare]);
+			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | Pos2Bit[epsquare]);
         while(x)
         {
             unsigned long k = 0;
@@ -974,9 +974,9 @@ void Position::generateCaptures(vector<Move>& moves)
         //Pawn Attacks
         Bitset x = 0x0;
 		if(epsquare==0)
-			x = PawnAttacks[turn][n]&(ColorPieces[Opponent[turn]]);
+			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)]);
 		else
-			x = PawnAttacks[turn][n]&(ColorPieces[Opponent[turn]] | Pos2Bit[epsquare]);
+			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | Pos2Bit[epsquare]);
         while(x)
         {
             unsigned long k = 0;
@@ -1009,7 +1009,7 @@ void Position::generateCaptures(vector<Move>& moves)
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
         b^=Pos2Bit[n];
-        Bitset m = getKnightMoves(n)&ColorPieces[Opponent[turn]];
+        Bitset m = getKnightMoves(n)&ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
@@ -1026,7 +1026,7 @@ void Position::generateCaptures(vector<Move>& moves)
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
         b^=Pos2Bit[n];
-        Bitset m = KingMoves[n]&ColorPieces[Opponent[turn]];
+        Bitset m = KingMoves[n]&ColorPieces[getOpponent(turn)];
         while(m)
         {
 			unsigned long k = 0;
@@ -1047,7 +1047,7 @@ void Position::generateCaptures(vector<Move>& moves)
         /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
 		Bitset m = getRookAttacks(n,OccupiedSq,OccupiedSq90);
-        m &= ColorPieces[Opponent[turn]];
+        m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
@@ -1067,7 +1067,7 @@ void Position::generateCaptures(vector<Move>& moves)
         b^=Pos2Bit[n];
         Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
         m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);
-        m &= ColorPieces[Opponent[turn]];
+        m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
@@ -1089,7 +1089,7 @@ void Position::generateCaptures(vector<Move>& moves)
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
         m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
         m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);
-        m &= ColorPieces[Opponent[turn]];
+        m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
@@ -1143,7 +1143,7 @@ bool Position::isLegal(Move const& m)
 
 bool Position::isAttacked(int turn,int n)
 {
-    int opp = Opponent[turn];
+    int opp = getOpponent(turn);
     Bitset b = PawnAttacks[turn][n]&Pieces[opp][PIECE_PAWN];
 	/*if(b!=0)
         return true;*/
@@ -1213,7 +1213,7 @@ Move Position::getSmallestAttacker(int turn,int n)
 Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ,unsigned long long occ90,unsigned long long occ45,
 								   unsigned long long occ135)
 {
-    int opp = Opponent[turn];
+    int opp = getOpponent(turn);
 	Bitset b = 0x0;
 	b = PawnAttacks[opp][n]&Pieces[turn][PIECE_PAWN];
 	if(b!=0)
