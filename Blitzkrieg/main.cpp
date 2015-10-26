@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 69;
+const int ENGINEVERSION = 71;
 
 ///BUILDS
+// Build 71 - 25-10-2015 - Fixed endgame draw evaluation
+// Build 70 - 25-10-2015 - Improved speed a bit, added mobility bonus for queen and piece adjustment for number of enemy pawns
 // Build 69 - 24-10-2015 - Added null move extensions and singular extensions, increase AttackWeights of minor pieces and rook by 1
 // Build 68 - 23-10-2015 - Fixed a bug regarding TTKey changing with null moves
 // Build 67 - 23-10-2015 - Now does razoring and pruning before null move search

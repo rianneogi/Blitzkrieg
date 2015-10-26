@@ -261,17 +261,19 @@ int Engine::LeafEval(int alpha, int beta)
 		checkup();
 		//nodes = 0;
 	}
-	evaltime.Start();
+	//evaltime.Start();
 
 	Bitset ColorPieces[2];
+	long long ColorPiecesCount[2];
 	for (int i = 0;i < 2;i++)
 	{
 		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
 			pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
 			pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
+		ColorPiecesCount[i] = popcnt(ColorPieces[i]);
 	}
 
-	if (ColorPieces[COLOR_WHITE] == 2 && ColorPieces[COLOR_BLACK] == 2) //2 piece endgame
+	if (ColorPiecesCount[COLOR_WHITE] == 2 && ColorPiecesCount[COLOR_BLACK] == 2) //2 piece endgame
 	{
 		if (popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN]) == 0 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN]) == 0) //no pawns
 		{
@@ -665,7 +667,7 @@ int Engine::LeafEval(int alpha, int beta)
 	if(pos.turn==COLOR_BLACK)
 		return -neteval;
 
-	evaltime.Stop();
+	//evaltime.Stop();
 	return neteval;
 }
 

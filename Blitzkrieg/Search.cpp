@@ -209,36 +209,6 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
 
-	Bitset tttest = 0x0;
-	for (int i = 0;i<64;i++)
-	{
-		if (pos.Squares[i] != SQUARE_EMPTY)
-		{
-			tttest ^= TT_PieceKey[getSquare2Color(pos.Squares[i])][getSquare2Piece(pos.Squares[i])][i];
-			//cout << "ZOR " << i << " " << getSquare2Color(pos.Squares[i]) << " " << getSquare2Piece(pos.Squares[i]) << endl;
-		}
-	}
-	for (int i = 0;i<2;i++)
-	{
-		for (int j = 0;j<2;j++)
-		{
-			if (pos.castling[i][j]==1)
-				tttest ^= TT_CastlingKey[i][j];
-			//cout << "CASTLE " << i << " " << j << endl;
-		}
-	}
-	tttest ^= TT_EPKey[pos.epsquare];
-	//cout << "EP " << pos.epsquare << endl;
-	if (pos.turn == COLOR_BLACK)
-		tttest ^= TT_ColorKey;
-	if (pos.TTKey != tttest)
-	{
-		cout << "info string ERROR: TT consistency error" << endl;
-		pos.display(0);
-		cout << pos.TTKey << " " << tttest << endl;
-		_getch();
-	}
-
 	bool underCheck = pos.underCheck(pos.turn);
 	if(underCheck) //check extension
 	{
@@ -407,7 +377,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	//vec = pos.generateMoves();
 	vector<Move> vec;
 	vec.reserve(128);
-	movegentime.Start();
+	//movegentime.Start();
 	if(futilityprune)
 	{
     	pos.generateCaptures(vec); //search only captures in futility pruning
@@ -416,7 +386,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	{
 		pos.generateMoves(vec);
     }
-	movegentime.Stop();
+	//movegentime.Stop();
 	/*vector<Move> line;
 	line.reserve(128);*/
 	/*vector<int> scores;
@@ -719,7 +689,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 
 Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 {
-	sorttime.Start();
+	//sorttime.Start();
 	int bigmove = currentmove;
 	unsigned long long bigscore = getMoveScore(moves.at(currentmove));
 	unsigned long long x;
@@ -738,8 +708,8 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 	//int sc = scores.at(bigmove); //swamp score
 	//scores.at(bigmove) = scores.at(currentmove);
 	//scores.at(currentmove) = sc;
+	//sorttime.Stop();
 	return m;
-	sorttime.Stop();
 }
 
 //void Engine::movesort(vector<Move>& moves,int depth)

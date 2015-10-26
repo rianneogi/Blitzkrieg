@@ -2,7 +2,7 @@
 
 int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 {
-	quisctime.Start();
+	//quisctime.Start();
 	nodes++;
 	if(nodes%1024==0)
 	{
@@ -45,9 +45,9 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 
     vector<Move> vec; //generate moves
 	vec.reserve(128);
-	movegentime.Start();
+	//movegentime.Start();
 	pos.generateCaptures(vec);
-	movegentime.Stop();
+	//movegentime.Stop();
 
 	//vector<int> scores; //generate move scores
 	//scores.reserve(128);
@@ -80,6 +80,6 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 		if(alpha < score)
 			alpha = score;
 	}
-	quisctime.Stop();
+	//quisctime.Stop();
 	return alpha;
 }

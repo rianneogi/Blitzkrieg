@@ -189,21 +189,25 @@ inline int getflipA1H8(int n)
 inline int getFile(unsigned long n)
 {
     return File[n];
+	//return (n & 0x7);
 }
 
 inline int getFile(int n)
 {
     return File[n];
+	//return (n & 0x7);
 }
 
 inline int getRank(unsigned long n)
 {
-    return Rank[n];
+    //return Rank[n];
+	return (n >> 3);
 }
 
 inline int getRank(int n)
 {
-    return Rank[n];
+    //return Rank[n];
+	return (n >> 3);
 }
 
 inline int getDiag(int n)
