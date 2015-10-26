@@ -1145,18 +1145,18 @@ bool Position::isAttacked(int turn,int n)
 {
     int opp = getOpponent(turn);
     Bitset b = PawnAttacks[turn][n]&Pieces[opp][PIECE_PAWN];
-	/*if(b!=0)
-        return true;*/
+	if(b!=0)
+        return true;
 	b |= KnightMoves[n]&Pieces[opp][PIECE_KNIGHT];
-	/*if(b!=0)
-        return true;*/
+	if(b!=0)
+        return true;
     b |= KingMoves[n]&Pieces[opp][PIECE_KING];
-	/*if(b!=0)
-        return true;*/
+	if(b!=0)
+        return true;
     b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&(Pieces[opp][PIECE_ROOK]|Pieces[opp][PIECE_QUEEN]);
     b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&(Pieces[opp][PIECE_ROOK]|Pieces[opp][PIECE_QUEEN]);
-	/*if(b!=0)
-        return true;*/
+	if(b!=0)
+        return true;
     b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&(Pieces[opp][PIECE_BISHOP]|Pieces[opp][PIECE_QUEEN]);
     b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&(Pieces[opp][PIECE_BISHOP]|Pieces[opp][PIECE_QUEEN]);
 	if(b!=0)

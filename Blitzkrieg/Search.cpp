@@ -87,11 +87,11 @@ Move Engine::IterativeDeepening(int movetime)
 
 	MAXTIME = movetime;
 
-	/*vector<Move> line;
-	line.reserve(128);*/
-	//PrincipalVariation = vector<Move>();
-	//PrincipalVariation.reserve(128);
-	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,CONS_NULLMOVE,false,false);
+	vector<Move> line;
+	line.reserve(128);
+	PrincipalVariation = vector<Move>();
+	PrincipalVariation.reserve(128);
+	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,CONS_NULLMOVE,&line,false,false);
 	//int score = think(1,CONS_NEGINF,CONS_INF,&line);
 	//PrincipalVariation = line;
 	int val = 0;
@@ -99,10 +99,10 @@ Move Engine::IterativeDeepening(int movetime)
 	int takeback = 0;
 	int initialmovenumber = pos.movelist.size();
 	Move bestmove = CONS_NULLMOVE;
-	for (int i = 0;i < 128;i++)
+	/*for (int i = 0;i < 128;i++)
 	{
 		PrincipalVariation[i] = CONS_NULLMOVE;
-	}
+	}*/
 	//cout << "takeback set " << takeback << " " << PrincipalVariation.size() << endl;
 	takeback = setjmp(env);
 	if(takeback!=0)
@@ -139,8 +139,8 @@ Move Engine::IterativeDeepening(int movetime)
 		//int low = 8;
 		//int high = 8;
 
-		PvSize = -1;
-		PvPly = -1;
+		/*PvSize = -1;
+		PvPly = -1;*/
 
 		int delta = 16;
 		int alpha = max(score - delta, int(CONS_NEGINF));
@@ -150,8 +150,8 @@ Move Engine::IterativeDeepening(int movetime)
 		{
 			//line = deque<Move>();
 			ply = 0;
-			
-			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,true,true);
+			//PvSize = -1;
+			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,&line,true,true);
 			//cout << "asp. " << alpha << " " << beta << endl;
 			
 			if(val <= alpha)
@@ -176,18 +176,17 @@ Move Engine::IterativeDeepening(int movetime)
 		//firstguess = val;
 		timer.Stop();
 		cout << "info score cp " << score << " depth " << i << " nodes " << nodes << " nps " << getNPS(nodes,timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
-		for(int j = 0;j<=PvSize;j++)
+		/*for(int j = 0;j<=PvSize;j++)
 		{
 			cout << PrincipalVariation[j].toString() << " ";
-		}
-		cout << endl;
-		/*for (int j = line.size()-1;j >=0;j--)
+		}*/
+		for (int j = line.size()-1;j >=0;j--)
 		{
 			cout << line.at(j).toString() << " ";
 		}
-		cout << endl;*/
-		bestmove = PrincipalVariation[0];
-		//PrincipalVariation = line;
+		cout << endl;
+		PrincipalVariation = line;
+		bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
 	}
 	cout << "Nodes: " << nodes << endl;
 	cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
@@ -201,7 +200,7 @@ Move Engine::IterativeDeepening(int movetime)
 	return bestmove;
 }
 
-int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bool dopv)
+int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv)
 {
 	int tablekey = pos.TTKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
@@ -251,10 +250,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			Move ttbestmove = Table.getBestMove(pos.TTKey);
 			if (!ttbestmove.isNullMove())
 			{
-				//variation->push_back(ttbestmove);
-				PrincipalVariation[ply] = ttbestmove;
-				PvSize = ply;
-				PvPly = ply;
+				variation->push_back(ttbestmove);
+				//PrincipalVariation[ply] = ttbestmove;
+				//PvSize = ply;
+				//PvPly = ply;
 				/*vector<Move> vec;
 				vec.reserve(128);
 				pos.generateMoves(vec);
@@ -276,8 +275,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 			}
 			else if (ply != 0)
 			{
-				PvSize = ply - 1;
-				PvPly = ply;
+				//PvSize = ply - 1;
+				//PvPly = ply;
 				return probe;
 			}
 		}
@@ -321,8 +320,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	dummyline.reserve(128);*/
 	/*vector<Move> lineptr;
 	lineptr.reserve(128);*/
-	/*vector<Move> line;
-	line.reserve(128);*/
+	vector<Move> line;
+	line.reserve(128);
 	Move m;
 	int score = 0;
 
@@ -339,7 +338,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		ply++;
 		int ttkeynull = pos.TTKey;
 		pos.forceMove(m);
-        score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,m,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
+        score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,m,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
         pos.unmakeMove(m);
 		if (ttkeynull != pos.TTKey)
@@ -397,7 +396,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	int bestscore = CONS_NEGINF;
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
-		//line.clear();
+		line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
 		int tablekey2 = pos.TTKey;
@@ -452,22 +451,22 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 		
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
-			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, true, false);
+			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, &line, true, false);
 			if(score>alpha && score < beta) //check for failure
 			{
-				//line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, true, true); //research
+				line.clear();
+				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, true); //research
 				//cout << "pv research" << endl;
 			}
 		}
 		else //latemove reduction
 		{
-			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, true, dopv);
+			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, &line, true, dopv);
 			//cout << "latemove" << endl;
 			if(score>alpha && score < beta && reductiondepth>1)
 			{
-				//line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, true, dopv);
+				line.clear();
+				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, true, dopv);
 				//cout << "latemove research" << endl;
 			}
 		}
@@ -522,7 +521,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 				alpha = score;
 				alpharaised = true;
 				alphamove = m;
-				//*variation = line;
+				*variation = line;
 
 				if (firstalpha == -1)
 				{
@@ -581,13 +580,13 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,bool cannull,bo
 	}
 	if(!alphamove.isNullMove())
 	{
-		//variation->push_back(alphamove);
-		PrincipalVariation[ply] = alphamove;
-		if (ply > PvSize || depth == 1)
+		variation->push_back(alphamove);
+		//PrincipalVariation[ply] = alphamove;
+		/*if (depth == 1)
 		{
 			PvSize = ply;
 			PvPly = ply;
-		}
+		}*/
 		/*else if (ply == PvPly - 1)
 		{
 			PrincipalVariation[ply] = alphamove;
@@ -634,17 +633,19 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
 	unsigned long long score = 100000;
-	//if(ply < PvSize)
-	//{
-		if(m==PrincipalVariation[ply])
+	if(ply < PrincipalVariation.size())
+	{
+		if(m==PrincipalVariation.at(PrincipalVariation.size()-1-ply))
 		{
 			score += 600000;
+			//cout << "info string pv hit " << ply << " " << m.toString() << " " << (PrincipalVariation.size() - 1 - ply) << endl;
 			return score;
 		}
-	//}
+	}
 	if(m==Table.getBestMove(pos.TTKey)) //history best move is always first, give it a big advantage of 400000
 	{
 		score += 400000;
+		//tthitcount++;
 		return score;
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
@@ -690,8 +691,9 @@ unsigned long long Engine::getMoveScore(const Move& m)
 Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 {
 	//sorttime.Start();
-	int bigmove = currentmove;
-	unsigned long long bigscore = getMoveScore(moves.at(currentmove));
+	int bigmoveid = currentmove;
+	Move bigmove = moves.at(currentmove);
+	unsigned long long bigscore = getMoveScore(bigmove);
 	unsigned long long x;
 	for(int i = currentmove+1;i<moves.size();i++)
 	{
@@ -699,11 +701,12 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 		if(x>bigscore)
 		{
 			bigscore = x;
-			bigmove = i;
+			bigmoveid = i;
+			bigmove = moves.at(i);
 		}
 	}
-	Move m = moves.at(bigmove); //swap move
-	moves.at(bigmove) = moves.at(currentmove);
+	Move m = bigmove; //swap move
+	moves.at(bigmoveid) = moves.at(currentmove);
 	moves.at(currentmove) = m;
 	//int sc = scores.at(bigmove); //swamp score
 	//scores.at(bigmove) = scores.at(currentmove);

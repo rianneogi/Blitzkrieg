@@ -469,8 +469,27 @@ int Engine::LeafEval(int alpha, int beta)
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
 				sideeval[i] += PassedPawnBonus[getColorMirror(i, k)];
+				if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
+				{
+					sideeval[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
+				}
+				else
+				{
+					if (isEG)
+					{
+						sideeval[i] += PassedPawnBonus[getFile(getColorMirror(i, k))]; //protected passed pawn
+					}
+					else
+					{
+						sideeval[i] += PassedPawnBonus[getFile(getColorMirror(i, k))] / 2;
+					}
+				}
+				if (isEG)
+				{
+					sideeval[i] += PassedPawnBonus[getFile(getColorMirror(i, k))]/2; //extra bonus in endgame
+				}
 			}
-			if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
+			else if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
 				sideeval[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
 			}

@@ -67,10 +67,13 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 		}
 		if(StaticExchangeEvaluation(m.getTo(),m.getFrom(),m.getMovingPiece(),captured)<0)
 			continue;
+		//if (getSquare2Piece(m.getCapturedPiece()) == PIECE_KING) //captured opponent king
+		//	return CONS_INF;
 		if(!pos.makeMove(m))
 		{
 			continue;
 		}
+		//pos.forceMove(m);
 		ply++;
 		score = -QuiescenceSearchStandPat(-beta,-alpha,m);
 		pos.unmakeMove(m);

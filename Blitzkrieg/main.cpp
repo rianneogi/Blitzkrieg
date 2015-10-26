@@ -27,6 +27,7 @@ string ENGINEAUTHOR = "Rian Neogi";
 const int ENGINEVERSION = 71;
 
 ///BUILDS
+// Build 72 - 26-10-2015 - Changed PV back to vector
 // Build 71 - 25-10-2015 - Fixed endgame draw evaluation
 // Build 70 - 25-10-2015 - Improved speed a bit, added mobility bonus for queen and piece adjustment for number of enemy pawns
 // Build 69 - 24-10-2015 - Added null move extensions and singular extensions, increase AttackWeights of minor pieces and rook by 1
