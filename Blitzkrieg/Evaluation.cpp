@@ -288,16 +288,30 @@ int Engine::LeafEval(int alpha, int beta)
 			}
 		}
 	}
-	if (ColorPieces[COLOR_WHITE] == 1 && ColorPieces[COLOR_BLACK] == 3 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT]) == 2)
+	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 3 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT]) == 2)
 	{
 		if (Trace)
 			cout << "draw, 2 knights cant force checkmate" << endl;
 		return 0; //2 knights cant force checkmate
 	}
-	if (ColorPieces[COLOR_BLACK] == 1 && ColorPieces[COLOR_WHITE] == 3 && popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT]) == 2)
+	if (ColorPiecesCount[COLOR_BLACK] == 1 && ColorPiecesCount[COLOR_WHITE] == 3 && popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT]) == 2)
 	{
 		if (Trace)
 			cout << "draw, 2 knights cant force checkmate" << endl;
+		return 0; //2 knights cant force checkmate
+	}
+	if(ColorPiecesCount[COLOR_BLACK]==1 && ColorPiecesCount[COLOR_WHITE] == 2
+		&& (popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT]) == 1 || popcnt(pos.Pieces[COLOR_WHITE][PIECE_BISHOP]) == 1))
+	{
+		if (Trace)
+			cout << "draw, king and minor piece vs king" << endl;
+		return 0; //2 knights cant force checkmate
+	}
+	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 2
+		&& (popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT]) == 1 || popcnt(pos.Pieces[COLOR_BLACK][PIECE_BISHOP]) == 1))
+	{
+		if (Trace)
+			cout << "draw, king and minor piece vs king" << endl;
 		return 0; //2 knights cant force checkmate
 	}
 
