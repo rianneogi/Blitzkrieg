@@ -84,16 +84,21 @@ class Engine
 	int StaticExchangeEvaluation(int square,int side);
 
 	//Evaluation.cpp
-	int LeafEval(int alpha,int beta);
+	template<bool Trace> int LeafEval(int alpha,int beta);
 	int EvalKingSafety(int turn,bool isEG);
 	int FastEval();
-	int getBoardMaterial();
-	int Trace(int alpha,int beta);
+	template<int Color> int getBoardMaterial();
+	//int Trace(int alpha,int beta);
 	//int loadFromLua(std::string path);
 };
 
 void evalinit();
 void searchinit();
 int getNPS(int nodes,int milliseconds);
+template int Engine::LeafEval<true>(int, int);
+template int Engine::LeafEval<false>(int, int);
+template int Engine::getBoardMaterial<COLOR_WHITE>();
+template int Engine::getBoardMaterial<COLOR_BLACK>();
+
 //int loadFromLua(std::string path);
 #endif // ENGINE_H_INCLUDED

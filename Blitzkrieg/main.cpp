@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 71;
+const int ENGINEVERSION = 74;
 
 ///BUILDS
+// Build 74 - 29-10-2015 - Fixed a bug with evaluation, reduced king safety parameters a bit
+// Build 73 - 27-10-2015 - Now does not do null move pruning and razoring at PV nodes, improved blocked pawn evaluation
 // Build 72 - 26-10-2015 - Changed PV back to vector
 // Build 71 - 25-10-2015 - Fixed endgame draw evaluation
 // Build 70 - 25-10-2015 - Improved speed a bit, added mobility bonus for queen and piece adjustment for number of enemy pawns

@@ -294,9 +294,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	}
 	else
 	{
-		leafeval = LeafEval(alpha, beta);
+		leafeval = LeafEval<false>(alpha, beta);
 	}
-	if (ply != 0 && depth < 4 && !underCheck &&
+	if (!dopv && ply != 0 && depth < 4 && !underCheck &&
 		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
 	{
 		prunednodes++;
@@ -328,7 +328,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-	if (cannull && depth >= 3 && underCheck == false && pieceCount>6 //not endgame
+	if (cannull && !dopv && depth >= 3 && underCheck == false && pieceCount>6 //not endgame
 		//&& leafeval >= beta
 		) 
     {
@@ -419,7 +419,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		if (depth < 8 && ((LeafEval(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
+		if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
 		{
 			reductiondepth++;
 		}

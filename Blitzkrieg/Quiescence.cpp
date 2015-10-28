@@ -26,7 +26,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 	}
 	else
 	{
-		stand_pat = LeafEval(alpha, beta);
+		stand_pat = LeafEval<false>(alpha, beta);
 	} 
 	if(stand_pat >= beta) //standpat
 	{
@@ -53,7 +53,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 	//scores.reserve(128);
 	//generateCaptureScores(vec, scores);
 
-	int material = getBoardMaterial();
+	int material = getBoardMaterial<COLOR_WHITE>()+getBoardMaterial<COLOR_BLACK>();
 	for(int i = 0;i<vec.size();i++)
 	{
 		m = getHighestScoringMove(vec,i);

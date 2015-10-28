@@ -236,11 +236,11 @@ void Interface::start()
 		}*/
 		else if(s=="leafeval" || s=="leafevaluate")
 		{
-			cout << e1.LeafEval(CONS_NEGINF,CONS_INF) << endl;
+			cout << e1.LeafEval<false>(CONS_NEGINF,CONS_INF) << endl;
 		}
 		else if(s=="trace")
 		{
-			cout << e1.Trace(CONS_NEGINF,CONS_INF) << endl;
+			cout << e1.LeafEval<true>(CONS_NEGINF,CONS_INF) << endl;
 		}
 		else if(s=="getmovelist" || s=="movelist" || s=="getprevmoves" || s=="prevmoves")
 		{
