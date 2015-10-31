@@ -51,7 +51,7 @@ int KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half o
 int KingAdjOpenFilePenalty = 15; //penalty for king being adjacent to open files
 int KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiopen file with a rook on it
 int KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
-int AttackWeights[6] = {1,3,3,3,4,0};
+int AttackWeights[6] = {1,2,2,3,4,0};
 int KingBetweenRooksPenalty = 10;
 //int NoPawnShieldPenalty = 15;
 
@@ -131,9 +131,9 @@ int PieceSqValues[7][64] =
 	  -5,  0,  0, 10, 10, 10,  0, -5,
 	  -5,  0,  0, 10, 10, 10,  0, -5,
 	  -5,  0,  0, 10, 10, 10,  0, -5,
-	  -5,  0,  0, 10, 10, 10,  0, -5,
+	  -5,  0,  0, 15, 15, 15,  0, -5,
 	  10, 15, 15, 25, 25, 25, 15, 10,
-	   5, 10, 10, 20, 20, 20, 10,  5},
+	   5, 10, 10, 15, 15, 15, 15,  5},
 
 	{  0,  0,  0,  0,  0,  0,  0,  0, //queen
 	   0,  0,  0,  0,  1,  2,  0,  0,

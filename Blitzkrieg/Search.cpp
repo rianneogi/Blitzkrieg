@@ -114,11 +114,11 @@ Move Engine::IterativeDeepening(int movetime)
 		}
 		cout << "info string ";
 		//cout << "Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
-		cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << (((double)prunednodes / nodes)*100) << "%, Futility nodes: " << futilitynodes << ": " << (((double)futilitynodes / nodes)*100) << "%";
+		cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << ((double)(prunednodes*100) / nodes) << "%, Futility nodes: " << futilitynodes << ": " << ((double)(futilitynodes*100) / nodes) << "%";
 		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
 		cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);
-		cout << ", TT hits: " << tthitcount << ": " << (((double)tthitcount / nodes) * 100) << "%" << endl;
+		cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount*100) / nodes) << "%" << endl;
 		if (PvSize < 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
@@ -245,7 +245,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	if (probe != CONS_TTUNKNOWN)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
-		if (ply != 0 && (!dopv || (probe > alpha && probe<beta)))
+		if (ply != 0 && (!dopv || (probe > alpha && probe < beta)))
 		{
 			Move ttbestmove = Table.getBestMove(pos.TTKey);
 			if (!ttbestmove.isNullMove())
@@ -277,6 +277,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			{
 				//PvSize = ply - 1;
 				//PvPly = ply;
+				tthitcount++;
 				return probe;
 			}
 		}

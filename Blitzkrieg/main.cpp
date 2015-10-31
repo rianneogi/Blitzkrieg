@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 77;
+const int ENGINEVERSION = 78;
 
 ///BUILDS
+// Build 78 - 31-10-2015 - Undid last change, reduced attack weights of bishop and knight by 1
 // Build 77 - 31-10-2015 - getRank is now a table lookup instead of shift
 // Build 76 - 31-10-2015 - Added lategame scaling to evaluation
 // Build 75 - 29-10-2015 - Improved endgame draw evaluation

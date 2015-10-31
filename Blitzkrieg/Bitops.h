@@ -200,14 +200,14 @@ inline int getFile(int n)
 
 inline int getRank(unsigned long n)
 {
-    return Rank[n];
-	//return (n >> 3);
+    //return Rank[n];
+	return (n >> 3);
 }
 
 inline int getRank(int n)
 {
-    return Rank[n];
-	//return (n >> 3);
+    //return Rank[n];
+	return (n >> 3);
 }
 
 inline int getDiag(int n)
