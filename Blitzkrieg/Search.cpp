@@ -300,7 +300,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
 	{
 		prunednodes++;
-		if (depth <= 1 && leafeval + getRazorMargin(3) <= alpha)
+		if (depth <= 1 && (leafeval + getRazorMargin(3)) <= alpha)
 			return QuiescenceSearchStandPat(alpha, beta, lastmove);
 
 		int ralpha = alpha - getRazorMargin(depth);
