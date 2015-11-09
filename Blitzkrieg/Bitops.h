@@ -27,6 +27,9 @@ extern string debugstring;
 typedef unsigned long long Bitset;
 
 extern Bitset ColoredSquares[2]; //light squares and dark squares
+extern Bitset EnemyTerritory[2]; //opponent's side of the board
+extern Bitset CenterBits;
+extern Bitset CenterBorderBits;
 
 extern Bitset Pos2Bit[64];
 

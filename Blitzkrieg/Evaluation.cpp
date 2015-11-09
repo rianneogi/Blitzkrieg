@@ -16,6 +16,10 @@ int BishopPairBonus = 45;
 int KnightPairBonus = -5;
 int RookPairBonus = 10;
 
+//int CenterSquareBonus = 4;
+//int CenterBorderSquareBonus = 2;
+int EnemyTerritorySquareBonus = 3;
+
 //int KnightOutpostBonus = 25;
 //int BishopOutpostBonus = 10;
 int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 };
@@ -341,23 +345,42 @@ int Engine::LeafEval(int alpha, int beta)
 			cout << "We are in the endgame" << endl;
 	}
 
-	//Material eval
-	for(int i = 0;i<64;i++)
+	//Piece Sq eval
+	if (isEG)
 	{
-		//neteval += MaterialValues[pos.Squares[i]];
-		if (isEG)
+		for (int i = 0;i<64;i++)
 		{
 			neteval += PieceSqEG[pos.Squares[i]][i];
-			if (Trace && pos.Squares[i]!=SQUARE_EMPTY)
+			if (Trace && pos.Squares[i] != SQUARE_EMPTY)
 				cout << PieceSqEG[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
-		}   
-		else
+		}
+	}
+	else
+	{
+		for (int i = 0;i<64;i++)
 		{
 			neteval += PieceSq[pos.Squares[i]][i];
 			if (Trace && pos.Squares[i] != SQUARE_EMPTY)
-				cout << PieceSqEG[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
-		}	
+				cout << PieceSq[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
+		}
 	}
+	
+	unsigned long k = 0;
+	/*for (int i = 0;i < 2;i++)
+	{
+		for (int j = 0;j < 6;j++)
+		{
+			Bitset b = pos.Pieces[i][j];
+			while (b)
+			{
+				_BitScanForward64(&k, b);
+				b ^= getPos2Bit(k);
+				PieceActivity[i] += PieceSqValues[j][getColorMirror(i,k)];
+				if (Trace)
+					cout << PieceSqValues[j][getColorMirror(i, k)] << " for piece on " << Int2Sq(k) << endl;
+			}
+		}
+	}*/
 
 	Bitset b = 0x0;
 	Bitset KingField[2];
@@ -371,7 +394,7 @@ int Engine::LeafEval(int alpha, int beta)
 	for(int i = 0;i<2;i++) //king safety
 	{
 		b = pos.Pieces[i][PIECE_KING];
-		unsigned long k = 0;
+		//unsigned long k = 0;
 		_BitScanForward64(&k,b);
 		KingField[i] = getKingField(i,k);
 
@@ -544,7 +567,7 @@ int Engine::LeafEval(int alpha, int beta)
 		while (b)
 		{
 			//int k = firstOf(b);
-			unsigned long k = 0;
+			//unsigned long k = 0;
 			_BitScanForward64(&k, b);
 			b ^= getPos2Bit(k);
 			if (getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
@@ -607,6 +630,10 @@ int Engine::LeafEval(int alpha, int beta)
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)] & getPawnAttacks(i, k))*AttackWeights[PIECE_PAWN];
 			if (Trace && popcnt(KingField[getOpponent(i)] & getPawnAttacks(i, k)) != 0)
 				cout << "King attack units penalty for pawn on " << Int2Sq(k) << " for " << PlayerStrings[getOpponent(i)] << ": " << popcnt(KingField[getOpponent(i)] & getPawnAttacks(i, k))*AttackWeights[PIECE_PAWN] << endl;
+
+			//PieceActivity[i] += popcnt(getPawnAttacks(i, k)&CenterBits)*CenterSquareBonus;
+			//PieceActivity[i] += popcnt(getPawnAttacks(i, k)&CenterBorderBits)*CenterBorderSquareBonus;
+			//PieceActivity[i] += popcnt(getPawnAttacks(i, k)&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 		}
 	}
 
@@ -635,7 +662,7 @@ int Engine::LeafEval(int alpha, int beta)
 		while(b)
 		{
 			//int k = firstOf(b);
-			unsigned long k = 0;
+			//unsigned long k = 0;
 			_BitScanForward64(&k,b);
 			b ^= getPos2Bit(k);
 			if((getAboveBits(i,k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there arent friendly pawns in the same file
@@ -657,12 +684,18 @@ int Engine::LeafEval(int alpha, int beta)
 			//Rook Attacks
 			Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
 			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
+
 			if (m&b)
 			{
 				PieceActivity[i] += RookConnectedBonus;
 				if (Trace)
 					cout << "Bonus for Rooks being connected for " << PlayerStrings[i] << ": " << RookConnectedBonus << endl;
 			}
+
+			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
+			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
+			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
+
 			m &= m^ColorPieces[i];
 			PieceActivity[i] += RookMobility[popcnt(m)];
 			if (Trace)
@@ -692,7 +725,7 @@ int Engine::LeafEval(int alpha, int beta)
 		}
 		while(b)
 		{
-			unsigned long k = 0;
+			//unsigned long k = 0;
 			_BitScanForward64(&k,b);
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
@@ -724,6 +757,10 @@ int Engine::LeafEval(int alpha, int beta)
 
 			//knight attacks near opposing king
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&getKnightMoves(k))*AttackWeights[PIECE_KNIGHT];
+			//PieceActivity[i] += popcnt(getKnightMoves(k)&CenterBits)*CenterSquareBonus;
+			//PieceActivity[i] += popcnt(getKnightMoves(k)&CenterBorderBits)*CenterBorderSquareBonus;
+			//PieceActivity[i] += popcnt(getKnightMoves(k)&EnemyTerritory[i])*EnemyTerritorySquareBonus;
+
 			Bitset m = getKnightMoves(k)&(getKnightMoves(k)^ColorPieces[i]);
 			PieceActivity[i] += KnightMobility[popcnt(m)];
 			if (Trace)
@@ -758,7 +795,7 @@ int Engine::LeafEval(int alpha, int beta)
 		}
 		while(b)
 		{
-			unsigned long k = 0;
+			//unsigned long k = 0;
 			_BitScanForward64(&k,b);
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
@@ -791,6 +828,11 @@ int Engine::LeafEval(int alpha, int beta)
 			//bishop attacks near opposing king
 			Bitset m = getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
 			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
+
+			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
+			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
+			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
+
 			m &= m^ColorPieces[i];
 
 			PieceActivity[i] += BishopMobility[popcnt(m)];
@@ -820,7 +862,7 @@ int Engine::LeafEval(int alpha, int beta)
 		b = pos.Pieces[i][PIECE_QUEEN];
 		while(b)
 		{
-			unsigned long k = 0;
+			//unsigned long k = 0;
 			_BitScanForward64(&k,b);
 			b ^= getPos2Bit(k);
 
@@ -829,6 +871,11 @@ int Engine::LeafEval(int alpha, int beta)
 			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
 			m |= getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
 			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
+
+			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
+			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
+			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
+
 			m &= m^ColorPieces[i];
 
 			PieceActivity[i] += QueenMobility[popcnt(m)]; //mobility factor
