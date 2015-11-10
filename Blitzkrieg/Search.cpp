@@ -420,10 +420,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 
 		int reductiondepth = 1;
 
-		if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
-		{
-			reductiondepth++;
-		}
+		//if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
+		//{
+		//	reductiondepth++;
+		//}
 
 		if (depth >= 3 && i>=4 
 			&& !alpharaised

@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 82;
+const int ENGINEVERSION = 83;
 
 ///BUILDS
+// Build 83 - 10-11-2015 - Removed small forward razoring
 // Build 82 - 10-11-2015 - Increase latemove reduction from 1 to 2
 // Build 81 - 10-11-2015 - Improved move sorting by adding PieceSq value difference to move score
 // Build 80 - 09-11-2015 - Undid last change, made a few optimizations
