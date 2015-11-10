@@ -432,7 +432,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())
 			) //latemove reduction
 		{
-			reductiondepth++;
+			reductiondepth+=2;
 		}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
@@ -633,6 +633,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	int to = m.getTo();
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
+	int movingpiece = m.getMovingPiece();
 	unsigned long long score = 100000;
 	if(ply < PrincipalVariation.size())
 	{
@@ -651,7 +652,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{
-		int x = StaticExchangeEvaluation(to,from,m.getMovingPiece(),capturedpiece);
+		int x = StaticExchangeEvaluation(to,from, movingpiece,capturedpiece);
 		//int x = movescore;
 		if(x>=0) //if it is a good capture
 		{
@@ -664,7 +665,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	else if(special==PIECE_PAWN) //enpassant are also captures
 	{
-		int x = StaticExchangeEvaluation(to, from, m.getMovingPiece(), capturedpiece);
+		int x = StaticExchangeEvaluation(to, from, movingpiece, capturedpiece);
 		if(x>=0)
 		{
 			score += 350000 + x;
@@ -685,6 +686,8 @@ unsigned long long Engine::getMoveScore(const Move& m)
 			score += 200000;
 		}
 		score += HistoryScores[from][to]; //sort the rest by history
+		int p2sq = getPiece2Square(movingpiece, pos.turn);
+		score += PieceSq[p2sq][to] - PieceSq[p2sq][from];
 	}
 	return score;
 }

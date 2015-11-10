@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 80;
+const int ENGINEVERSION = 82;
 
 ///BUILDS
+// Build 82 - 10-11-2015 - Increase latemove reduction from 1 to 2
+// Build 81 - 10-11-2015 - Improved move sorting by adding PieceSq value difference to move score
 // Build 80 - 09-11-2015 - Undid last change, made a few optimizations
 // Build 79 - 01-11-2015 - Removed Piece Square Bonus
 // Build 78 - 31-10-2015 - Undid last change, reduced attack weights of bishop and knight by 1
