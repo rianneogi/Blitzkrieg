@@ -51,6 +51,10 @@ void Interface::UCI()
 			for (int i = 2;;i++)
 			{
 				s = getStringToken(str, ' ', i);
+				if (s == "infinite")
+				{
+					time = -1;
+				}
 				if (s == "movetime")
 				{
 					time = atoi(getStringToken(str, ' ', i+1).c_str());
@@ -85,15 +89,146 @@ void Interface::UCI()
 		else if(s=="position")
 		{
 			s = getStringToken(str,' ',2);
+			int tokennumber = 3;
 			if(s=="startpos")
 			{
-				e1.pos = Position();
+				//e1.pos = Position();
+				e1.pos.setStartPos();
+			}
+			else if (s == "fen")
+			{
+				//cout << "info string fen enter" << endl;
+				e1.pos.clearBoard();
+				s = getStringToken(str, ' ', 3);
+				int currsquare = 63;
+				for (int i = 0;i < s.size();i++)
+				{
+					//cout << "info string fen " << s.at(i) << endl;
+					if (s.at(i) >= '0' && s.at(i) <= '9')
+					{
+						currsquare -= s.at(i) - 48;
+					}
+					else if (s.at(i) == 'K')
+					{
+						e1.pos.placePiece(SQUARE_WHITEKING, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'k')
+					{
+						e1.pos.placePiece(SQUARE_BLACKKING, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'Q')
+					{
+						e1.pos.placePiece(SQUARE_WHITEQUEEN, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'q')
+					{
+						e1.pos.placePiece(SQUARE_BLACKQUEEN, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'R')
+					{
+						e1.pos.placePiece(SQUARE_WHITEROOK, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'r')
+					{
+						e1.pos.placePiece(SQUARE_BLACKROOK, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'N')
+					{
+						e1.pos.placePiece(SQUARE_WHITEKNIGHT, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'n')
+					{
+						e1.pos.placePiece(SQUARE_BLACKKNIGHT, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'B')
+					{
+						e1.pos.placePiece(SQUARE_WHITEBISHOP, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'b')
+					{
+						e1.pos.placePiece(SQUARE_BLACKBISHOP, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'P')
+					{
+						e1.pos.placePiece(SQUARE_WHITEPAWN, currsquare);
+						currsquare--;
+					}
+					else if (s.at(i) == 'p')
+					{
+						e1.pos.placePiece(SQUARE_BLACKPAWN, currsquare);
+						currsquare--;
+					}
+				}
+
+				s = getStringToken(str, ' ', 4);
+				if (s == "b")
+				{
+					e1.pos.turn = COLOR_BLACK;
+				}
+				else
+				{
+					e1.pos.turn = COLOR_WHITE;
+				}
+
+				s = getStringToken(str, ' ', 5);
+				for (int i = 0;i < 2;i++)
+				{
+					for (int j = 0;j < 2;j++)
+					{
+						e1.pos.castling[i][j] = 0;
+					}
+				}
+				if (s != "-")
+				{
+					for (int i = 0;i < s.size();i++)
+					{
+						if (s.at(i) == 'K')
+						{
+							e1.pos.castling[0][0] = 1;
+						}
+						if (s.at(i) == 'Q')
+						{
+							e1.pos.castling[0][1] = 1;
+						}
+						if (s.at(i) == 'k')
+						{
+							e1.pos.castling[1][0] = 1;
+						}
+						if (s.at(i) == 'q')
+						{
+							e1.pos.castling[1][1] = 1;
+						}
+					}
+				}
+
+				s = getStringToken(str, ' ', 6);
+				if (s != "-")
+				{
+					e1.pos.epsquare = Sq2Int(s);
+				}
+				else
+				{
+					e1.pos.epsquare = 0;
+				}
+
+				e1.pos.initializeBitsets();
+				tokennumber = 9;
 			}
 
-			s = getStringToken(str,' ',3);
+			s = getStringToken(str,' ',tokennumber);
 			if(s=="moves")
 			{
-				int i = 4;
+				int i = tokennumber+1;
 				s = getStringToken(str,' ',i);
 				while(s!="")
 				{
@@ -133,6 +268,28 @@ void Interface::UCI()
 		else if(s=="debug")
 		{
 			DEBUG = !DEBUG;
+		}
+		else if (s == "trace")
+		{
+			cout << e1.LeafEval<true>(CONS_NEGINF, CONS_INF) << endl;
+		}
+		else if (s == "eval")
+		{
+			cout << e1.LeafEval<false>(CONS_NEGINF, CONS_INF) << endl;
+		}
+		else if (s == "see")
+		{
+			string s2;
+			cin >> s2;
+			int m1 = Sq2Int(s2);
+			cin >> s2;
+			int m2 = Sq2Int(s2);
+			cout << m1 << " " << m2 << " " << Square2Piece[board.pos.Squares[m1]] << Square2Piece[board.pos.Squares[m2]] << endl;
+			cout << e1.StaticExchangeEvaluation(m2, m1, Square2Piece[board.pos.Squares[m1]], board.pos.Squares[m2]) << endl;
+		}
+		else if (s == "info" || s == "information")
+		{
+			info();
 		}
 		fflush(stdin);
 	}
@@ -396,6 +553,10 @@ void Interface::info()
 	if(s=="epsq")
 	{
 		cout << Int2Sq(board.pos.epsquare) << "(" << board.pos.epsquare << ")" << endl;
+	}
+	if (s == "castling")
+	{
+		cout << e1.pos.castling[0][0] << " " << e1.pos.castling[0][1] << " " << e1.pos.castling[1][0] << " " << e1.pos.castling[1][1] << endl;
 	}
 	if(s=="epos")
 	{

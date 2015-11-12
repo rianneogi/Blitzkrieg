@@ -765,7 +765,7 @@ void Engine::checkup()
 {
 	timer.Stop();
 	int seconds = timer.ElapsedMilliseconds();
-	if(seconds >= MAXTIME)
+	if(seconds >= MAXTIME && MAXTIME!=-1)
 	{
 		//cout << "milliseconds: " << seconds << endl;
 		longjmp(env,seconds);

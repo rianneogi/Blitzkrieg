@@ -29,6 +29,12 @@ public:
     Position();
     Position(Position const& pos,Move const& m);
     ~Position();
+
+	void initializeBitsets();
+	void setStartPos();
+	void clearBoard();
+	void placePiece(int square, int location);
+
     void generateMoves(vector<Move>& moves);
 	void generateCaptures(vector<Move>& moves);
 	void generateMoves2(vector<Move>& moves);

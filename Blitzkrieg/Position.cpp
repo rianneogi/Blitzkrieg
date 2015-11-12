@@ -5,77 +5,7 @@ string pieceStrings[] = {"- ","P ","N ","B ","R ","Q ","K ","p ","n ","b ","r ",
 
 Position::Position()
 {
-    Pieces[COLOR_WHITE][PIECE_PAWN] = 0x000000000000ff00;
-    Pieces[COLOR_BLACK][PIECE_PAWN] = 0x00ff000000000000;
-    Pieces[COLOR_WHITE][PIECE_ROOK] = 0x0000000000000081;
-    Pieces[COLOR_BLACK][PIECE_ROOK] = 0x8100000000000000;
-    Pieces[COLOR_WHITE][PIECE_KNIGHT] = 0x0000000000000042;
-    Pieces[COLOR_BLACK][PIECE_KNIGHT] = 0x4200000000000000;
-    Pieces[COLOR_WHITE][PIECE_BISHOP] = 0x0000000000000024;
-    Pieces[COLOR_BLACK][PIECE_BISHOP] = 0x2400000000000000;
-    Pieces[COLOR_WHITE][PIECE_QUEEN] = 0x0000000000000010;
-    Pieces[COLOR_BLACK][PIECE_QUEEN] = 0x1000000000000000;
-    Pieces[COLOR_WHITE][PIECE_KING] = 0x0000000000000008;
-    Pieces[COLOR_BLACK][PIECE_KING] = 0x0800000000000000;
-    OccupiedSq = 0xffff00000000ffff;
-    OccupiedSq90 = 0xc3c3c3c3c3c3c3c3;
-    OccupiedSq45 = 0x0;
-    OccupiedSq135 = 0x0;
-    for(int i = 0;i<64;i++)
-    {
-        OccupiedSq45 |= getPos2Bit(getturn45(i))*((OccupiedSq>>i)%2);
-        OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq>>i)%2);
-        Squares[i] = SQUARE_EMPTY;
-    }
-
-    for(int i = 0;i<2;i++)
-    {
-        for(int j = 0;j<6;j++)
-        {
-            Bitset b = Pieces[i][j];
-            while(b!=0)
-            {
-                int x = firstOf(b);
-                if(x==-1)
-                {
-                    break;
-                }
-                Squares[x] = i*6 + j + 1;
-                b^=getPos2Bit(x);
-            }
-        }
-    }
-
-    turn = COLOR_WHITE;
-
-    for(int i = 0;i<2;i++)
-    {
-        for(int j = 0;j<2;j++)
-        {
-            castling[i][j] = 1;
-        }
-    }
-    epsquare = 0;
-
-	TTKey = 0x0;
-	for(int i = 0;i<64;i++)
-	{
-		if(Squares[i]!=SQUARE_EMPTY)
-		{
-			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
-		}
-	}
-	for(int i = 0;i<2;i++)
-	{
-		for(int j = 0;j<2;j++)
-		{
-			TTKey ^= TT_CastlingKey[i][j];
-		}
-	}
-	TTKey ^= TT_EPKey[epsquare];
-
-	movelist = vector<Move>(0);
-	hashlist = vector<Bitset>(0);
+	setStartPos();
 }
 
 Position::Position(Position const& pos,Move const& m)
@@ -118,6 +48,193 @@ Position::Position(Position const& pos,Move const& m)
 
 Position::~Position()
 {
+}
+
+void Position::setStartPos()
+{
+	Pieces[COLOR_WHITE][PIECE_PAWN] = 0x000000000000ff00;
+	Pieces[COLOR_BLACK][PIECE_PAWN] = 0x00ff000000000000;
+	Pieces[COLOR_WHITE][PIECE_ROOK] = 0x0000000000000081;
+	Pieces[COLOR_BLACK][PIECE_ROOK] = 0x8100000000000000;
+	Pieces[COLOR_WHITE][PIECE_KNIGHT] = 0x0000000000000042;
+	Pieces[COLOR_BLACK][PIECE_KNIGHT] = 0x4200000000000000;
+	Pieces[COLOR_WHITE][PIECE_BISHOP] = 0x0000000000000024;
+	Pieces[COLOR_BLACK][PIECE_BISHOP] = 0x2400000000000000;
+	Pieces[COLOR_WHITE][PIECE_QUEEN] = 0x0000000000000010;
+	Pieces[COLOR_BLACK][PIECE_QUEEN] = 0x1000000000000000;
+	Pieces[COLOR_WHITE][PIECE_KING] = 0x0000000000000008;
+	Pieces[COLOR_BLACK][PIECE_KING] = 0x0800000000000000;
+	OccupiedSq = 0xffff00000000ffff;
+	OccupiedSq90 = 0xc3c3c3c3c3c3c3c3;
+	OccupiedSq45 = 0x0;
+	OccupiedSq135 = 0x0;
+	for (int i = 0;i<64;i++)
+	{
+		OccupiedSq45 |= getPos2Bit(getturn45(i))*((OccupiedSq >> i) % 2);
+		OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq >> i) % 2);
+		Squares[i] = SQUARE_EMPTY;
+	}
+
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<6;j++)
+		{
+			Bitset b = Pieces[i][j];
+			while (b != 0)
+			{
+				int x = firstOf(b);
+				if (x == -1)
+				{
+					break;
+				}
+				Squares[x] = i * 6 + j + 1;
+				b ^= getPos2Bit(x);
+			}
+		}
+	}
+
+	turn = COLOR_WHITE;
+
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<2;j++)
+		{
+			castling[i][j] = 1;
+		}
+	}
+	epsquare = 0;
+
+	TTKey = 0x0;
+	for (int i = 0;i<64;i++)
+	{
+		if (Squares[i] != SQUARE_EMPTY)
+		{
+			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
+		}
+	}
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<2;j++)
+		{
+			if (castling[i][j] == 1)
+				TTKey ^= TT_CastlingKey[i][j];
+		}
+	}
+	TTKey ^= TT_EPKey[epsquare];
+
+	movelist = vector<Move>(0);
+	hashlist = vector<Bitset>(0);
+}
+
+void Position::clearBoard()
+{
+	Pieces[COLOR_WHITE][PIECE_PAWN] = 0;
+	Pieces[COLOR_BLACK][PIECE_PAWN] = 0;
+	Pieces[COLOR_WHITE][PIECE_ROOK] = 0;
+	Pieces[COLOR_BLACK][PIECE_ROOK] = 0;
+	Pieces[COLOR_WHITE][PIECE_KNIGHT] = 0;
+	Pieces[COLOR_BLACK][PIECE_KNIGHT] = 0;
+	Pieces[COLOR_WHITE][PIECE_BISHOP] = 0;
+	Pieces[COLOR_BLACK][PIECE_BISHOP] = 0;
+	Pieces[COLOR_WHITE][PIECE_QUEEN] = 0;
+	Pieces[COLOR_BLACK][PIECE_QUEEN] = 0;
+	Pieces[COLOR_WHITE][PIECE_KING] = 0;
+	Pieces[COLOR_BLACK][PIECE_KING] = 0;
+	OccupiedSq = 0;
+	OccupiedSq90 = 0;
+	OccupiedSq45 = 0;
+	OccupiedSq135 = 0;
+	for (int i = 0;i<64;i++)
+	{
+		Squares[i] = SQUARE_EMPTY;
+	}
+
+	turn = COLOR_WHITE;
+
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<2;j++)
+		{
+			castling[i][j] = 0;
+		}
+	}
+	epsquare = 0;
+
+	TTKey = 0x0;
+	for (int i = 0;i<64;i++)
+	{
+		if (Squares[i] != SQUARE_EMPTY)
+		{
+			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
+		}
+	}
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<2;j++)
+		{
+			if (castling[i][j] == 1)
+				TTKey ^= TT_CastlingKey[i][j];
+		}
+	}
+	TTKey ^= TT_EPKey[epsquare];
+
+	movelist = vector<Move>(0);
+	hashlist = vector<Bitset>(0);
+}
+
+void Position::initializeBitsets()
+{
+	OccupiedSq = 0;
+	OccupiedSq90 = 0;
+	OccupiedSq45 = 0;
+	OccupiedSq135 = 0;
+	for (int i = 0;i < 2;i++)
+	{
+		for (int j = 0;j < 6;j++)
+		{
+			Pieces[i][j] = 0;
+		}
+	}
+	for (int i = 0;i < 64;i++)
+	{
+		if (Squares[i] != SQUARE_EMPTY)
+		{
+			Pieces[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])] |= getPos2Bit(i);
+			OccupiedSq |= getPos2Bit(i);
+		}
+		
+	}
+	for (int i = 0;i<64;i++)
+	{
+		OccupiedSq45 |= getPos2Bit(getturn45(i))*((OccupiedSq >> i) % 2);
+		OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq >> i) % 2);
+		OccupiedSq90 |= getPos2Bit(getturn90(i))*((OccupiedSq >> i) % 2);
+	}
+	TTKey = 0x0;
+	for (int i = 0;i<64;i++)
+	{
+		if (Squares[i] != SQUARE_EMPTY)
+		{
+			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
+		}
+	}
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<2;j++)
+		{
+			if(castling[i][j]==1)
+				TTKey ^= TT_CastlingKey[i][j];
+		}
+	}
+	cout << castling[0][1] << " y" << endl;
+	TTKey ^= TT_EPKey[epsquare];
+	if (turn == COLOR_BLACK)
+		TTKey ^= TT_ColorKey;
+}
+
+void Position::placePiece(int square, int location)
+{
+	Squares[location] = square;
 }
 
 void Position::forceMove(Move const& m)
