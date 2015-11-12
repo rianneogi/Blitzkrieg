@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 83;
+const int ENGINEVERSION = 84;
 
 ///BUILDS
+// Build 84 - 12-11-2015 - Changed LMR depth to scale with movenumber
 // Build 83 - 10-11-2015 - Removed small forward razoring
 // Build 82 - 10-11-2015 - Increase latemove reduction from 1 to 2
 // Build 81 - 10-11-2015 - Improved move sorting by adding PieceSq value difference to move score
@@ -152,6 +153,159 @@ const int ENGINEVERSION = 83;
 //   -Doesn't work because after using unmakeMove() to go back, you don't know the previous move
 ///HISTORY
 
+string convertMoveNotation(string move, const Position& pos) //converts move notation (eg. Nf3 into g1f3) 
+{
+	vector<Move> moves;
+	pos.generateMoves(moves);
+
+	if (move.at(move.size() - 1) == ';')
+	{
+		move = move.substr(0, move.size() - 1);
+	}
+
+	if (move.at(move.size() - 1) == '+' || move.at(move.size() - 1) == '#')
+	{
+		move = move.substr(0, move.size() - 1);
+	}
+
+	for (int i = 0;i < moves.size();i++)
+	{
+		Move m = moves.at(i);
+		string s = m.toString();
+		if (Int2Sq(m.getTo()) == move.substr(move.size() - 2))
+		{
+			if (pieceStrings[m.getMovingPiece() + 1].at(0) == move.at(0) && move.size()>2) //piece
+			{
+				if (move.size() >= 4 && move.at(1) != 'x')
+				{
+					if (move.at(1) >= '1' && move.at(1) <= '8')
+					{
+						int rank = move.at(1) - 49;
+						if (m.getFrom() >= rank && m.getFrom() <= rank + 7)
+						{
+							return s;
+						}
+					}
+					else
+					{
+						int file = move.at(1) - 97;
+						if (m.getFrom() % 8 == (7 - file))
+						{
+							return s;
+						}
+					}
+				}
+				else
+				{
+					return s;
+				}
+			}
+			else if (move.size() == 2 || (move.size()==4 && move.at(1)=='x'))
+			{
+				return s;
+			}
+		}
+	}
+	return "error";
+}
+
+void testpositions(string test, int fenformat, int onlyfailed, int time, Engine& e)
+{
+	vector<int> oldfailed;
+	vector<int> newfailed;
+
+	fstream f("Test Suites//"+test+".txt", ios::in);
+	string s;
+
+	if (onlyfailed)
+	{
+		fstream f3("Test Suites//" + test + "_results.txt", ios::in);
+		getline(f3, s);
+		getline(f3, s);
+		int i = 1;
+		while (true)
+		{
+			string s2 = getStringToken(s, ' ', i);
+			if (s2 == "") break;
+			oldfailed.push_back(atoi(s2.c_str()));
+			//cout << s2 << endl;
+			i++;
+		}
+		f3.close();
+	}
+
+	int oldfailedcount = oldfailed.size();
+
+	int error = 0;
+	int count = 1;
+	int passed = 0;
+	while (!f.eof())
+	{
+		getline(f, s);
+		if (onlyfailed && (oldfailed.size() == 0 || count != oldfailed.at(0)))
+		{
+			count++;
+			continue;
+		}
+		e.pos.loadFromFEN(s);
+		Move m = e.IterativeDeepening(time, false);
+
+		string bm;
+		if (fenformat == 1)
+		{
+			bm = getStringToken(s, ' ', 8);
+		}
+		else
+		{
+			bm = getStringToken(s, ' ', 6);
+		}
+
+		string bmx = convertMoveNotation(bm, e.pos);
+		if (bmx == "error")
+		{
+			cout << "ERROR" << endl;
+			error++;
+		}
+
+		if (m.toString() == bmx)
+		{
+			cout << "test " << count << ": success, suggested move : " << m.toString() << ", best move : " << bmx << endl;
+			passed++;
+		}
+		else
+		{
+			cout << "test " << count << ": failed, suggested move: " << m.toString() << ", best move: " << bmx << endl;
+			newfailed.push_back(count);
+		}
+		cout << endl;
+
+		if (onlyfailed) oldfailed.erase(oldfailed.begin());
+		count++;
+	}
+
+	f.close();
+
+	fstream f2("Test Suites//"+test+"_results.txt", ios::out | ios::trunc);
+
+	if(onlyfailed)
+		f2 << "Total passed: " << passed << "/" << oldfailedcount << endl;
+	else
+		f2 << "Total passed: " << passed << "/" << (count - 1) << endl;
+
+	if (error)
+	{
+		cout << error << " errors have occured" << endl;
+	}
+	for (int i = 0;i < newfailed.size();i++)
+	{
+		f2 << newfailed.at(i);
+		if (i != newfailed.size() - 1)
+			f2 << " ";
+	}
+
+	f2.close();
+}
+
 int main(int argc, char* args[])
 {
 	srand(time(0));
@@ -162,7 +316,10 @@ int main(int argc, char* args[])
 	TTinit();
     cout << "Initialization done" << endl;
 
-    Interface i = Interface();
+	Interface i = Interface();
+	
+	//testpositions("wac", 0, 0, 1000, i.e1);
+    
 	try{
     i.start();
 	}catch(exception e) 

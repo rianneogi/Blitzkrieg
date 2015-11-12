@@ -226,7 +226,6 @@ void Position::initializeBitsets()
 				TTKey ^= TT_CastlingKey[i][j];
 		}
 	}
-	cout << castling[0][1] << " y" << endl;
 	TTKey ^= TT_EPKey[epsquare];
 	if (turn == COLOR_BLACK)
 		TTKey ^= TT_ColorKey;
@@ -235,6 +234,134 @@ void Position::initializeBitsets()
 void Position::placePiece(int square, int location)
 {
 	Squares[location] = square;
+}
+
+void Position::loadFromFEN(string fen)
+{
+	clearBoard();
+	string s = getStringToken(fen, ' ', 1);
+	int currsquare = 63;
+	for (int i = 0;i < s.size();i++)
+	{
+		//cout << "info string fen " << s.at(i) << endl;
+		if (s.at(i) >= '0' && s.at(i) <= '9')
+		{
+			currsquare -= s.at(i) - 48;
+		}
+		else if (s.at(i) == 'K')
+		{
+			placePiece(SQUARE_WHITEKING, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'k')
+		{
+			placePiece(SQUARE_BLACKKING, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'Q')
+		{
+			placePiece(SQUARE_WHITEQUEEN, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'q')
+		{
+			placePiece(SQUARE_BLACKQUEEN, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'R')
+		{
+			placePiece(SQUARE_WHITEROOK, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'r')
+		{
+			placePiece(SQUARE_BLACKROOK, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'N')
+		{
+			placePiece(SQUARE_WHITEKNIGHT, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'n')
+		{
+			placePiece(SQUARE_BLACKKNIGHT, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'B')
+		{
+			placePiece(SQUARE_WHITEBISHOP, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'b')
+		{
+			placePiece(SQUARE_BLACKBISHOP, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'P')
+		{
+			placePiece(SQUARE_WHITEPAWN, currsquare);
+			currsquare--;
+		}
+		else if (s.at(i) == 'p')
+		{
+			placePiece(SQUARE_BLACKPAWN, currsquare);
+			currsquare--;
+		}
+	}
+
+	s = getStringToken(fen, ' ', 2);
+	if (s == "b")
+	{
+		turn = COLOR_BLACK;
+	}
+	else
+	{
+		turn = COLOR_WHITE;
+	}
+
+	s = getStringToken(fen, ' ', 3);
+	for (int i = 0;i < 2;i++)
+	{
+		for (int j = 0;j < 2;j++)
+		{
+			castling[i][j] = 0;
+		}
+	}
+	if (s != "-")
+	{
+		for (int i = 0;i < s.size();i++)
+		{
+			if (s.at(i) == 'K')
+			{
+				castling[0][0] = 1;
+			}
+			if (s.at(i) == 'Q')
+			{
+				castling[0][1] = 1;
+			}
+			if (s.at(i) == 'k')
+			{
+				castling[1][0] = 1;
+			}
+			if (s.at(i) == 'q')
+			{
+				castling[1][1] = 1;
+			}
+		}
+	}
+
+	s = getStringToken(fen, ' ', 4);
+	if (s != "-")
+	{
+		epsquare = Sq2Int(s);
+	}
+	else
+	{
+		epsquare = 0;
+	}
+
+	initializeBitsets();
 }
 
 void Position::forceMove(Move const& m)
@@ -730,7 +857,7 @@ void Position::unmakeMove(Move const& m)
 	}
 }
 
-void Position::generateMoves(vector<Move>& moves)
+void Position::generateMoves(vector<Move>& moves) const
 {
     //std::vector<Move> moves(0);
 	//moves.reserve(128);
@@ -1064,7 +1191,7 @@ void Position::generateMoves(vector<Move>& moves)
 	//return moves;
 }
 
-void Position::generateCaptures(vector<Move>& moves)
+void Position::generateCaptures(vector<Move>& moves) const
 {
     //std::vector<Move> moves(0);
 	//moves.reserve(128);
@@ -1236,7 +1363,7 @@ void Position::generateCaptures(vector<Move>& moves)
 	//return moves;
 }
 
-void Position::addMove(std::vector<Move>& vec,Move const& m)
+void Position::addMove(std::vector<Move>& vec,Move const& m) const
 {
 	/*forceMove(m);
 	if(!underCheck(getOpponent(turn)))
@@ -1258,7 +1385,7 @@ bool Position::isLegal(Move const& m)
 	return false;
 }
 
-bool Position::isAttacked(int turn,int n)
+bool Position::isAttacked(int turn,int n) const
 {
     int opp = getOpponent(turn);
     Bitset b = PawnAttacks[turn][n]&Pieces[opp][PIECE_PAWN];

@@ -34,18 +34,19 @@ public:
 	void setStartPos();
 	void clearBoard();
 	void placePiece(int square, int location);
+	void loadFromFEN(string fen);
 
-    void generateMoves(vector<Move>& moves);
-	void generateCaptures(vector<Move>& moves);
+    void generateMoves(vector<Move>& moves) const;
+	void generateCaptures(vector<Move>& moves) const;
 	void generateMoves2(vector<Move>& moves);
 	bool isLegal(Move const& m);
-    void addMove(std::vector<Move>& vec,Move const& m);
+    void addMove(std::vector<Move>& vec,Move const& m) const;
     void forceMove(Move const& m);
     bool makeMove(Move const& m);
     void unmakeMove(Move const& m);
     Move* getBestMove();
     bool checkLegal(Move* m);
-    bool isAttacked(int turn,int n);
+    bool isAttacked(int turn,int n) const;
 	Move getSmallestAttacker(int turn,int n);
 	Move getSmallestAttacker(int turn,int n,unsigned long long occ,unsigned long long occ90,unsigned long long occ45,
 								   unsigned long long occ135);
@@ -60,6 +61,9 @@ public:
 };
 unsigned long long getRookAttacks(int sq,unsigned long long occ,unsigned long long occ90);
 unsigned long long getBishopAttacks(int sq,unsigned long long occ45,unsigned long long occ135);
+
+string getStringToken(string str, char delimiter, int token);
+int getStringTokenPosition(string str, char delimiter, int token);
 
 //int getSquare2Piece(int sq);
 //int getSquare2Color(int sq);

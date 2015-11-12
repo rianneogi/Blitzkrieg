@@ -82,7 +82,7 @@ void Interface::UCI()
 					break;
 			}
 			
-			Move m = e1.IterativeDeepening(time);
+			Move m = e1.IterativeDeepening(time, true);
 			cout << "bestmove " << m.toString() << endl;
 			//e1.pos.forceMove(m);
 		}
@@ -98,130 +98,7 @@ void Interface::UCI()
 			else if (s == "fen")
 			{
 				//cout << "info string fen enter" << endl;
-				e1.pos.clearBoard();
-				s = getStringToken(str, ' ', 3);
-				int currsquare = 63;
-				for (int i = 0;i < s.size();i++)
-				{
-					//cout << "info string fen " << s.at(i) << endl;
-					if (s.at(i) >= '0' && s.at(i) <= '9')
-					{
-						currsquare -= s.at(i) - 48;
-					}
-					else if (s.at(i) == 'K')
-					{
-						e1.pos.placePiece(SQUARE_WHITEKING, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'k')
-					{
-						e1.pos.placePiece(SQUARE_BLACKKING, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'Q')
-					{
-						e1.pos.placePiece(SQUARE_WHITEQUEEN, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'q')
-					{
-						e1.pos.placePiece(SQUARE_BLACKQUEEN, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'R')
-					{
-						e1.pos.placePiece(SQUARE_WHITEROOK, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'r')
-					{
-						e1.pos.placePiece(SQUARE_BLACKROOK, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'N')
-					{
-						e1.pos.placePiece(SQUARE_WHITEKNIGHT, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'n')
-					{
-						e1.pos.placePiece(SQUARE_BLACKKNIGHT, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'B')
-					{
-						e1.pos.placePiece(SQUARE_WHITEBISHOP, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'b')
-					{
-						e1.pos.placePiece(SQUARE_BLACKBISHOP, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'P')
-					{
-						e1.pos.placePiece(SQUARE_WHITEPAWN, currsquare);
-						currsquare--;
-					}
-					else if (s.at(i) == 'p')
-					{
-						e1.pos.placePiece(SQUARE_BLACKPAWN, currsquare);
-						currsquare--;
-					}
-				}
-
-				s = getStringToken(str, ' ', 4);
-				if (s == "b")
-				{
-					e1.pos.turn = COLOR_BLACK;
-				}
-				else
-				{
-					e1.pos.turn = COLOR_WHITE;
-				}
-
-				s = getStringToken(str, ' ', 5);
-				for (int i = 0;i < 2;i++)
-				{
-					for (int j = 0;j < 2;j++)
-					{
-						e1.pos.castling[i][j] = 0;
-					}
-				}
-				if (s != "-")
-				{
-					for (int i = 0;i < s.size();i++)
-					{
-						if (s.at(i) == 'K')
-						{
-							e1.pos.castling[0][0] = 1;
-						}
-						if (s.at(i) == 'Q')
-						{
-							e1.pos.castling[0][1] = 1;
-						}
-						if (s.at(i) == 'k')
-						{
-							e1.pos.castling[1][0] = 1;
-						}
-						if (s.at(i) == 'q')
-						{
-							e1.pos.castling[1][1] = 1;
-						}
-					}
-				}
-
-				s = getStringToken(str, ' ', 6);
-				if (s != "-")
-				{
-					e1.pos.epsquare = Sq2Int(s);
-				}
-				else
-				{
-					e1.pos.epsquare = 0;
-				}
-
-				e1.pos.initializeBitsets();
+				e1.pos.loadFromFEN(str.substr(getStringTokenPosition(str,' ',3)));
 				tokennumber = 9;
 			}
 
@@ -311,7 +188,7 @@ void Interface::Winboard()
 		else if(s=="go")
 		{
 			side = e1.pos.turn;
-			Move m = e1.IterativeDeepening(1000);
+			Move m = e1.IterativeDeepening(1000, true);
 			cout << "move " << m.toString() << endl;
 		}
 		else if(s=="quit")
@@ -614,7 +491,7 @@ void Interface::think()
 {
 	Clock c;
 	c.Start();
-	e1.IterativeDeepening(1000);
+	e1.IterativeDeepening(1000, true);
 	c.Stop();
 	cout << "Time taken: " << c.ElapsedMilliseconds() << endl;
 }
@@ -787,4 +664,25 @@ string getStringToken(string str, char delimiter, int token)
 		}
 	}
 	return "";
+}
+
+int getStringTokenPosition(string str, char delimiter, int token)
+{
+	int x = 1;
+	for (int i = 0;i<str.size();i++)
+	{
+		if (str.at(i) == delimiter)
+		{
+			x++;
+		}
+		if (x == token)
+		{
+			return i+1;
+		}
+		else if (i == str.size() - 1 && x<token)
+		{
+			return -1;
+		}
+	}
+	return -1;
 }

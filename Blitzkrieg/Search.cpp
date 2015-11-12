@@ -25,7 +25,7 @@ inline int getFutilityMargin(int depth)
 	return (200 * depth);
 }
 
-Move Engine::IterativeDeepening(int movetime)
+Move Engine::IterativeDeepening(int movetime, bool print)
 {
 	int status = pos.getGameStatus();
 	if(status!=STATUS_NOTOVER)
@@ -112,13 +112,18 @@ Move Engine::IterativeDeepening(int movetime)
 			pos.takebackMove();
 			takeback--;
 		}
-		cout << "info string ";
-		//cout << "Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
-		cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << ((double)(prunednodes*100) / nodes) << "%, Futility nodes: " << futilitynodes << ": " << ((double)(futilitynodes*100) / nodes) << "%";
-		cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
-		cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
-		cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);
-		cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount*100) / nodes) << "%" << endl;
+
+		if (print)
+		{
+			cout << "info string ";
+			//cout << "Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
+			cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << ((double)(prunednodes * 100) / nodes) << "%, Futility nodes: " << futilitynodes << ": " << ((double)(futilitynodes * 100) / nodes) << "%";
+			cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
+			cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
+			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);
+			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
+		}
+		
 		if (PvSize < 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
@@ -127,7 +132,7 @@ Move Engine::IterativeDeepening(int movetime)
 		return bestmove;
 	}
 	
-	for(int i = 2;i<=MAXDEPTH;i++)
+	for (int i = 2;i <= MAXDEPTH;i++)
 	{
 		//mr = think(i,CONS_NEGINF,CONS_INF);
 		//mr = think(i,score - 100,score + 100); //aspiration search
@@ -146,22 +151,22 @@ Move Engine::IterativeDeepening(int movetime)
 		int alpha = max(score - delta, int(CONS_NEGINF));
 		int beta = min(score + delta, int(CONS_INF));
 
-		while(true)
+		while (true)
 		{
 			//line = deque<Move>();
 			ply = 0;
 			//PvSize = -1;
-			val = AlphaBeta(i,alpha,beta,CONS_NULLMOVE,&line,true,true);
+			val = AlphaBeta(i, alpha, beta, CONS_NULLMOVE, &line, true, true);
 			//cout << "asp. " << alpha << " " << beta << endl;
-			
-			if(val <= alpha)
+
+			if (val <= alpha)
 			{
 				beta = (alpha + beta) / 2;
 				alpha = max(score - delta, int(CONS_NEGINF));
 				//cout << "val is " << val << endl;
 				//low = low << 1;
 			}
-			else if(val >= beta)
+			else if (val >= beta)
 			{
 				alpha = (alpha + beta) / 2;
 				beta = min(score + delta, int(CONS_INF));
@@ -172,24 +177,30 @@ Move Engine::IterativeDeepening(int movetime)
 
 			delta += delta / 2;
 		}
-        score = val;
+		score = val;
 		//firstguess = val;
 		timer.Stop();
-		cout << "info score cp " << score << " depth " << i << " nodes " << nodes << " nps " << getNPS(nodes,timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
-		/*for(int j = 0;j<=PvSize;j++)
+		if (print)
 		{
-			cout << PrincipalVariation[j].toString() << " ";
-		}*/
-		for (int j = line.size()-1;j >=0;j--)
-		{
-			cout << line.at(j).toString() << " ";
+			cout << "info score cp " << score << " depth " << i << " nodes " << nodes << " nps " << getNPS(nodes, timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
+			/*for(int j = 0;j<=PvSize;j++)
+			{
+				cout << PrincipalVariation[j].toString() << " ";
+			}*/
+			for (int j = line.size() - 1;j >= 0;j--)
+			{
+				cout << line.at(j).toString() << " ";
+			}
+			cout << endl;
 		}
-		cout << endl;
 		PrincipalVariation = line;
 		bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
 	}
-	cout << "Nodes: " << nodes << endl;
-	cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
+	if (print)
+	{
+		cout << "Nodes: " << nodes << endl;
+		cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
+	}
 	//cout << bestmove.toString() << " " << firstguess << endl;
 	if (PvSize < 0)
 	{
@@ -297,6 +308,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	{
 		leafeval = LeafEval<false>(alpha, beta);
 	}
+
 	if (!dopv && ply != 0 && depth < 4 && !underCheck &&
 		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
 	{
@@ -432,7 +444,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())
 			) //latemove reduction
 		{
-			reductiondepth+=2;
+			reductiondepth+=((i-2)>>1);
+			if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE

@@ -4,6 +4,8 @@
 #include "Engine.h"
 #include "Board.h"
 
+#include <fstream>
+
 extern const int ENGINEVERSION;
 extern string ENGINENAME;
 extern string ENGINEAUTHOR;
@@ -31,7 +33,5 @@ class Interface
 	void UCI();
 	void Winboard();
 };
-
-string getStringToken(string str, char delimiter, int token);
 
 #endif // INTERFACE_H_INCLUDED
