@@ -437,15 +437,15 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		//	reductiondepth++;
 		//}
 
-		if (depth >= 3 && i>=4 
+		if (depth >= 4 && i>=4 
 			&& !alpharaised
 			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE && !pos.underCheck(pos.turn)
 			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
 			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())
 			) //latemove reduction
 		{
-			reductiondepth+=((i-2)>>1);
-			if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
+			reductiondepth += depth > 4 ? 2 : 1;
+			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
