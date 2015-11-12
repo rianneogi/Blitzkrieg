@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 85;
+const int ENGINEVERSION = 86;
 
 ///BUILDS
+// Build 86 - 12-11-2015 - Limited null move to only once per variation
 // Build 85 - 12-11-2015 - Changed LMR depth to max(3,d-2)
 // Build 84 - 12-11-2015 - Changed LMR depth to scale with movenumber
 // Build 83 - 10-11-2015 - Removed small forward razoring
@@ -35,7 +36,7 @@ const int ENGINEVERSION = 85;
 // Build 80 - 09-11-2015 - Undid last change, made a few optimizations
 // Build 79 - 01-11-2015 - Removed Piece Square Bonus
 // Build 78 - 31-10-2015 - Undid last change, reduced attack weights of bishop and knight by 1
-// Build 77 - 31-10-2015 - getRank is now a table lookup instead of shift
+// Build 77 - 31-10-2015 - getRank is now a shift instead of a table lookup
 // Build 76 - 31-10-2015 - Added lategame scaling to evaluation
 // Build 75 - 29-10-2015 - Improved endgame draw evaluation
 // Build 74 - 29-10-2015 - Fixed a bug with evaluation, reduced king safety parameters a bit
