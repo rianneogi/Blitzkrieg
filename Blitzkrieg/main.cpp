@@ -24,10 +24,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 93;
+const int ENGINEVERSION = 94;
 
 ///BUILDS
-// Build 93 - 13-11-2015 - Reverted PieceSq values to what they were in Build 86
+// Build 94 - 13-11-2015 - Undid last change, undid change in Build 86
+// Build 93 - 13-11-2015 - Reverted PieceSq values to what they were in Build 87
 // Build 92 - 13-11-2015 - Optimized a bit more
 // Build 91 - 13-11-2015 - Optimized a bit by reducing number of arguments passed
 // Build 90 - 13-11-2015 - Improved zugzwang check for nullmove

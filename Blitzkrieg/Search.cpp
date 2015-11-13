@@ -468,22 +468,22 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
-			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, cannull, false);
+			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, true, false);
 			if(score>alpha && score < beta) //check for failure
 			{
 				line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, cannull, true); //research
+				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, true); //research
 				//cout << "pv research" << endl;
 			}
 		}
 		else //latemove reduction
 		{
-			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, &line, cannull, dopv);
+			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, &line, true, dopv);
 			//cout << "latemove" << endl;
 			if(score>alpha && score < beta && reductiondepth>1)
 			{
 				line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, cannull, dopv);
+				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, dopv);
 				//cout << "latemove research" << endl;
 			}
 		}
