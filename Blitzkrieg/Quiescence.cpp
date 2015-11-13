@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
+int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 {
 	//quisctime.Start();
 	nodes++;
@@ -26,7 +26,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 	}
 	else
 	{
-		stand_pat = LeafEval<false>(alpha, beta);
+		stand_pat = LeafEval<false>();
 	} 
 	if(stand_pat >= beta) //standpat
 	{
@@ -75,7 +75,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta,Move lastmove)
 		}
 		//pos.forceMove(m);
 		ply++;
-		score = -QuiescenceSearchStandPat(-beta,-alpha,m);
+		score = -QuiescenceSearchStandPat(-beta,-alpha);
 		pos.unmakeMove(m);
 		ply--;
 		if(score >= beta)

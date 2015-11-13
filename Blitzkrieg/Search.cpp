@@ -91,7 +91,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 	line.reserve(128);
 	PrincipalVariation = vector<Move>();
 	PrincipalVariation.reserve(128);
-	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,CONS_NULLMOVE,&line,false,false);
+	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,&line,false,false);
 	//int score = think(1,CONS_NEGINF,CONS_INF,&line);
 	//PrincipalVariation = line;
 	int val = 0;
@@ -156,7 +156,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			//line = deque<Move>();
 			ply = 0;
 			//PvSize = -1;
-			val = AlphaBeta(i, alpha, beta, CONS_NULLMOVE, &line, true, true);
+			val = AlphaBeta(i, alpha, beta, &line, true, true);
 			//cout << "asp. " << alpha << " " << beta << endl;
 
 			if (val <= alpha)
@@ -211,7 +211,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 	return bestmove;
 }
 
-int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv)
+int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv)
 {
 	int tablekey = pos.TTKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
@@ -228,7 +228,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	if(depth==0)
 	{
 		int ttqs = pos.TTKey;
-		int value = QuiescenceSearchStandPat(alpha,beta,lastmove); //go to quiescence
+		int value = QuiescenceSearchStandPat(alpha,beta); //go to quiescence
 		if (ttqs != pos.TTKey)
 		{
 			cout << "info string ERROR: TT key quiescence fail" << endl;
@@ -306,7 +306,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	}
 	else
 	{
-		leafeval = LeafEval<false>(alpha, beta);
+		leafeval = LeafEval<false>();
 	}
 
 	if (!dopv && ply != 0 && depth < 4 && !underCheck &&
@@ -314,10 +314,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	{
 		prunednodes++;
 		if (depth <= 1 && (leafeval + getRazorMargin(3)) <= alpha)
-			return QuiescenceSearchStandPat(alpha, beta, lastmove);
+			return QuiescenceSearchStandPat(alpha, beta);
 
 		int ralpha = alpha - getRazorMargin(depth);
-		int v = QuiescenceSearchStandPat(ralpha, ralpha + 1, lastmove);
+		int v = QuiescenceSearchStandPat(ralpha, ralpha + 1);
 		if (v <= ralpha)
 			return v;
 	}
@@ -341,7 +341,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-	if (cannull && !dopv && depth >= 3 && underCheck == false && pieceCount>6 //not endgame
+	if (cannull && !dopv && depth >= 3 && underCheck == false 
+		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK]) 
+			|| popcnt(pos.Pieces[pos.turn][PIECE_BISHOP] || popcnt(pos.Pieces[pos.turn][PIECE_KNIGHT]))
+			) //side to move does not have only pawns(to avoid zugzwang)
 		//&& leafeval >= beta
 		) 
     {
@@ -351,7 +354,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		ply++;
 		int ttkeynull = pos.TTKey;
 		pos.forceMove(m);
-        score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,m,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
+        score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
         pos.unmakeMove(m);
 		if (ttkeynull != pos.TTKey)
@@ -465,22 +468,22 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* v
 		
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
-			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, m, &line, cannull, false);
+			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, cannull, false);
 			if(score>alpha && score < beta) //check for failure
 			{
 				line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, cannull, true); //research
+				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, cannull, true); //research
 				//cout << "pv research" << endl;
 			}
 		}
 		else //latemove reduction
 		{
-			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, m, &line, cannull, dopv);
+			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, &line, cannull, dopv);
 			//cout << "latemove" << endl;
 			if(score>alpha && score < beta && reductiondepth>1)
 			{
 				line.clear();
-				score = -AlphaBeta(depth - 1, -beta, -alpha, m, &line, cannull, dopv);
+				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, cannull, dopv);
 				//cout << "latemove research" << endl;
 			}
 		}

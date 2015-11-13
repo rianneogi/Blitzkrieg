@@ -66,7 +66,7 @@ class Engine
 	//Search.cpp
 	Move IterativeDeepening(int movetime, bool print);
 	//int think(int depth,int alpha,int beta,vector<Move>* variation);
-	int AlphaBeta(int depth,int alpha,int beta,Move lastmove,vector<Move>* variation,bool cannull,bool dopv);
+	int AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv);
 	void movesort(vector<Move>& moves,int depth);
 	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
 	unsigned long long getMoveScore(const Move& m);
@@ -79,14 +79,14 @@ class Engine
 
 	//Quiescence.cpp
 	//int QuiescenceSearch(int alpha,int beta,Move lastmove);
-	int QuiescenceSearchStandPat(int alpha,int beta,Move lastmove);
+	int QuiescenceSearchStandPat(int alpha,int beta);
 	int StaticExchangeEvaluation(int to, int from,int movpiece,int capt);
 	int StaticExchangeEvaluation2(Move m);
 	int StaticExchangeEvaluation(Move m);
 	int StaticExchangeEvaluation(int square,int side);
 
 	//Evaluation.cpp
-	template<bool Trace> int LeafEval(int alpha,int beta);
+	template<bool Trace> int LeafEval();
 	int EvalKingSafety(int turn,bool isEG);
 	int FastEval();
 	template<int Color> int getBoardMaterial();
@@ -97,8 +97,8 @@ class Engine
 void evalinit();
 void searchinit();
 int getNPS(int nodes,int milliseconds);
-template int Engine::LeafEval<true>(int, int);
-template int Engine::LeafEval<false>(int, int);
+template int Engine::LeafEval<true>();
+template int Engine::LeafEval<false>();
 template int Engine::getBoardMaterial<COLOR_WHITE>();
 template int Engine::getBoardMaterial<COLOR_BLACK>();
 

@@ -261,7 +261,7 @@ int PieceSqValuesEG[7][64] =
 //}
 
 template<bool Trace>
-int Engine::LeafEval(int alpha, int beta)
+int Engine::LeafEval()
 {
 	nodes++;
 	if (nodes%CheckupNodeCount == 0)

@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 89;
+const int ENGINEVERSION = 91;
 
 ///BUILDS
+// Build 91 - 13-11-2015 - Optimized a bit by reducing number of arguments passed
+// Build 90 - 13-11-2015 - Improved zugzwang check for nullmove
 // Build 89 - 13-11-2015 - Fixed a bug with passed pawn evaluation
 // Build 88 - 13-11-2015 - Reduced Queen Piece Square values a bit
 // Build 87 - 13-11-2015 - Balanced out Piece Square values a bit
