@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 94;
+const int ENGINEVERSION = 95;
 
 ///BUILDS
+// Build 95 - 13-11-2015 - Does not reduce pawn moves in endgame
 // Build 94 - 13-11-2015 - Undid last change, undid change in Build 86
 // Build 93 - 13-11-2015 - Reverted PieceSq values to what they were in Build 87
 // Build 92 - 13-11-2015 - Optimized a bit more

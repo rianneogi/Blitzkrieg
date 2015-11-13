@@ -432,6 +432,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 
 		int capturedpiece = m.getCapturedPiece();
 		int special = m.getSpecial();
+		int movingpiece = m.getMovingPiece();
+		int moveto = m.getTo();
+		int movefrom = m.getFrom();
 
 		int reductiondepth = 1;
 
@@ -443,11 +446,12 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		if (depth >= 4 && i>=4 
 			&& !alpharaised
 			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE && !pos.underCheck(pos.turn)
-			&& (KillerMoves[0][ply].getTo() != m.getTo() || KillerMoves[0][ply].getFrom() != m.getFrom())
-			&& (KillerMoves[1][ply].getTo() != m.getTo() || KillerMoves[1][ply].getFrom() != m.getFrom())
+			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
+			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			) //latemove reduction
 		{
-			reductiondepth += depth > 4 ? 2 : 1;
+			if ((getBoardMaterial<COLOR_WHITE>() + getBoardMaterial<COLOR_BLACK>() > EndgameMaterial) || movingpiece != PIECE_PAWN) //dont reduce pawn move in endgame
+				reductiondepth += depth > 4 ? 2 : 1;
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
