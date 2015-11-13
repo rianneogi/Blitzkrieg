@@ -139,13 +139,13 @@ int PieceSqValues[7][64] =
 	  10, 15, 20, 25, 25, 20, 15, 10,
 	   5, 10, 10, 15, 15, 10, 10,  5},
 
-	{  0,  0,  0,  2,  2,  0,  0,  0, //queen
-	   0,  4,  4,  4,  4,  4,  4,  0,
-	   0,  4,  6,  6,  6,  6,  4,  0,
-	   0,  4,  5,  8,  8,  5,  4,  0,
-	   0,  4,  5,  8,  8,  5,  4,  0,
-	   0,  4,  6,  6,  6,  6,  4,  0,
-	   0,  4,  4,  4,  4,  4,  4,  0,
+	{  0,  0,  0,  0,  0,  0,  0,  0, //queen
+	   0,  1,  1,  1,  1,  1,  1,  0,
+	   0,  1,  2,  2,  2,  2,  1,  0,
+	   0,  1,  2,  4,  4,  2,  1,  0,
+	   0,  1,  2,  4,  4,  2,  1,  0,
+	   0,  1,  2,  2,  2,  2,  1,  0,
+	   0,  1,  1,  1,  1,  1,  1,  0,
 	   0,  0,  0,  0,  0,  0,  0,  0},
 
 	{ 20, 20,-10,-20,-20, 10, 20, 20, //king
@@ -576,37 +576,40 @@ int Engine::LeafEval(int alpha, int beta)
 				if (Trace)
 					cout << "Penalty for doubled pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << DoubledPawnPenalty[getFile(getColorMirror(i, k))] << endl;
 			}
+
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
 				PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)];
 				if (Trace)
 					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] << endl;
+
 				if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 				{
 					PawnStructure[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
 					if (Trace)
 						cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << IsolatedPawnPenalty[getFile(getColorMirror(i, k))] << endl;
+
+					if (isEG)
+					{
+						PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)] / 2; //extra bonus in endgame
+						if (Trace)
+							cout << "Extra endgame Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)]/2 << endl;
+					}
 				}
 				else
 				{
 					if (isEG)
 					{
-						PawnStructure[i] += PassedPawnBonus[getFile(getColorMirror(i, k))]; //protected passed pawn
+						PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)]; //protected passed pawn
 						if (Trace)
 							cout << "Extra endgame Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] << endl;
 					}
 					else
 					{
-						PawnStructure[i] += PassedPawnBonus[getFile(getColorMirror(i, k))] / 2;
+						PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)] / 2;
 						if (Trace)
-							cout << "Extra Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] << endl;
+							cout << "Extra Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)]/2 << endl;
 					}
-				}
-				if (isEG)
-				{
-					PawnStructure[i] += PassedPawnBonus[getFile(getColorMirror(i, k))]/2; //extra bonus in endgame
-					if (Trace)
-						cout << "Extra endgame Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] << endl;
 				}
 			}
 			else if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
@@ -615,6 +618,7 @@ int Engine::LeafEval(int alpha, int beta)
 				if (Trace)
 					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << IsolatedPawnPenalty[getFile(getColorMirror(i, k))] << endl;
 			}
+
 			//if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] != SQUARE_EMPTY) //checks if pawn is blocked
 			//{
 			//	sideeval[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
@@ -909,6 +913,18 @@ int Engine::LeafEval(int alpha, int beta)
 		{
 			cout << "King Attack Units for " << PlayerStrings[i] << ": " << KingAttackUnits[i] << endl;
 			cout << "Safety table for " << PlayerStrings[i] << ": " << SafetyTable[min(99, KingAttackUnits[i])] << endl;
+			cout << endl;
+		}
+	}
+
+	if (Trace)
+	{
+		for (int i = 0;i < 2;i++)
+		{
+			cout << PlayerStrings[i] << " King Safety: " << KingSafety[i] << endl;
+			cout << PlayerStrings[i] << " Pawn Structure: " << PawnStructure[i] << endl;
+			cout << PlayerStrings[i] << " Piece Activity: " << PieceActivity[i] << endl;
+			cout << endl;
 		}
 	}
 
@@ -916,6 +932,18 @@ int Engine::LeafEval(int alpha, int beta)
 	{
 		KingSafety[i] = (KingSafety[i] * currentMaterial) / TotalMaterial;
 		PawnStructure[i] = (PawnStructure[i]/2) + ((PawnStructure[i] * (TotalMaterial-currentMaterial)) / (2*TotalMaterial));
+	}
+
+	cout << "After scaling:" << endl;
+	if (Trace)
+	{
+		for (int i = 0;i < 2;i++)
+		{
+			cout << PlayerStrings[i] << " King Safety: " << KingSafety[i] << endl;
+			cout << PlayerStrings[i] << " Pawn Structure: " << PawnStructure[i] << endl;
+			cout << PlayerStrings[i] << " Piece Activity: " << PieceActivity[i] << endl;
+			cout << endl;
+		}
 	}
 
 	neteval += Material[COLOR_WHITE] + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];

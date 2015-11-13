@@ -24,15 +24,17 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 87;
+const int ENGINEVERSION = 89;
 
 ///BUILDS
+// Build 89 - 13-11-2015 - Fixed a bug with passed pawn evaluation
+// Build 88 - 13-11-2015 - Reduced Queen Piece Square values a bit
 // Build 87 - 13-11-2015 - Balanced out Piece Square values a bit
 // Build 86 - 12-11-2015 - Limited null move to only once per variation
 // Build 85 - 12-11-2015 - Changed LMR depth to max(3,d-2)
 // Build 84 - 12-11-2015 - Changed LMR depth to scale with movenumber
 // Build 83 - 10-11-2015 - Removed small forward razoring
-// Build 82 - 10-11-2015 - Increase latemove reduction from 1 to 2
+// Build 82 - 10-11-2015 - Increased latemove reduction from 1 to 2
 // Build 81 - 10-11-2015 - Improved move sorting by adding PieceSq value difference to move score
 // Build 80 - 09-11-2015 - Undid last change, made a few optimizations
 // Build 79 - 01-11-2015 - Removed Piece Square Bonus
