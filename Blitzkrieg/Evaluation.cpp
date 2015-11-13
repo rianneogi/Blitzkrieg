@@ -934,9 +934,9 @@ int Engine::LeafEval(int alpha, int beta)
 		PawnStructure[i] = (PawnStructure[i]/2) + ((PawnStructure[i] * (TotalMaterial-currentMaterial)) / (2*TotalMaterial));
 	}
 
-	cout << "After scaling:" << endl;
 	if (Trace)
 	{
+		cout << "After scaling:" << endl;
 		for (int i = 0;i < 2;i++)
 		{
 			cout << PlayerStrings[i] << " King Safety: " << KingSafety[i] << endl;
