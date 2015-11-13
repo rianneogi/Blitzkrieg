@@ -13,10 +13,10 @@ extern Bitset TT_EPKey[64];
 struct HashEntry
 {
 	Bitset key;
+	Move bestmove;
 	int depth;
 	int score;
 	int bound;
-	Move bestmove;
 
 	HashEntry();
 	HashEntry(Bitset k,int d,int s,int b,Move m);

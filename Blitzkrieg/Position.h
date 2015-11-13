@@ -14,15 +14,18 @@ class Position
 {
 public:
 	Bitset TTKey;
+	int turn;
+
     int Squares[64];
     Bitset Pieces[2][6];
     Bitset OccupiedSq;
     Bitset OccupiedSq90;
     Bitset OccupiedSq45;
     Bitset OccupiedSq135;
-    int turn;
+    
     Bitset castling[2][2];
     Bitset epsquare;
+
 	vector<Move> movelist;
 	vector<Bitset> hashlist;
 

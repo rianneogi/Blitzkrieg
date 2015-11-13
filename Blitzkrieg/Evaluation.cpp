@@ -22,8 +22,8 @@ int EnemyTerritorySquareBonus = 3;
 
 //int KnightOutpostBonus = 25;
 //int BishopOutpostBonus = 10;
-int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 };
-int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 10, 6};
+int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 };  //shouldn't be negative values(will cause bugs)
+int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 10, 6}; //shouldn't be negative values(will cause bugs)
 
 int QueenOutEarlyPenalty = 10; //penalty for queens not on back rank for every minor on back rank
 
@@ -76,7 +76,7 @@ int SafetyTable[100] = {
 int NoPawnsPenalty = 32;
 int DoubledPawnPenalty[8] = {6,8,10,15,15,10,8,6};
 int IsolatedPawnPenalty[8] = {9,12,18,30,30,18,12,9};
-int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0,
+int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0,  //shouldn't be negative values(will cause bugs)
 						     5, 10, 10, 10, 10, 10, 10,  5,
 						    10, 20, 20, 20, 20, 20, 20, 10,
                             20, 40, 40, 40, 40, 40, 40, 20,
@@ -591,7 +591,7 @@ int Engine::LeafEval()
 
 					if (isEG)
 					{
-						PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)] / 2; //extra bonus in endgame
+						PawnStructure[i] += (unsigned)PassedPawnBonus[getColorMirror(i, k)] / 2; //extra bonus in endgame
 						if (Trace)
 							cout << "Extra endgame Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)]/2 << endl;
 					}
@@ -606,7 +606,7 @@ int Engine::LeafEval()
 					}
 					else
 					{
-						PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)] / 2;
+						PawnStructure[i] += (unsigned)PassedPawnBonus[getColorMirror(i, k)] / 2;
 						if (Trace)
 							cout << "Extra Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)]/2 << endl;
 					}
@@ -734,7 +734,7 @@ int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
+				unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
 				if (Trace)
 					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << KnightOutpostBonus[getRank(getColorMirror(i, k))] << endl;
 				int piececolor = SquareColor[k];
@@ -746,7 +746,7 @@ int Engine::LeafEval()
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += (KnightOutpostBonus[getRank(getColorMirror(i, k))] / 2); //extra bonus if defended by a pawn
+					outpostbonus += ((unsigned)KnightOutpostBonus[getRank(getColorMirror(i, k))] / 2); //extra bonus if defended by a pawn
 					if (Trace)
 						cout << "	Extra bonus because its defended by a pawn: " << KnightOutpostBonus[getRank(getColorMirror(i, k))]/2 << endl;
 				}
@@ -804,7 +804,7 @@ int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
 				if (Trace)
 					cout << "Bonus for Bishop outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << BishopOutpostBonus[getRank(getColorMirror(i, k))];
 				int piececolor = SquareColor[k];
@@ -816,7 +816,7 @@ int Engine::LeafEval()
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += BishopOutpostBonus[getRank(getColorMirror(i, k))]/2; //extra bonus if defended by a pawn
+					outpostbonus += (unsigned)BishopOutpostBonus[getRank(getColorMirror(i, k))]/2; //extra bonus if defended by a pawn
 					if (Trace)
 						cout << "	Extra bonus because its defended by a pawn: " << BishopOutpostBonus[getRank(getColorMirror(i, k))] / 2 << endl;
 				}
@@ -931,7 +931,7 @@ int Engine::LeafEval()
 	for (int i = 0;i < 2;i++)
 	{
 		KingSafety[i] = (KingSafety[i] * currentMaterial) / TotalMaterial;
-		PawnStructure[i] = (PawnStructure[i]/2) + ((PawnStructure[i] * (TotalMaterial-currentMaterial)) / (2*TotalMaterial));
+		PawnStructure[i] = (PawnStructure[i]/2) + ((PawnStructure[i] * (TotalMaterial-currentMaterial)) / (TotalMaterial*2));
 	}
 
 	if (Trace)
