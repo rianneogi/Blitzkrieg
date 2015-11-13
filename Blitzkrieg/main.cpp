@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 86;
+const int ENGINEVERSION = 87;
 
 ///BUILDS
+// Build 87 - 13-11-2015 - Balanced out Piece Square values a bit
 // Build 86 - 12-11-2015 - Limited null move to only once per variation
 // Build 85 - 12-11-2015 - Changed LMR depth to max(3,d-2)
 // Build 84 - 12-11-2015 - Changed LMR depth to scale with movenumber
