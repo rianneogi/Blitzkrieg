@@ -58,17 +58,20 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 
 	betacutoff_counter = 0;
 	betacutoff_sum = 0;
+	firstbetacutoffcount = 0;
 	tthitcount = 0;
-	/*alpha_counter = 0;
+	alpha_counter = 0;
 	alphalast_sum = 0;
-	alphafirst_sum = 0;*/
+	alphafirst_sum = 0;
 
 	ply = 0;
-	for(int i = 0;i<2;i++)
+	for(int i = 0;i<3;i++)
 	{
 		for(int j = 0;j<100;j++)
 		{
 			KillerMoves[i][j] = CONS_NULLMOVE;
+			if(i!=2)
+				KillerScores[i][j] = CONS_NEGINF;
 		}
 	}
 	for(unsigned int i = 0;i<64;i++) //ages the history table
@@ -119,8 +122,9 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			//cout << "Eval time: " << evaltime.time << ", Sort time: " << sorttime.time << ", Quisc time: " << quisctime.time << ", movegen time: " << movegentime.time << ", Timer: " << timer.ElapsedMilliseconds();
 			cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << ((double)(prunednodes * 100) / nodes) << "%, Futility nodes: " << futilitynodes << ": " << ((double)(futilitynodes * 100) / nodes) << "%";
 			cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
-			cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
-			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);
+			cout << ", First beta: " << ((double)(firstbetacutoffcount*100) / betacutoff_counter) << "%";
+			/*cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
+			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);*/
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
 		}
 		
@@ -158,7 +162,13 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			//PvSize = -1;
 			val = AlphaBeta(i, alpha, beta, &line, true, true);
 			//cout << "asp. " << alpha << " " << beta << endl;
-
+			for (int i = 0;i < 2;i++)
+			{
+				for (int j = 0;j < 100;j++)
+				{
+					KillerScores[i][j] = CONS_NEGINF;
+				}
+			}
 			if (val <= alpha)
 			{
 				beta = (alpha + beta) / 2;
@@ -443,8 +453,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		//	reductiondepth++;
 		//}
 
-		if (depth >= 4 && i>=4 
+		if (i>=4 
 			&& !alpharaised
+			&& depth>=4
 			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
@@ -513,7 +524,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			Table.Save(pos.TTKey,depth,score,TT_BETA,m);
 			if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
 			{
-				setKiller(m, depth);
+				setKiller(m, depth, score);
 				int bonus = depth*depth;
 				HistoryScores[m.getFrom()][m.getTo()] += bonus;
 				if (HistoryScores[m.getFrom()][m.getTo()] > 200000) //prevent overflow of history values
@@ -533,6 +544,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			}
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
+			if (i == 0)
+				firstbetacutoffcount++;
 			return score; //fail soft beta cutoff
 		}
 		else if(score>bestscore)
@@ -707,9 +720,13 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		{
 			score += 200000;
 		}
+		else if (from == KillerMoves[2][ply].getFrom() && to == KillerMoves[2][ply].getTo())
+		{
+			score += 150000;
+		}
 		score += HistoryScores[from][to]; //sort the rest by history
-		//int p2sq = getPiece2Square(movingpiece, pos.turn);
-		//score += PieceSq[p2sq][to] - PieceSq[p2sq][from];
+		/*int p2sq = getPiece2Square(movingpiece, pos.turn);
+		score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
 	}
 	return score;
 }
@@ -795,13 +812,22 @@ void Engine::checkup()
 	//cout << (seconds-MAXTIME) << endl;
 }
 
-void Engine::setKiller(Move m,int depth)
+void Engine::setKiller(Move m,int depth,int score)
 {
-	if(m!=KillerMoves[0][ply])
+	if (m != KillerMoves[0][ply] && score > KillerScores[0][ply])
 	{
+		KillerMoves[2][ply] = KillerMoves[1][ply];
 		KillerMoves[1][ply] = KillerMoves[0][ply];
+		KillerScores[1][ply] = KillerScores[0][ply];
 		KillerMoves[0][ply] = m;
+		KillerScores[0][ply] = score;
 		//cout << "Killer set: " << m.toString() << endl;
+	}
+	else if (m != KillerMoves[1][ply] && score > KillerScores[1][ply])
+	{
+		KillerMoves[2][ply] = KillerMoves[1][ply];
+		KillerMoves[1][ply] = m;
+		KillerScores[1][ply] = score;
 	}
 }
 

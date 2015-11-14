@@ -103,6 +103,11 @@ char Int2Char(int n);
 std::string Long2Str(unsigned long long n);
 std::string Int2Str(int n);
 
+inline bool isValidSquare(int n)
+{
+	return (n < 64 && n >= 0);
+}
+
 inline int getSquareColor(int n)
 {
 	return SquareColor[n];

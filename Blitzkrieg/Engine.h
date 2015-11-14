@@ -33,13 +33,16 @@ class Engine
 	//Move PrincipalVariation[128];
 	int PvSize;
 	int PvPly;
-	Move KillerMoves[2][100];
+	Move KillerMoves[3][100];
+	int KillerScores[2][100];
 	int ply;
 
+	//stats
 	unsigned long long nodes;
 	unsigned long long prunednodes;
 	unsigned long long futilitynodes;
 	unsigned long long betacutoff_counter;
+	unsigned long long firstbetacutoffcount;
 	unsigned long long betacutoff_sum;
 	unsigned long long alpha_counter;
 	unsigned long long alphalast_sum;
@@ -73,7 +76,7 @@ class Engine
 	void generateCaptureScores(vector<Move>& moves, vector<int>& scores);
 	//void ageHistoryTable();
 	void checkup();
-	void setKiller(Move m,int depth);
+	void setKiller(Move m,int depth,int score);
 
 	unsigned long long perft(int depth);
 

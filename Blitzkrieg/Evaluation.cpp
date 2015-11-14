@@ -76,6 +76,7 @@ int SafetyTable[100] = {
 int NoPawnsPenalty = 32;
 int DoubledPawnPenalty[8] = {6,8,10,15,15,10,8,6};
 int IsolatedPawnPenalty[8] = {9,12,18,30,30,18,12,9};
+int BackwardPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
 int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0, //non-negative values always(code will bug otherwise)
 						     5, 10, 10, 10, 10, 10, 10,  5,
 						    10, 20, 20, 20, 20, 20, 20, 10,
@@ -97,6 +98,8 @@ int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 int RookHalfOpenBonus[8] = {15,15,20,30,30,20,15,15};
 int RookOpenBonus[8] = {20,20,30,40,40,30,20,20};
 int RookConnectedBonus = 10;
+int RookBehindPassedPawnBonus = 30;
+int OppRookBehindPassedPawnPenalty = 20;
 
 int PieceSq[13][64];
 int PieceSqEG[13][64];
@@ -611,6 +614,19 @@ int Engine::LeafEval()
 							cout << "Extra Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)]/2 << endl;
 					}
 				}
+
+				if (getAboveBits(getOpponent(i), k)&pos.Pieces[i][PIECE_ROOK]) //rook behind passer
+				{
+					PawnStructure[i] += RookBehindPassedPawnBonus;
+					if (Trace)
+						cout << "Bonus for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << RookBehindPassedPawnBonus << endl;
+				}
+				if (getAboveBits(getOpponent(i), k)&pos.Pieces[getOpponent(i)][PIECE_ROOK])
+				{
+					PawnStructure[i] -= OppRookBehindPassedPawnPenalty;
+					if (Trace)
+						cout << "Penalty for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << OppRookBehindPassedPawnPenalty << endl;
+				}
 			}
 			else if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
@@ -619,15 +635,36 @@ int Engine::LeafEval()
 					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << IsolatedPawnPenalty[getFile(getColorMirror(i, k))] << endl;
 			}
 
-			//if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] != SQUARE_EMPTY) //checks if pawn is blocked
-			//{
-			//	sideeval[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
-			//}
-			if (pos.OccupiedSq&getPos2Bit(getPlus8(getColorMirror(i, k)))) //checks if pawn is blocked
+			if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] != SQUARE_EMPTY) //checks if pawn is blocked
 			{
 				PawnStructure[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
 				if (Trace)
 					cout << "Penalty for blocked pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BlockedPawnPenalty[getColorMirror(i, k)] << endl;
+			}
+			//if (pos.OccupiedSq&getPos2Bit(getColorMirror(i,getPlus8(getColorMirror(i, k))))) //checks if pawn is blocked
+			//{
+			//	PawnStructure[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
+			//	if (Trace)
+			//		cout << "Penalty for blocked pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BlockedPawnPenalty[getColorMirror(i, k)] << endl;
+			//}
+
+			printBitset((getAboveSideBits(getOpponent(i), k))&pos.Pieces[i][PIECE_PAWN]);
+			if ((getAboveSideBits(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if pawn is backward
+			{
+				
+				if (getRank(getColorMirror(i, k)) < 5)
+				{
+					
+					if (getPawnAttacks(i, getColorMirror(i, getPlus8(getColorMirror(i, k))))&pos.Pieces[getOpponent(i)][PIECE_PAWN]
+						&& pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))]==SQUARE_EMPTY)
+					{
+						
+						PawnStructure[i] -= BackwardPawnPenalty[getFile(k)];
+						if (Trace)
+							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BackwardPawnPenalty[getFile(k)] << endl;
+					}
+				}
+				
 			}
 			//pawn attacks near opposing king
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&getPawnAttacks(i,k))*AttackWeights[PIECE_PAWN];

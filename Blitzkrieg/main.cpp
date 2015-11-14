@@ -14,7 +14,8 @@ using namespace std;
 ///TODO
 
 ///BUGS
-// Search doesn't consider enpassant moves even though they are generated my movegen
+// Rare crash
+// FIXED - Search doesn't consider enpassant moves even though they are generated my movegen
 // FIXED - Engine crashes when near mate
 // FIXED - Bug where after calculating upto depth 6 then calculating upto depth 5 after e2e4 e7e5 leads to messed up engine position
 // FIXED - Bug where calculation in depth 6 or above leads to messed up engine position
@@ -24,9 +25,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 99;
+const int ENGINEVERSION = 101;
 
 ///BUILDS
+// Build 101 - 15-11-2015 - Added backward pawn and rook behind passer evaluation
+// Build 100 - 14-11-2015 - New cutoff now only replaces a killer move if its score is higher
 // Build 99 - 14-11-2015 - Removed PieceSq values for move sorting (Build 81)
 // Build 98 - 14-11-2015 - Undid Build 97 and Build 95, changed LMR depth to 1
 // Build 97 - 14-11-2015 - Does not reduce pawn moves past 6th rank
