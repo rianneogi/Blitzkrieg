@@ -24,9 +24,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 95;
+const int ENGINEVERSION = 97;
 
 ///BUILDS
+// Build 97 - 14-11-2015 - Does not reduce pawn moves past 6th rank
+// Build 96 - 14-11-2015 - Made an optimization in LMR if-condition
 // Build 95 - 13-11-2015 - Does not reduce pawn moves in endgame
 // Build 94 - 13-11-2015 - Undid last change, undid change in Build 86
 // Build 93 - 13-11-2015 - Reverted PieceSq values to what they were in Build 87
@@ -226,11 +228,21 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 	vector<int> newfailed;
 
 	fstream f("Test Suites//"+test+".txt", ios::in);
+	if (!f.is_open())
+	{
+		cout << "Cant open test suite" << endl;
+		return;
+	}
 	string s;
 
 	if (onlyfailed)
 	{
 		fstream f3("Test Suites//" + test + "_results.txt", ios::in);
+		if (!f3.is_open())
+		{
+			cout << "Cant open test suite results" << endl;
+			return;
+		}
 		getline(f3, s);
 		getline(f3, s);
 		int i = 1;
@@ -297,11 +309,17 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 	f.close();
 
 	fstream f2("Test Suites//"+test+"_results.txt", ios::out | ios::trunc);
+	if (!f2.is_open())
+	{
+		cout << "Cant open test suite results" << endl;
+		return;
+	}
 
 	if(onlyfailed)
-		f2 << "Total passed: " << passed << "/" << oldfailedcount << endl;
+		f2 << "Total passed: " << passed << "/" << oldfailedcount << " ";
 	else
-		f2 << "Total passed: " << passed << "/" << (count - 1) << endl;
+		f2 << "Total passed: " << passed << "/" << (count - 1) << " ";
+	f2 << ", Time per position: " << time << " ms" << endl;
 
 	if (error)
 	{
@@ -329,7 +347,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("wac", 0, 0, 1000, i.e1);
+	//testpositions("passedpawnsuite", 0, 0, 10000, i.e1);
     
 	try{
     i.start();
