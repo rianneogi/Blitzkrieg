@@ -708,8 +708,8 @@ unsigned long long Engine::getMoveScore(const Move& m)
 			score += 200000;
 		}
 		score += HistoryScores[from][to]; //sort the rest by history
-		int p2sq = getPiece2Square(movingpiece, pos.turn);
-		score += PieceSq[p2sq][to] - PieceSq[p2sq][from];
+		//int p2sq = getPiece2Square(movingpiece, pos.turn);
+		//score += PieceSq[p2sq][to] - PieceSq[p2sq][from];
 	}
 	return score;
 }
