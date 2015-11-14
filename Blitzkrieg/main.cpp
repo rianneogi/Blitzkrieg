@@ -24,9 +24,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 97;
+const int ENGINEVERSION = 98;
 
 ///BUILDS
+// Build 98 - 14-11-2015 - Undid Build 97 and Build 95, changed LMR depth to 1
 // Build 97 - 14-11-2015 - Does not reduce pawn moves past 6th rank
 // Build 96 - 14-11-2015 - Made an optimization in LMR if-condition
 // Build 95 - 13-11-2015 - Does not reduce pawn moves in endgame
@@ -347,7 +348,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("passedpawnsuite", 0, 0, 10000, i.e1);
+	//testpositions("quick", 0, 1, 60000, i.e1);
     
 	try{
     i.start();
