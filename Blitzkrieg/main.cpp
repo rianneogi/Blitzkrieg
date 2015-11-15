@@ -25,9 +25,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 102;
+const int ENGINEVERSION = 104;
 
 ///BUILDS
+// Build 104 - 15-11-2015 - Now prunes bad captures at low depths
+// Build 103 - 15-11-2015 - Removed depth>=4 condition in LMR
 // Build 102 - 15-11-2015 - Undid Build 100
 // Build 101 - 15-11-2015 - Added backward pawn and rook behind passer evaluation
 // Build 100 - 14-11-2015 - New cutoff now only replaces a killer move if its score is higher
@@ -219,7 +221,8 @@ string convertMoveNotation(string move, const Position& pos) //converts move not
 					return s;
 				}
 			}
-			else if (move.size() == 2 || (move.size()==4 && move.at(1)=='x'))
+			else if (move.at(0)!='Q' && move.at(0)!='B' && move.at(0)!='R' && move.at(0)!='N' && move.at(0)!='K' &&
+				(move.size() == 2 || (move.size()==4 && move.at(1)=='x'))) //pawn move
 			{
 				return s;
 			}

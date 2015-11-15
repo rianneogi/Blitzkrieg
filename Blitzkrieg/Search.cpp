@@ -428,6 +428,17 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		int tablekey2 = pos.TTKey;
 		m = getHighestScoringMove(vec,i);
 
+		int capturedpiece = m.getCapturedPiece();
+		int special = m.getSpecial();
+		int movingpiece = m.getMovingPiece();
+		int moveto = m.getTo();
+		int movefrom = m.getFrom();
+
+		if (capturedpiece != SQUARE_EMPTY && depth <= 4 && StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece) < 0)
+		{ //prune bad captures at low depths
+			continue;
+		}
+
 		if(!pos.makeMove(m))
 		{
 			continue;
@@ -440,12 +451,6 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		ply++;
 		score = 0;
 
-		int capturedpiece = m.getCapturedPiece();
-		int special = m.getSpecial();
-		int movingpiece = m.getMovingPiece();
-		int moveto = m.getTo();
-		int movefrom = m.getFrom();
-
 		int reductiondepth = 1;
 
 		//if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
@@ -455,7 +460,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 
 		if (i>=4 
 			&& !alpharaised
-			&& depth>=4
+			//&& depth>=4
 			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
@@ -464,7 +469,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		{
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
 				//reductiondepth += depth > 4 ? 2 : 1;
-			reductiondepth++;
+			reductiondepth+=1;
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
