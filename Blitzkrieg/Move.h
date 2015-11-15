@@ -48,6 +48,8 @@ struct MoveReturn
 void sortMoves(vector<Move>& moves,int turn);
 Move String2Move(const string& s); 
 Move createNullMove(int epsquare);
+bool isDangerous(const Move& m);
+bool isCapture(const Move& m);
 
 extern Move CONS_NULLMOVE;
 

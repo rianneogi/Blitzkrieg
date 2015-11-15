@@ -440,7 +440,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			see = StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece);
 		}
 
-		if (capturedpiece != SQUARE_EMPTY && depth <= 4 && see < 0)
+		if (isCapture(m) && depth <= 4 && see < 0)
 		{ //prune bad captures at low depths
 			continue;
 		}
@@ -467,7 +467,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		if (i>=4 
 			&& !alpharaised
 			&& depth>=4
-			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
+			&& !isCapture(m)
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !pos.underCheck(pos.turn)
@@ -479,10 +479,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
-		if (capturedpiece != SQUARE_EMPTY && !dopv && see > 400 && depth>=5) //prune really good captures
-		{
-			reductiondepth += 4;
-		}
+		//if (isCapture(m) && !dopv && see > 400 && depth>=5) //prune really good captures
+		//{
+		//	reductiondepth += 4;
+		//}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 		//	&& !pos.underCheck(pos.turn)
@@ -593,9 +593,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	{
 		if(futilityprune)
 		{
-			movegentime.Start();
+			//movegentime.Start();
+			vec.clear();
 			pos.generateMoves(vec);
-			movegentime.Stop();
+			//movegentime.Stop();
 			int flag = 1;
 			for(int i = 0;i<vec.size();i++)
 			{
@@ -700,6 +701,10 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		score += 400000;
 		//tthitcount++;
 		return score;
+	}
+	if (m.getSpecial() == PIECE_QUEEN) //queen promotion
+	{
+		score += 400000;
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{

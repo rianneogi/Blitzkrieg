@@ -25,10 +25,11 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 106;
+const int ENGINEVERSION = 107;
 
 ///BUILDS
-// Build 106 - 15-112-105 - Now prunes really good captures
+// Build 107 - 16-11-2015 - Undid last change, queen promotions are now sorted before captures
+// Build 106 - 15-11-2015 - Now prunes really good captures
 // Build 105 - 15-11-2015 - Undid Build 103 and reduced rook behind passer and backward pawn values
 // Build 104 - 15-11-2015 - Now prunes bad captures at low depths
 // Build 103 - 15-11-2015 - Removed depth>=4 condition in LMR
@@ -358,7 +359,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	testpositions("wac", 0, 0, 1000, i.e1);
+	//testpositions("wac", 0, 0, 1000, i.e1);
     
 	try{
     i.start();

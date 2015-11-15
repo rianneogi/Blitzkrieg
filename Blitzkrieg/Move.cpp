@@ -385,6 +385,16 @@ bool Move::isNullMove() const
 	return false;
 }
 
+bool isDangerous(const Move& m)
+{
+	return (m.getCapturedPiece() != SQUARE_EMPTY || m.getSpecial() == PIECE_PAWN || m.getSpecial() == PIECE_QUEEN);
+}
+
+bool isCapture(const Move& m)
+{
+	return (m.getCapturedPiece() != SQUARE_EMPTY || m.getSpecial() == PIECE_PAWN);
+}
+
 Move createNullMove(int epsquare)
 {
 	Move m(0, 0, 0, 0, 0, 0, 0, 0, 0, epsquare);
