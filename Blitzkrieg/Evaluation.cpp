@@ -648,23 +648,18 @@ int Engine::LeafEval()
 			//		cout << "Penalty for blocked pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BlockedPawnPenalty[getColorMirror(i, k)] << endl;
 			//}
 
-			printBitset((getAboveSideBits(getOpponent(i), k))&pos.Pieces[i][PIECE_PAWN]);
 			if ((getAboveSideBits(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if pawn is backward
 			{
-				
 				if (getRank(getColorMirror(i, k)) < 5)
 				{
-					
 					if (getPawnAttacks(i, getColorMirror(i, getPlus8(getColorMirror(i, k))))&pos.Pieces[getOpponent(i)][PIECE_PAWN]
 						&& pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))]==SQUARE_EMPTY)
 					{
-						
 						PawnStructure[i] -= BackwardPawnPenalty[getFile(k)];
 						if (Trace)
 							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BackwardPawnPenalty[getFile(k)] << endl;
 					}
 				}
-				
 			}
 			//pawn attacks near opposing king
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&getPawnAttacks(i,k))*AttackWeights[PIECE_PAWN];

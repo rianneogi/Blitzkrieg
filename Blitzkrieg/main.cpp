@@ -25,9 +25,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 101;
+const int ENGINEVERSION = 102;
 
 ///BUILDS
+// Build 102 - 15-11-2015 - Undid Build 100
 // Build 101 - 15-11-2015 - Added backward pawn and rook behind passer evaluation
 // Build 100 - 14-11-2015 - New cutoff now only replaces a killer move if its score is higher
 // Build 99 - 14-11-2015 - Removed PieceSq values for move sorting (Build 81)

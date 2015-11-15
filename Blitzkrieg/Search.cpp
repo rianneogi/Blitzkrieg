@@ -70,8 +70,8 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 		for(int j = 0;j<100;j++)
 		{
 			KillerMoves[i][j] = CONS_NULLMOVE;
-			if(i!=2)
-				KillerScores[i][j] = CONS_NEGINF;
+			/*if(i!=2)
+				KillerScores[i][j] = CONS_NEGINF;*/
 		}
 	}
 	for(unsigned int i = 0;i<64;i++) //ages the history table
@@ -162,13 +162,13 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			//PvSize = -1;
 			val = AlphaBeta(i, alpha, beta, &line, true, true);
 			//cout << "asp. " << alpha << " " << beta << endl;
-			for (int i = 0;i < 2;i++)
+			/*for (int i = 0;i < 2;i++)
 			{
 				for (int j = 0;j < 100;j++)
 				{
 					KillerScores[i][j] = CONS_NEGINF;
 				}
-			}
+			}*/
 			if (val <= alpha)
 			{
 				beta = (alpha + beta) / 2;
@@ -814,20 +814,20 @@ void Engine::checkup()
 
 void Engine::setKiller(Move m,int depth,int score)
 {
-	if (m != KillerMoves[0][ply] && score > KillerScores[0][ply])
+	if (m != KillerMoves[0][ply])
 	{
-		KillerMoves[2][ply] = KillerMoves[1][ply];
+		//KillerMoves[2][ply] = KillerMoves[1][ply];
 		KillerMoves[1][ply] = KillerMoves[0][ply];
-		KillerScores[1][ply] = KillerScores[0][ply];
+		//KillerScores[1][ply] = KillerScores[0][ply];
 		KillerMoves[0][ply] = m;
-		KillerScores[0][ply] = score;
+		//KillerScores[0][ply] = score;
 		//cout << "Killer set: " << m.toString() << endl;
 	}
-	else if (m != KillerMoves[1][ply] && score > KillerScores[1][ply])
+	else if (m != KillerMoves[1][ply])
 	{
-		KillerMoves[2][ply] = KillerMoves[1][ply];
+		//KillerMoves[2][ply] = KillerMoves[1][ply];
 		KillerMoves[1][ply] = m;
-		KillerScores[1][ply] = score;
+		//KillerScores[1][ply] = score;
 	}
 }
 

@@ -33,8 +33,8 @@ class Engine
 	//Move PrincipalVariation[128];
 	int PvSize;
 	int PvPly;
-	Move KillerMoves[3][100];
-	int KillerScores[2][100];
+	Move KillerMoves[2][100];
+	//int KillerScores[2][100];
 	int ply;
 
 	//stats
