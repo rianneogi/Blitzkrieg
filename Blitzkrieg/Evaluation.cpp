@@ -74,9 +74,9 @@ int SafetyTable[100] = {
 
 //Pawn Structure
 int NoPawnsPenalty = 32;
-int DoubledPawnPenalty[8] = {6,8,10,15,15,10,8,6};
-int IsolatedPawnPenalty[8] = {9,12,18,30,30,18,12,9};
-int BackwardPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
+int DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
+int IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
+int BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
 int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0, //non-negative values always(code will bug otherwise)
 						     5, 10, 10, 10, 10, 10, 10,  5,
 						    10, 20, 20, 20, 20, 20, 20, 10,
@@ -98,8 +98,8 @@ int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 int RookHalfOpenBonus[8] = {15,15,20,30,30,20,15,15};
 int RookOpenBonus[8] = {20,20,30,40,40,30,20,20};
 int RookConnectedBonus = 10;
-int RookBehindPassedPawnBonus = 30;
-int OppRookBehindPassedPawnPenalty = 20;
+int RookBehindPassedPawnBonus = 20;
+int OppRookBehindPassedPawnPenalty = 15;
 
 int PieceSq[13][64];
 int PieceSqEG[13][64];
@@ -284,6 +284,12 @@ int Engine::LeafEval()
 		ColorPiecesCount[i] = popcnt(ColorPieces[i]);
 	}
 
+	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 1)
+	{
+		if (Trace)
+			cout << "draw, King vs King" << endl;
+		return 0; //draw
+	}
 	if (ColorPiecesCount[COLOR_WHITE] == 2 && ColorPiecesCount[COLOR_BLACK] == 2) //2 piece endgame
 	{
 		if (popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN]) == 0 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN]) == 0) //no pawns

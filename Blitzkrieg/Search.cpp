@@ -434,7 +434,13 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		int moveto = m.getTo();
 		int movefrom = m.getFrom();
 
-		if (capturedpiece != SQUARE_EMPTY && depth <= 4 && StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece) < 0)
+		int see = 0;
+		if (capturedpiece != SQUARE_EMPTY)
+		{
+			see = StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece);
+		}
+
+		if (capturedpiece != SQUARE_EMPTY && depth <= 4 && see < 0)
 		{ //prune bad captures at low depths
 			continue;
 		}
@@ -460,7 +466,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 
 		if (i>=4 
 			&& !alpharaised
-			//&& depth>=4
+			&& depth>=4
 			&& capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
@@ -471,6 +477,11 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 				//reductiondepth += depth > 4 ? 2 : 1;
 			reductiondepth+=1;
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
+		}
+
+		if (capturedpiece != SQUARE_EMPTY && !dopv && see > 400 && depth>=5) //prune really good captures
+		{
+			reductiondepth += 4;
 		}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
