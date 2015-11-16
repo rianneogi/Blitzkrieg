@@ -48,6 +48,8 @@ class Engine
 	unsigned long long alphalast_sum;
 	unsigned long long alphafirst_sum;
 	unsigned long long tthitcount;
+	unsigned long long latemoveresearch;
+	unsigned long long pvresearch;
 
 	Clock timer;
 

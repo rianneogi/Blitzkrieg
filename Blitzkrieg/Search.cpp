@@ -63,6 +63,8 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 	alpha_counter = 0;
 	alphalast_sum = 0;
 	alphafirst_sum = 0;
+	latemoveresearch = 0;
+	pvresearch = 0;
 
 	ply = 0;
 	for(int i = 0;i<2;i++)
@@ -123,6 +125,8 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			cout << "Nodes: " << nodes << ", Pruned nodes: " << prunednodes << ": " << ((double)(prunednodes * 100) / nodes) << "%, Futility nodes: " << futilitynodes << ": " << ((double)(futilitynodes * 100) / nodes) << "%";
 			cout << ", Avg. beta: " << ((double)betacutoff_sum / betacutoff_counter);
 			cout << ", First beta: " << ((double)(firstbetacutoffcount*100) / betacutoff_counter) << "%";
+			cout << ", Latemove researches: " << latemoveresearch;
+			cout << ", PV researches: " << pvresearch;
 			/*cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);*/
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
@@ -467,7 +471,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		if (i>=4 
 			&& !alpharaised
 			&& depth>=4
-			&& !isCapture(m)
+			&& !isDangerous(m)
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !pos.underCheck(pos.turn)
@@ -475,7 +479,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		{
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
 				//reductiondepth += depth > 4 ? 2 : 1;
-			reductiondepth+=1;
+			reductiondepth+=depth>>1;
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
@@ -506,6 +510,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, true); //research
+				pvresearch++;
 				//cout << "pv research" << endl;
 			}
 		}
@@ -517,7 +522,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, dopv);
-				//cout << "latemove research" << endl;
+				latemoveresearch++;
 			}
 		}
 		ply--;

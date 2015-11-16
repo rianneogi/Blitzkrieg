@@ -25,9 +25,10 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 107;
+const int ENGINEVERSION = 108;
 
 ///BUILDS
+// Build 108 - 16-11-2015 - Changed LMR depth to d/2
 // Build 107 - 16-11-2015 - Undid last change, queen promotions are now sorted before captures
 // Build 106 - 15-11-2015 - Now prunes really good captures
 // Build 105 - 15-11-2015 - Undid Build 103 and reduced rook behind passer and backward pawn values
