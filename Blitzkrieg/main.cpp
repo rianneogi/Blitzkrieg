@@ -25,9 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 108;
+const int ENGINEVERSION = 109;
+
+// Best Build so far: 107
 
 ///BUILDS
+// Build 109 - 24-11-2015 - Undid last change, changed piece sq values
 // Build 108 - 16-11-2015 - Changed LMR depth to d/2
 // Build 107 - 16-11-2015 - Undid last change, queen promotions are now sorted before captures
 // Build 106 - 15-11-2015 - Now prunes really good captures
@@ -359,8 +362,24 @@ int main(int argc, char* args[])
     cout << "Initialization done" << endl;
 
 	Interface i = Interface();
+
+	/*for (int i = 0;i < 64;i++)
+	{
+		if (i % 8 == 0)
+			cout << endl;
+		Bitset b = getKnightMoves(i);
+		int val = 0;
+		while (b)
+		{
+			unsigned long k = 0;
+			_BitScanForward64(&k, b);
+			b ^= getPos2Bit(k);
+			val += SquareValues[k];
+		}
+		cout << val << " ";
+	}*/
 	
-	//testpositions("wac", 0, 0, 1000, i.e1);
+	//testpositions("wac", 0, 0, 10000, i.e1);
     
 	try{
     i.start();

@@ -15,6 +15,7 @@
 extern int PieceMaterial[7];
 extern int PieceSq[13][64];
 extern int PieceSqValues[7][64];
+extern int SquareValues[64];
 
 enum EvalConstants{CONS_INF = 20000,CONS_NEGINF = -20000, CONS_DRAW = 0, CONS_MATED = -10000};
 
