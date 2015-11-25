@@ -750,9 +750,27 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		{
 			score += 150000;
 		}
-		score += HistoryScores[from][to]; //sort the rest by history
-		/*int p2sq = getPiece2Square(movingpiece, pos.turn);
-		score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
+		else
+		{
+			if (pos.underCheck(pos.turn) == false) //move a threatened piece
+			{
+				Move null = createNullMove(pos.epsquare);
+				pos.makeMove(null);
+				Move m2 = pos.getSmallestAttacker(getOpponent(pos.turn), m.getFrom());
+				pos.unmakeMove(null);
+
+				int x = StaticExchangeEvaluation(m.getFrom(), m2.getFrom(), m2.getMovingPiece(), m2.getCapturedPiece());
+
+				if (x > 0)
+				{
+					score += 10000;
+				}
+			}
+
+			score += HistoryScores[from][to]; //sort the rest by history
+											  /*int p2sq = getPiece2Square(movingpiece, pos.turn);
+											  score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
+		}
 	}
 	return score;
 }

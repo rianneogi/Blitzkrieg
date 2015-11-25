@@ -516,6 +516,7 @@ void Interface::makeMove()
 	if(s=="null")
 	{
 		board.makeMove(createNullMove(board.pos.epsquare));
+		e1.makeMove(createNullMove(e1.pos.epsquare));
 		return;
 	}
     //cout << endl;

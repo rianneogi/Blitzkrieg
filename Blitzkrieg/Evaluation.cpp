@@ -6,7 +6,7 @@ int ColorFactor[2] = {1,-1};
 
 const float PieceActivityFactor = 1;
 const float PawnStructureFactor = 0.7;
-const float KingSafetyFactor = 0.7;
+const float KingSafetyFactor = 1;
 
 int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
 int MaterialValues[13] = {0,100,325,335,500,975,-CONS_MATED,-100,-325,-335,-500,-975,CONS_MATED};
@@ -22,7 +22,7 @@ int RookPairBonus = 10;
 
 //int CenterSquareBonus = 4;
 //int CenterBorderSquareBonus = 2;
-int EnemyTerritorySquareBonus = 3;
+//int EnemyTerritorySquareBonus = 3;
 
 //int KnightOutpostBonus = 25;
 //int BishopOutpostBonus = 10;
@@ -1085,7 +1085,7 @@ int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 		from = m.getFrom();
 		capt = movpiece;
 		movpiece = m.getMovingPiece();
-	}while(m!=CONS_NULLMOVE);
+	}while(m.isNullMove()==false);
 
     pos.OccupiedSq = occ;
     pos.OccupiedSq90 = occ90;
