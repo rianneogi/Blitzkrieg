@@ -4,6 +4,10 @@ string PlayerStrings[2] = { "White","Black" };
 
 int ColorFactor[2] = {1,-1};
 
+const float PieceActivityFactor = 1;
+const float PawnStructureFactor = 0.7;
+const float KingSafetyFactor = 0.7;
+
 int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
 int MaterialValues[13] = {0,100,325,335,500,975,-CONS_MATED,-100,-325,-335,-500,-975,CONS_MATED};
 int TotalMaterial = 2 * (PieceMaterial[0] + PieceMaterial[1] + PieceMaterial[2] + PieceMaterial[3] + PieceMaterial[4]);
@@ -22,8 +26,8 @@ int EnemyTerritorySquareBonus = 3;
 
 //int KnightOutpostBonus = 25;
 //int BishopOutpostBonus = 10;
-int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 }; //non-negative values always(code will bug otherwise)
-int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 10, 6}; //non-negative values always(code will bug otherwise)
+//int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 }; //non-negative values always(code will bug otherwise)
+//int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 10, 6}; //non-negative values always(code will bug otherwise)
 
 int QueenOutEarlyPenalty = 10; //penalty for queens not on back rank for every minor on back rank
 
@@ -86,8 +90,8 @@ int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0, //non-negative value
 						    90,120,120,120,120,120,120, 90,
 						   200,200,200,200,200,200,200,200};
 int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
-	                             1,  1,  2, 15, 15,  7,  1,  1,
-								 0,  0,  0,  5,  5,  0,  0,  0,
+	                             1,  1, 14, 16, 16, 14,  1,  1,
+								 0,  0,  0,  4,  4,  0,  0,  0,
 								 0,  0,  0,  0,  0,  0,  0,  0,
 								 2,  2,  2,  2,  2,  2,  2,  2,
 								10, 10, 10, 10, 10, 10, 10, 10,
@@ -116,50 +120,50 @@ int SquareValues[64] = { 1, 1, 1, 1, 1, 1, 1, 1,
 int PieceSqValues[7][64] = 
 {
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, //empty
-	{  1,  2,  2,  2,  2,  2,  2,  1, //pawn
-	   1,  3,  3,  4,  4,  3,  3,  1,
-	   1,  3,  5,  6,  6,  5,  3,  1,
-	   2,  6, 10, 12, 12, 10,  6,  2,
+	{  2,  4,  4,  4,  4,  4,  4,  2, //pawn
 	   2,  6,  6,  8,  8,  6,  6,  2,
-	   2,  4,  4,  4,  4,  4,  4,  2,
-	   2,  4,  4,  4,  4,  4,  4,  2,
-	   2,  4,  4,  4,  4,  4,  4,  2},
+	   2,  6, 10, 12, 12, 10,  6,  2,
+	   4, 12, 20, 24, 24, 20, 12,  4,
+	   4, 12, 12, 16, 16, 12, 12,  4,
+	   4,  8,  8,  8,  8,  8,  8,  4,
+	   4,  8,  8,  8,  8,  8,  8,  4,
+	   4,  8,  8,  8,  8,  8,  8,  4},
 
-	{  1,  2,  3,  3,  3,  3,  2,  1, //knight
-	   2,  3,  5,  6,  6,  5,  3,  2,
-	   3,  7, 10, 10, 10, 10,  7,  3,
-	   5,  9, 11, 10, 10, 11,  9,  5,
-	   5,  8,  9,  9,  9,  9,  8,  5,
-	   5,  9, 12, 10, 10, 12,  9,  5,
-	   4,  6, 10, 11, 11, 10,  6,  4,
-	   2,  4,  5,  6,  6,  5,  4,  2},
+	{  2,  4,  6,  6,  6,  6,  4,  2, //knight, non-negative
+	   4,  6, 10, 12, 12, 10,  6,  4,
+	   6, 14, 20, 20, 20, 20, 14,  6,
+	  10, 18, 22, 20, 20, 22, 18, 10,
+	  10, 16, 18, 18, 18, 18, 16, 10,
+	  10, 18, 24, 20, 20, 24, 18, 10,
+	   8, 12, 20, 22, 22, 20, 12,  8,
+	   4,  8, 10, 12, 12, 10,  8,  4},
 
-	{  8,  5,  3,  3,  3,  3,  5,  8, //bishop
-	   7,  8,  6,  5,  5,  6,  8,  7,
-	   5,  7,  9,  7,  7,  9,  7,  5,
-	   4,  6,  9, 11, 11,  9,  6,  4,
-	   4,  6,  7,  9,  9,  7,  6,  4,
-	   4,  7,  9,  9,  9,  9,  7,  4,
-	   5,  9,  8,  7,  7,  8,  9,  5,
-	   7,  7,  5,  5,  5,  5,  7,  7},
+	{ 16, 10,  6,  6,  6,  6, 10, 16, //bishop, non-negative
+	  14, 16, 12, 10, 10, 12, 16, 14,
+	  10, 14, 18, 14, 14, 18, 14, 10,
+	  16, 12, 18, 22, 22, 18, 12, 16,
+	  16, 12, 14, 18, 18, 14, 12, 16,
+	  16, 14, 18, 18, 18, 18, 14, 16,
+	  10, 18, 16, 14, 14, 16, 18, 10,
+	  14, 14, 10, 10, 10, 10, 14, 14},
 
-	{  4,  4,  5,  6,  6,  5,  4,  4, //rook
-	   4,  4,  5,  6,  6,  5,  4,  4,
-	   4,  4,  5,  6,  6,  5,  4,  4,
-	   5,  5,  6,  6,  6,  6,  5,  5,
-	   8,  8,  8,  8,  8,  8,  8,  8,
-	   6,  6,  7,  8,  8,  7,  6,  6,
-	   9,  9, 10, 11, 11, 10,  9,  9,
-	   5,  5,  6,  7,  7,  6,  5,  5},
+	{  8,  8, 10, 12, 12, 10,  8,  8, //rook
+	   8,  8, 10, 12, 12, 10,  8,  8,
+	   8,  8, 10, 12, 12, 10,  8,  8,
+	  10, 10, 12, 12, 12, 12, 10, 10,
+	  16, 16, 16, 16, 16, 16, 16, 16,
+	  12, 12, 14, 16, 16, 14, 12, 12,
+	  18, 18, 20, 22, 22, 20, 18, 18,
+	  10, 10, 12, 14, 14, 12, 10, 10},
 
-	{  4,  3,  4,  4,  4,  4,  3,  4, //queen
-	   4,  4,  4,  5,  5,  4,  4,  4,
-	   4,  4,  5,  5,  5,  5,  4,  4,
-	   4,  5,  6,  6,  6,  6,  5,  4,
-	   5,  6,  6,  7,  7,  6,  6,  5,
-	   4,  5,  6,  7,  7,  6,  5,  4,
-	   4,  5,  5,  6,  6,  5,  5,  4,
-	   5,  4,  5,  5,  5,  5,  4,  5},
+	{  8,  6,  8,  8,  8,  8,  6,  8, //queen
+	   8,  8,  8, 10, 10,  8,  8,  8,
+	   8,  8, 10, 10, 10, 10,  8,  8,
+	   8, 10, 12, 12, 12, 12, 10,  8,
+	  10, 12, 12, 14, 14, 12, 12, 10,
+	   8, 10, 12, 14, 14, 12, 10,  8,
+	   8, 10, 10, 12, 12, 10, 10,  8,
+	  10,  8, 10, 10, 10, 10,  8, 10},
 
 	{ 20, 20,-10,-20,-20, 10, 20, 20, //king
 	  10, 20,  0,-30,-30,  0, 15, 10,
@@ -183,41 +187,45 @@ int PieceSqValuesEG[7][64] =
 	   5, 10, 20, 40, 40, 20, 10,  5,
 	   0,  0,  0,  0,  0,  0,  0,  0},
 
-	{-10, -7, -5, -5, -5, -5, -7,-10, //knight
-	  -6,  0,  4,  6,  6,  4,  0, -6,
-	  -5,  0, 10, 12, 12, 10,  0, -5,
-	  -5,  3, 14, 18, 18, 14,  3, -5,
-	  -5,  6, 16, 24, 24, 16,  6, -5,
-	  35, 40, 50, 60, 60, 50, 40, 35,
-	  10, 15, 20, 25, 25, 20, 15, 10,
-	   0,  0,  0,  0,  0,  0,  0,  0},
+	{ 
+	2,  4,  6,  6,  6,  6,  4,  2, //knight
+	4,  6, 10, 12, 12, 10,  6,  4,
+	6, 14, 20, 20, 20, 20, 14,  6,
+	10, 18, 22, 20, 20, 22, 18, 10,
+	10, 16, 18, 18, 18, 18, 16, 10,
+	10, 18, 24, 20, 20, 24, 18, 10,
+	8, 12, 20, 22, 22, 20, 12,  8,
+	4,  8, 10, 12, 12, 10,  8,  4 },
 
-	{  5, -5, -7, -5, -5, -7, -5,  5, //bishop
-	   0, 10,  0,  0,  0,  0, 10,  0,
-	   0,  0, 10,  5,  5, 10,  0,  0,
-	   0,  0,  8, 12, 12,  8,  0,  0,
-	   0,  2,  5, 12, 12,  5,  2,  0,
-	   0,  0, 10,  5,  5, 10,  0,  0,
-	   0, 10,  0,  0,  0,  0, 10,  0,
-	   5,  0,  0,  0,  0,  0,  0,  5},
+	{
+	16, 10,  6,  6,  6,  6, 10, 16, //bishop
+	14, 16, 12, 10, 10, 12, 16, 14,
+	10, 14, 18, 14, 14, 18, 14, 10,
+	16, 12, 18, 22, 22, 18, 12, 16,
+	16, 12, 14, 18, 18, 14, 12, 16,
+	16, 14, 18, 18, 18, 18, 14, 16,
+	10, 18, 16, 14, 14, 16, 18, 10,
+	14, 14, 10, 10, 10, 10, 14, 14 },
 
-	{ -5,  0, 10, 10, 10, 10,  0, -5, //rook
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	  15, 15, 15, 25, 25, 25, 15, 15,
-	  10, 10, 10, 20, 20, 20, 10, 10},
+	{ 
+	8,  8, 10, 12, 12, 10,  8,  8, //rook
+	8,  8, 10, 12, 12, 10,  8,  8,
+	8,  8, 10, 12, 12, 10,  8,  8,
+	10, 10, 12, 12, 12, 12, 10, 10,
+	16, 16, 16, 16, 16, 16, 16, 16,
+	12, 12, 14, 16, 16, 14, 12, 12,
+	18, 18, 20, 22, 22, 20, 18, 18,
+	10, 10, 12, 14, 14, 12, 10, 10 },
 
-	{ -1, -1, -1, -1, -1, -1, -1, -1, //queen
-	   0,  0,  0,  0,  1,  2,  0,  0,
-	   0,  0,  2,  1,  1,  2,  2,  0,
-	   0,  0,  1,  4,  4,  1,  0,  0,
-	   0,  0,  1,  4,  4,  1,  0,  0,
-	   0,  0,  2,  1,  1,  2,  0,  0,
-	   0,  0,  0,  0,  0,  0,  0,  0,
-	   0,  0,  0,  0,  0,  0,  0,  0},
+	{
+	8,  6,  8,  8,  8,  8,  6,  8, //queen
+	8,  8,  8, 10, 10,  8,  8,  8,
+	8,  8, 10, 10, 10, 10,  8,  8,
+	8, 10, 12, 12, 12, 12, 10,  8,
+	10, 12, 12, 14, 14, 12, 12, 10,
+	8, 10, 12, 14, 14, 12, 10,  8,
+	8, 10, 10, 12, 12, 10, 10,  8,
+	10,  8, 10, 10, 10, 10,  8, 10 },
 
 	{-40,-30,-20,-10,-10,-20,-30,-40, //king
 	 -30,  0,  0,  0,  0,  0,  0,-30,
@@ -782,21 +790,22 @@ int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
+				//unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
+				unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
 				if (Trace)
-					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << KnightOutpostBonus[getRank(getColorMirror(i, k))] << endl;
+					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] << endl;
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
 				{
-					outpostbonus += KnightOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
+					outpostbonus += PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)]; //double bonus if there are no opponent minor pieces
 					if (Trace)
-						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << KnightOutpostBonus[getRank(getColorMirror(i, k))] << endl;
+						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] << endl;
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += ((unsigned)KnightOutpostBonus[getRank(getColorMirror(i, k))] / 2); //extra bonus if defended by a pawn
+					outpostbonus += ((unsigned)PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] / 2); //extra bonus if defended by a pawn
 					if (Trace)
-						cout << "	Extra bonus because its defended by a pawn: " << KnightOutpostBonus[getRank(getColorMirror(i, k))]/2 << endl;
+						cout << "	Extra bonus because its defended by a pawn: " << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)]/2 << endl;
 				}
 				if (isEG)
 				{
@@ -852,21 +861,22 @@ int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				//unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				unsigned int outpostbonus = PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
 				if (Trace)
-					cout << "Bonus for Bishop outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << BishopOutpostBonus[getRank(getColorMirror(i, k))];
+					cout << "Bonus for Bishop outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
 				{
-					outpostbonus += BishopOutpostBonus[getRank(getColorMirror(i, k))]; //double bonus if there are no opponent minor pieces
+					outpostbonus += PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)]; //double bonus if there are no opponent minor pieces
 					if (Trace)
-						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << BishopOutpostBonus[getRank(getColorMirror(i, k))] << endl;
+						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)] << endl;
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += (unsigned)BishopOutpostBonus[getRank(getColorMirror(i, k))]/2; //extra bonus if defended by a pawn
+					outpostbonus += (unsigned)(PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)])>>1; //extra bonus if defended by a pawn
 					if (Trace)
-						cout << "	Extra bonus because its defended by a pawn: " << BishopOutpostBonus[getRank(getColorMirror(i, k))] / 2 << endl;
+						cout << "	Extra bonus because its defended by a pawn: " << PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)] / 2 << endl;
 				}
 				if (isEG)
 				{
@@ -978,8 +988,9 @@ int Engine::LeafEval()
 
 	for (int i = 0;i < 2;i++)
 	{
-		KingSafety[i] = (KingSafety[i] * currentMaterial) / TotalMaterial;
-		PawnStructure[i] = (PawnStructure[i]/2) + ((PawnStructure[i] * (TotalMaterial-currentMaterial)) / (TotalMaterial*2));
+		PieceActivity[i] = PieceActivity[i] * PieceActivityFactor;
+		KingSafety[i] = (KingSafety[i] * KingSafetyFactor * currentMaterial) / TotalMaterial;
+		PawnStructure[i] = ((PawnStructure[i] * PawnStructureFactor)/2) + (((PawnStructure[i]*PawnStructureFactor) * (TotalMaterial-currentMaterial)) / (TotalMaterial*2));
 	}
 
 	if (Trace)

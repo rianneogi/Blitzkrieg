@@ -25,11 +25,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 109;
+const int ENGINEVERSION = 111;
 
 // Best Build so far: 107
 
 ///BUILDS
+// Build 111 - 25-11-2015 - Added evaluation factors, changed pawn structure factor to 0.7
+// Build 110 - 24-11-2015 - Doubled PieceSq values, changed outpost bonus to be based on piece sq values
 // Build 109 - 24-11-2015 - Undid last change, changed piece sq values
 // Build 108 - 16-11-2015 - Changed LMR depth to d/2
 // Build 107 - 16-11-2015 - Undid last change, queen promotions are now sorted before captures
@@ -379,7 +381,7 @@ int main(int argc, char* args[])
 		cout << val << " ";
 	}*/
 	
-	//testpositions("wac", 0, 0, 10000, i.e1);
+	//testpositions("openfilesanddiagonals", 0, 0, 1000, i.e1);
     
 	try{
     i.start();
