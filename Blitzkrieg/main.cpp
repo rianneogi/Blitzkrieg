@@ -30,6 +30,7 @@ const int ENGINEVERSION = 111;
 // Best Build so far: 107
 
 ///BUILDS
+// Build 112 - 25-11-2015 - Reduced King Safety Factor
 // Build 111 - 25-11-2015 - Added evaluation factors, changed pawn structure factor to 0.7
 // Build 110 - 24-11-2015 - Doubled PieceSq values, changed outpost bonus to be based on piece sq values
 // Build 109 - 24-11-2015 - Undid last change, changed piece sq values
