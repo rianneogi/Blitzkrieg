@@ -35,6 +35,7 @@ void Board::unmakeMove()
 
 void Board::generateMoves()
 {
+	moves.clear();
 	pos.generateMoves(moves);
 }
 

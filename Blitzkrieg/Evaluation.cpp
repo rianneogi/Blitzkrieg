@@ -78,6 +78,8 @@ int SafetyTable[100] = {
 
 //Pawn Structure
 int NoPawnsPenalty = 32;
+int PawnsE4D4Bonus = 30;
+int PawnsC4D4Bonus = 20;
 int DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
 int IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
 int BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
@@ -99,8 +101,8 @@ int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 								 0,  0,  0,  0,  0,  0,  0,  0};
 
 //Rooks
-int RookHalfOpenBonus[8] = {15,15,20,30,30,20,15,15};
-int RookOpenBonus[8] = {20,20,30,40,40,30,20,20};
+int RookHalfOpenBonus[8] = {5,5,8,10,10,8,5,5};
+int RookOpenBonus[8] = {10,10,15,20,20,15,10,10};
 int RookConnectedBonus = 10;
 int RookBehindPassedPawnBonus = 20;
 int OppRookBehindPassedPawnPenalty = 15;
@@ -389,6 +391,34 @@ int Engine::LeafEval()
 			neteval += PieceSq[pos.Squares[i]][i];
 			if (Trace && pos.Squares[i] != SQUARE_EMPTY)
 				cout << PieceSq[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
+		}
+	}
+
+	if (!isEG)
+	{
+		if (pos.Squares[27] == SQUARE_WHITEPAWN && pos.Squares[28] == SQUARE_WHITEPAWN)
+		{
+			PawnStructure[COLOR_WHITE] += PawnsE4D4Bonus;
+			if (Trace)
+				cout << "Bonus for E4D4 Pawns for White: " << PawnsE4D4Bonus << endl;
+		}
+		if (pos.Squares[28] == SQUARE_WHITEPAWN && pos.Squares[29] == SQUARE_WHITEPAWN)
+		{
+			PawnStructure[COLOR_WHITE] += PawnsC4D4Bonus;
+			if (Trace)
+				cout << "Bonus for E4D4 Pawns for White: " << PawnsC4D4Bonus << endl;
+		}
+		if (pos.Squares[35] == SQUARE_BLACKPAWN && pos.Squares[36] == SQUARE_BLACKPAWN)
+		{
+			PawnStructure[COLOR_BLACK] += PawnsE4D4Bonus;
+			if (Trace)
+				cout << "Bonus for E4D4 Pawns for Black: " << PawnsE4D4Bonus << endl;
+		}
+		if (pos.Squares[36] == SQUARE_BLACKPAWN && pos.Squares[37] == SQUARE_BLACKPAWN)
+		{
+			PawnStructure[COLOR_BLACK] += PawnsC4D4Bonus;
+			if (Trace)
+				cout << "Bonus for E4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
 		}
 	}
 	

@@ -25,11 +25,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 113;
+const int ENGINEVERSION = 115;
 
 // Best Build so far: 107
 
 ///BUILDS
+// Build 115 - 26-11-2015 - Added bonus for E4-D4-C4 pawn duos
+// Build 114 - 26-11-2015 - Undid last change and halfed Rook files bonuses
 // Build 113 - 25-11-2015 - Undid last change, now gives a bonus score to moves that evade captures
 // Build 112 - 25-11-2015 - Reduced King Safety Factor
 // Build 111 - 25-11-2015 - Added evaluation factors, changed pawn structure factor to 0.7
