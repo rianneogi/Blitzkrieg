@@ -374,6 +374,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
         score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
         pos.unmakeMove(m);
+		if(line.size()!=0)
+			Threats[ply] = line.at(line.size() - 1);
 		if (ttkeynull != pos.TTKey)
 		{
 			cout << "info string ERROR: Null TT fail" << endl;
@@ -716,11 +718,15 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	if (m.getSpecial() == PIECE_QUEEN) //queen promotion
 	{
-		score += 3500000;
+		score += 3100000;
 		return score;
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{
+		if (Threats[ply].getFrom() == to && Threats[ply]!=CONS_NULLMOVE) //capturing a threatening piece
+		{
+			score += 200000; 
+		}
 		int x = StaticExchangeEvaluation(to,from, movingpiece,capturedpiece);
 		//int x = movescore;
 		if(x>=0) //if it is a good capture
@@ -774,6 +780,10 @@ unsigned long long Engine::getMoveScore(const Move& m)
 			//		score += 10000;
 			//	}
 			//}
+			if (Threats[ply].getTo() == from && Threats[ply]!=CONS_NULLMOVE) //moving a threatened piece
+			{
+				score += 1000000;
+			}
 
 			score += HistoryScores[from][to]; //sort the rest by history
 											  /*int p2sq = getPiece2Square(movingpiece, pos.turn);

@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 116;
+const int ENGINEVERSION = 117;
 
-// Best Build so far: 107
+// Best Build so far: 117
 
 ///BUILDS
+// Build 117 - 28-11-2015 - Improved sorting by giving a bonus to moves that capture a threatening piece or move a threatened piece
 // Build 116 - 27-11-2015 - Fixed a bug in sorting bad captures
 // Build 115 - 26-11-2015 - Added bonus for E4-D4-C4 pawn duos
 // Build 114 - 26-11-2015 - Undid last change and halfed Rook files bonuses
@@ -394,6 +395,7 @@ int main(int argc, char* args[])
 	{
 		cout << e.what() << endl;
 		cout << "info string " << e.what() << endl;
+		_getch();
 	}
     return 0;
 }
