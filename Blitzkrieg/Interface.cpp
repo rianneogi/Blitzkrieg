@@ -264,6 +264,34 @@ void Interface::start()
 		{
 			think();
 		}
+		else if (s == "movesort")
+		{
+			vector<Move> vec;
+			e1.pos.generateMoves(vec);
+			for (int i = 0;i < vec.size();i++)
+			{
+				Move bm = e1.getHighestScoringMove(vec, i);
+				cout << bm.toString() << " " << e1.getMoveScore(bm) << endl;
+			}
+		}
+		else if (s == "pv")
+		{
+			cout << "ply = " << e1.ply << endl;
+			cout << "pv size: " << e1.PrincipalVariation.size() << endl;
+			for (int i = 0;i < e1.PrincipalVariation.size();i++)
+			{
+				cout << e1.PrincipalVariation.at(i).toString() << endl;
+			}
+		}
+		else if (s == "loadfen")
+		{
+			fstream fen("fen.txt", ios::in);
+			string fenstr = "";
+			getline(fen, fenstr);
+			e1.pos.loadFromFEN(fenstr);
+			board.pos.loadFromFEN(fenstr);
+			display(0);
+		}
 		/*else if(s=="thinkdepth" || s=="analysedepth" || s=="analyzedepth" || s=="godepth")
 		{
 			thinkdepth();

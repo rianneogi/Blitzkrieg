@@ -8,9 +8,6 @@ int FutilityMargin[4] = {0,100,100,500};
 int ForwardPruningMargin[4] = { 0,1000,1000,1500};
 int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
 
-unsigned int HistoryScores[64][64];
-unsigned int ButterflyScores[64][64];
-
 int MAXTIME = 1000;
 int MAXDEPTH = 100;
 int CheckupNodeCount = 16384;
@@ -76,12 +73,15 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 				KillerScores[i][j] = CONS_NEGINF;*/
 		}
 	}
+	for (int j = 0;j<100;j++)
+	{
+		Threats[j] = CONS_NULLMOVE;
+	}
 	for(unsigned int i = 0;i<64;i++) //ages the history table
 	{
 		for(unsigned int j = 0;j<64;j++)
 		{
 			HistoryScores[i][j] /= 2;
-			ButterflyScores[i][j] /= 2;
 		}
 	}
 	evaltime.Reset();
@@ -137,6 +137,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			cout << "info string ERROR: pv size is 0\n";
 			return CONS_NULLMOVE;
 		}
+		ply = 0;
 		return bestmove;
 	}
 	
@@ -222,6 +223,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 		return CONS_NULLMOVE;
 	}
 	//Move bestmove = PrincipalVariation[0];
+	ply = 0;
 	return bestmove;
 }
 
@@ -232,6 +234,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
+	int oldply = ply;
 
 	bool underCheck = pos.underCheck(pos.turn);
 	if(underCheck) //check extension
@@ -660,6 +663,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	{
 		cout << "info string ERROR: TT key doesnt match" << endl;
 	}
+	if (ply != oldply)
+	{
+		cout << "info string ERROR: ply doesnt match" << endl;
+	}
 	return bestscore;
 }
 
@@ -691,25 +698,26 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
 	int movingpiece = m.getMovingPiece();
-	unsigned long long score = 100000;
+	unsigned long long score = 1000000;
 	if(ply < PrincipalVariation.size())
 	{
 		if(m==PrincipalVariation.at(PrincipalVariation.size()-1-ply))
 		{
-			score += 600000;
+			score += 6000000;
 			//cout << "info string pv hit " << ply << " " << m.toString() << " " << (PrincipalVariation.size() - 1 - ply) << endl;
 			return score;
 		}
 	}
 	if(m==Table.getBestMove(pos.TTKey)) //history best move is always first, give it a big advantage of 400000
 	{
-		score += 400000;
+		score += 4000000;
 		//tthitcount++;
 		return score;
 	}
 	if (m.getSpecial() == PIECE_QUEEN) //queen promotion
 	{
-		score += 400000;
+		score += 3500000;
+		return score;
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{
@@ -717,11 +725,11 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		//int x = movescore;
 		if(x>=0) //if it is a good capture
 		{
-			score += 300000 + x;
+			score += 3000000 + x;
 		}
 		else //bad capture
 		{
-			score += -100000 + x;
+			score += -500000 + x;
 		}
 	}
 	else if(special==PIECE_PAWN) //enpassant are also captures
@@ -729,26 +737,26 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		int x = StaticExchangeEvaluation(to, from, movingpiece, capturedpiece);
 		if(x>=0)
 		{
-			score += 350000 + x;
+			score += 3000000 + x;
 		}
 		else
 		{
-			score += -100000 + x;
+			score += -500000 + x;
 		}
 	}
 	else
 	{
 		if(from==KillerMoves[0][ply].getFrom() && to==KillerMoves[0][ply].getTo()) //if its a killer move
 		{
-			score += 250000;
+			score += 2500000;
 		}
 		else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
 		{
-			score += 200000;
+			score += 2000000;
 		}
 		else if (from == KillerMoves[2][ply].getFrom() && to == KillerMoves[2][ply].getTo())
 		{
-			score += 150000;
+			score += 1500000;
 		}
 		else
 		{
@@ -795,7 +803,7 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 	Move m = bigmove; //swap move
 	moves.at(bigmoveid) = moves.at(currentmove);
 	moves.at(currentmove) = m;
-	//int sc = scores.at(bigmove); //swamp score
+	//int sc = scores.at(bigmove); //swap score
 	//scores.at(bigmove) = scores.at(currentmove);
 	//scores.at(currentmove) = sc;
 	//sorttime.Stop();
@@ -899,14 +907,13 @@ unsigned long long Engine::perft(int depth)
 
 void searchinit()
 {
-	for(int i = 0;i<64;i++)
+	/*for(int i = 0;i<64;i++)
 	{
 		for(int j = 0;j<64;j++)
 		{
-			ButterflyScores[i][j] = 0;
 			HistoryScores[i][j] = 0;
 		}
-	}
+	}*/
 }
 
 int getNPS(int nodes,int milliseconds)

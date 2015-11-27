@@ -4,19 +4,37 @@
 
 Engine::Engine()
 {
-	myColor = COLOR_WHITE;
-    pos = Position();
-
-	alphafirst_sum = 0;
-	alphalast_sum = 0;
-	alpha_counter = 0;
-	betacutoff_counter = 0;
-	betacutoff_sum = 0;
+	initialize();
 }
 
 Engine::Engine(int col)
 {
+	initialize();
 	myColor = col;
+	pos = Position();
+}
+
+Engine::Engine(int col,Position const& p)
+{
+	initialize();
+	myColor = col;
+    pos = p;
+}
+
+Engine::Engine(int col, Position const& p, Move const& prevmove)
+{
+	initialize();
+	myColor = col;
+	pos = p;
+}
+
+Engine::~Engine()
+{
+}
+
+void Engine::initialize()
+{
+	myColor = COLOR_WHITE;
 	pos = Position();
 
 	alphafirst_sum = 0;
@@ -24,34 +42,29 @@ Engine::Engine(int col)
 	alpha_counter = 0;
 	betacutoff_counter = 0;
 	betacutoff_sum = 0;
-}
 
-Engine::Engine(int col,Position const& p)
-{
-	myColor = col;
-    pos = p;
+	ply = 0;
 
-	alphafirst_sum = 0;
-	alphalast_sum = 0;
-	alpha_counter = 0;
-	betacutoff_counter = 0;
-	betacutoff_sum = 0;
-}
-
-Engine::Engine(int col,Position const& p,Move const& prevmove)
-{
-	myColor = col;
-    pos = p;
-
-	alphafirst_sum = 0;
-	alphalast_sum = 0;
-	alpha_counter = 0;
-	betacutoff_counter = 0;
-	betacutoff_sum = 0;
-}
-
-Engine::~Engine()
-{
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<100;j++)
+		{
+			KillerMoves[i][j] = CONS_NULLMOVE;
+			/*if(i!=2)
+			KillerScores[i][j] = CONS_NEGINF;*/
+		}
+	}
+	for (int i = 0;i < 100;i++)
+	{
+		Threats[i] = CONS_NULLMOVE;
+	}
+	for (unsigned int i = 0;i<64;i++) //ages the history table
+	{
+		for (unsigned int j = 0;j<64;j++)
+		{
+			HistoryScores[i][j] = 0;
+		}
+	}
 }
 
 void Engine::makeMove(int i)

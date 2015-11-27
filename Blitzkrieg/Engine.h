@@ -35,6 +35,8 @@ class Engine
 	int PvSize;
 	int PvPly;
 	Move KillerMoves[2][100];
+	unsigned int HistoryScores[64][64];
+	Move Threats[100];
 	//int KillerScores[2][100];
 	int ply;
 
@@ -98,6 +100,8 @@ class Engine
 	template<int Color> int getBoardMaterial();
 	//int Trace(int alpha,int beta);
 	//int loadFromLua(std::string path);
+
+	void initialize();
 };
 
 void evalinit();

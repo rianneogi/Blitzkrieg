@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 115;
+const int ENGINEVERSION = 116;
 
 // Best Build so far: 107
 
 ///BUILDS
+// Build 116 - 27-11-2015 - Fixed a bug in sorting bad captures
 // Build 115 - 26-11-2015 - Added bonus for E4-D4-C4 pawn duos
 // Build 114 - 26-11-2015 - Undid last change and halfed Rook files bonuses
 // Build 113 - 25-11-2015 - Undid last change, now gives a bonus score to moves that evade captures
