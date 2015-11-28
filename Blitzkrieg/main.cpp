@@ -25,11 +25,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 118;
+const int ENGINEVERSION = 120;
 
-// Best Build so far: 117
+// Best Build so far: 116
 
 ///BUILDS
+// Build 120 - 28-11-2015 - Undid last change, undid Build 117
+// Build 119 - 28-11-2015 - Added movesort bonus based on PieceSq values (Build 81)
 // Build 118 - 28-11-2015 - Added history bonus to the best move in a position
 // Build 117 - 28-11-2015 - Improved sorting by giving a bonus to moves that capture a threatening piece or move a threatened piece
 // Build 116 - 27-11-2015 - Fixed a bug in sorting bad captures

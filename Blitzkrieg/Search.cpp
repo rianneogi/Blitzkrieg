@@ -758,10 +758,10 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	}
 	if(capturedpiece!=SQUARE_EMPTY) //a capture
 	{
-		if (Threats[ply].getFrom() == to && Threats[ply]!=CONS_NULLMOVE) //capturing a threatening piece
-		{
-			score += 200000; 
-		}
+		//if (Threats[ply].getFrom() == to && Threats[ply]!=CONS_NULLMOVE) //capturing a threatening piece
+		//{
+		//	score += 200000; 
+		//}
 		int x = StaticExchangeEvaluation(to,from, movingpiece,capturedpiece);
 		//int x = movescore;
 		if(x>=0) //if it is a good capture
@@ -815,10 +815,11 @@ unsigned long long Engine::getMoveScore(const Move& m)
 			//		score += 10000;
 			//	}
 			//}
-			if (Threats[ply].getTo() == from && Threats[ply]!=CONS_NULLMOVE) //moving a threatened piece
-			{
-				score += 1000000;
-			}
+
+			//if (Threats[ply].getTo() == from && Threats[ply]!=CONS_NULLMOVE) //moving a threatened piece
+			//{
+			//	score += 1000000;
+			//}
 
 			score += HistoryScores[from][to]; //sort the rest by history
 			/*int p2sq = getPiece2Square(movingpiece, pos.turn);
