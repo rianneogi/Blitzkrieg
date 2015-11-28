@@ -1045,8 +1045,7 @@ int Engine::LeafEval()
 	return neteval;
 }
 
-template <int Color>
-int Engine::getBoardMaterial()
+template <int Color> int Engine::getBoardMaterial()
 {
 	int eval = 0;
 	/*for(int i = 0;i<64;i++)

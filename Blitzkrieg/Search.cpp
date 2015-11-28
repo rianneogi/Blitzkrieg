@@ -659,6 +659,41 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);
 		alphafirst_sum += (firstalpha + 1);
+		HistoryScores[alphamove.getFrom()][alphamove.getTo()]++;
+		//pos.makeMove(alphamove);
+		//int le = LeafEval<false>()-PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()];
+		//pos.unmakeMove(alphamove);
+
+		//if (alpha > le+10)
+		//{
+		//	if (pos.turn == COLOR_WHITE)
+		//	{
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]++;
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]--;
+		//	}
+		//	else
+		//	{
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]--;
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]++;
+		//	}
+		//	//HistoryScores[alphamove.getFrom()][alphamove.getTo()]++;
+		//	
+		//}
+		//if (alpha < le - 10)
+		//{
+		//	if (pos.turn == COLOR_WHITE)
+		//	{
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]--;
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]++;
+		//	}
+		//	else
+		//	{
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]++;
+		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]--;
+		//	}
+		//	/*if(HistoryScores[alphamove.getFrom()][alphamove.getTo()]!=0)
+		//		HistoryScores[alphamove.getFrom()][alphamove.getTo()]--;*/
+		//}
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
 	if (pos.TTKey != tablekey)
@@ -786,8 +821,10 @@ unsigned long long Engine::getMoveScore(const Move& m)
 			}
 
 			score += HistoryScores[from][to]; //sort the rest by history
-											  /*int p2sq = getPiece2Square(movingpiece, pos.turn);
-											  score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
+			/*int p2sq = getPiece2Square(movingpiece, pos.turn);
+			if (pos.turn == COLOR_BLACK)
+				p2sq = -p2sq;
+			score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
 		}
 	}
 	return score;

@@ -292,10 +292,77 @@ void Interface::start()
 			board.pos.loadFromFEN(fenstr);
 			display(0);
 		}
-		/*else if(s=="thinkdepth" || s=="analysedepth" || s=="analyzedepth" || s=="godepth")
+		else if (s == "piecesq")
 		{
-			thinkdepth();
-		}*/
+			string s2;
+			cin >> s2;
+			if (s2 == "wp")
+			{
+				for (int i = 0;i < 64;i++)
+				{
+					if (i % 8 == 0)
+					{
+						cout << endl;
+					}
+					cout << PieceSq[SQUARE_WHITEPAWN][i] << " ";
+				}
+			}
+			if (s2 == "bp")
+			{
+				for (int i = 0;i < 64;i++)
+				{
+					if (i % 8 == 0)
+					{
+						cout << endl;
+					}
+					cout << PieceSq[SQUARE_BLACKPAWN][i] << " ";
+				}
+			}
+			if (s2 == "wn")
+			{
+				for (int i = 0;i < 64;i++)
+				{
+					if (i % 8 == 0)
+					{
+						cout << endl;
+					}
+					cout << PieceSq[SQUARE_WHITEKNIGHT][i] << " ";
+				}
+			}
+			if (s2 == "bn")
+			{
+				for (int i = 0;i < 64;i++)
+				{
+					if (i % 8 == 0)
+					{
+						cout << endl;
+					}
+					cout << PieceSq[SQUARE_BLACKKNIGHT][i] << " ";
+				}
+			}
+			if (s2 == "wb")
+			{
+				for (int i = 0;i < 64;i++)
+				{
+					if (i % 8 == 0)
+					{
+						cout << endl;
+					}
+					cout << PieceSq[SQUARE_WHITEBISHOP][i] << " ";
+				}
+			}
+			if (s2 == "bb")
+			{
+				for (int i = 0;i < 64;i++)
+				{
+					if (i % 8 == 0)
+					{
+						cout << endl;
+					}
+					cout << PieceSq[SQUARE_BLACKBISHOP][i] << " ";
+				}
+			}
+		}
 		else if(s=="leafeval" || s=="leafevaluate")
 		{
 			cout << e1.LeafEval<false>() << endl;

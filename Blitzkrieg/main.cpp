@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 117;
+const int ENGINEVERSION = 118;
 
 // Best Build so far: 117
 
 ///BUILDS
+// Build 118 - 28-11-2015 - Added history bonus to the best move in a position
 // Build 117 - 28-11-2015 - Improved sorting by giving a bonus to moves that capture a threatening piece or move a threatened piece
 // Build 116 - 27-11-2015 - Fixed a bug in sorting bad captures
 // Build 115 - 26-11-2015 - Added bonus for E4-D4-C4 pawn duos
