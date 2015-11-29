@@ -385,11 +385,6 @@ bool Move::isNullMove() const
 	return false;
 }
 
-bool isDangerous(const Move& m)
-{
-	return (m.getCapturedPiece() != SQUARE_EMPTY || m.getSpecial() == PIECE_PAWN || m.getSpecial() == PIECE_QUEEN);
-}
-
 bool isCapture(const Move& m)
 {
 	return (m.getCapturedPiece() != SQUARE_EMPTY || m.getSpecial() == PIECE_PAWN);

@@ -51,6 +51,16 @@ Move createNullMove(int epsquare);
 bool isDangerous(const Move& m);
 bool isCapture(const Move& m);
 
+inline bool isDangerous(const Move& m)
+{
+	return (m.getCapturedPiece() != SQUARE_EMPTY || m.getSpecial() == PIECE_PAWN || m.getSpecial() == PIECE_QUEEN);
+}
+
+inline bool noMaterialGain(const Move& m)
+{
+	return (m.getCapturedPiece() == SQUARE_EMPTY && m.getSpecial() == PIECE_NONE);
+}
+
 extern Move CONS_NULLMOVE;
 
 #endif // MOVE_H_INCLUDED

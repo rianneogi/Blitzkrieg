@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 122;
+const int ENGINEVERSION = 123;
 
 // Best Build so far: 116
 
 ///BUILDS
+// Build 123 - 30-11-2015 - Added history value reduction to quiet moves that didnt cause a beta cutoff
 // Build 122 - 29-11-2015 - Changed LMR to d>4?2:1
 // Build 121 - 29-11-2015 - Changed LMR to scale with move number
 // Build 120 - 28-11-2015 - Undid last change, undid Build 117

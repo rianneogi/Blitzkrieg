@@ -426,8 +426,8 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	/*vector<int> scores;
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
-	/*vector<Move> quietmoves;
-	quietmoves.reserve(128);*/
+	vector<Move> quietmoves;
+	quietmoves.reserve(128);
 	int bestscore = CONS_NEGINF;
 	for(unsigned int i = 0;i<vec.size();i++) //search
 	{
@@ -548,7 +548,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		if(score>=beta)
 		{
 			Table.Save(pos.TTKey,depth,score,TT_BETA,m);
-			if(capturedpiece==SQUARE_EMPTY && special!=PIECE_PAWN)
+			if(noMaterialGain(m))
 			{
 				setKiller(m, depth, score);
 				int bonus = depth*depth;
@@ -563,10 +563,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 						}
 					}
 				}
-				/*for (int i = 0;i < quietmoves.size();i++)
+				for (int i = 0;i < quietmoves.size();i++)
 				{
-					HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()] -= bonus;
-				}*/
+					HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()] = max((int)(HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()])-bonus,0);
+				}
 			}
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
@@ -585,6 +585,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 				alphamove = m;
 				*variation = line;
 
+				if (noMaterialGain(m))
+					HistoryScores[m.getFrom()][m.getTo()] += depth;
+
 				if (firstalpha == -1)
 				{
 					firstalpha = i;
@@ -594,10 +597,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			}
 		}
 
-		/*if (capturedpiece == PIECE_NONE && special == PIECE_NONE)
+		if (noMaterialGain(m))
 		{
 			quietmoves.push_back(m);
-		}*/
+		}
 	}
 	if(!foundlegal)
 	{
@@ -659,7 +662,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);
 		alphafirst_sum += (firstalpha + 1);
-		HistoryScores[alphamove.getFrom()][alphamove.getTo()]++;
+		
 		//pos.makeMove(alphamove);
 		//int le = LeafEval<false>()-PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()];
 		//pos.unmakeMove(alphamove);
