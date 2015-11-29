@@ -484,7 +484,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		{
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
 				//reductiondepth += depth > 4 ? 2 : 1;
-			reductiondepth+=1;
+			reductiondepth += (i >> 1) - 1;
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 

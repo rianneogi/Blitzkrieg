@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 120;
+const int ENGINEVERSION = 121;
 
 // Best Build so far: 116
 
 ///BUILDS
+// Build 121 - 29-11-2015 - Changed LMR to scale with move number
 // Build 120 - 28-11-2015 - Undid last change, undid Build 117
 // Build 119 - 28-11-2015 - Added movesort bonus based on PieceSq values (Build 81)
 // Build 118 - 28-11-2015 - Added history bonus to the best move in a position
