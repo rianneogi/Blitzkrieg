@@ -105,11 +105,16 @@ void Position::setStartPos()
 	epsquare = 0;
 
 	TTKey = 0x0;
+	PawnKey = 0x0;
 	for (int i = 0;i<64;i++)
 	{
 		if (Squares[i] != SQUARE_EMPTY)
 		{
 			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
+			if (Squares[i] == SQUARE_WHITEPAWN || Squares[i] == SQUARE_BLACKPAWN)
+			{
+				TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
+			}
 		}
 	}
 	for (int i = 0;i<2;i++)
@@ -161,11 +166,16 @@ void Position::clearBoard()
 	epsquare = 0;
 
 	TTKey = 0x0;
+	PawnKey = 0x0;
 	for (int i = 0;i<64;i++)
 	{
 		if (Squares[i] != SQUARE_EMPTY)
 		{
 			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
+			if (Squares[i] == SQUARE_WHITEPAWN || Squares[i] == SQUARE_BLACKPAWN)
+			{
+				TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
+			}
 		}
 	}
 	for (int i = 0;i<2;i++)
@@ -211,11 +221,16 @@ void Position::initializeBitsets()
 		OccupiedSq90 |= getPos2Bit(getturn90(i))*((OccupiedSq >> i) % 2);
 	}
 	TTKey = 0x0;
+	PawnKey = 0x0;
 	for (int i = 0;i<64;i++)
 	{
 		if (Squares[i] != SQUARE_EMPTY)
 		{
 			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
+			if (Squares[i] == SQUARE_WHITEPAWN || Squares[i] == SQUARE_BLACKPAWN)
+			{
+				TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
+			}
 		}
 	}
 	for (int i = 0;i<2;i++)
@@ -633,6 +648,17 @@ void Position::forceMove(Move const& m)
 		TTKey ^= TT_CastlingKey[1][1];
 	}
 
+	if (movingpiece == PIECE_PAWN)
+	{
+		PawnKey ^= TT_PieceKey[turn][movingpiece][from];
+		if(special==PIECE_NONE || special==PIECE_PAWN)
+			PawnKey ^= TT_PieceKey[turn][movingpiece][to];
+	}
+	if (capturedpiece == PIECE_PAWN)
+	{
+		PawnKey ^= TT_PieceKey[turn][PIECE_PAWN][to];
+	}
+
     turn = getOpponent(turn);
 	TTKey ^= TT_ColorKey;	
 }
@@ -854,6 +880,17 @@ void Position::unmakeMove(Move const& m)
 		TTKey ^= TT_EPKey[epsquare];
 		TTKey ^= TT_EPKey[ep];
 		epsquare = ep;
+	}
+
+	if (movingpiece == PIECE_PAWN)
+	{
+		PawnKey ^= TT_PieceKey[turn][movingpiece][from];
+		if (special == PIECE_NONE || special == PIECE_PAWN)
+			PawnKey ^= TT_PieceKey[turn][movingpiece][to];
+	}
+	if (capturedpiece == PIECE_PAWN)
+	{
+		PawnKey ^= TT_PieceKey[turn][PIECE_PAWN][to];
 	}
 }
 

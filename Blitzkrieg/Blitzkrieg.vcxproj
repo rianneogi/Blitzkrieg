@@ -129,6 +129,7 @@
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Move.cpp" />
+    <ClCompile Include="PawnHashTable.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Quiescence.cpp" />
     <ClCompile Include="Search.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="Move.h" />
+    <ClInclude Include="PawnHashTable.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="TranspositionTable.h" />
   </ItemGroup>

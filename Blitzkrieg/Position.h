@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Move.h"
-#include "TranspositionTable.h"
+#include "PawnHashTable.h"
 
 enum CASTLE {CASTLE_KINGSIDE,CASTLE_QUEENSIDE};
 enum GAMESTATUS{STATUS_NOTOVER,STATUS_WHITEMATED,STATUS_BLACKMATED,STATUS_STALEMATE,STATUS_INSUFFICIENTMAT,STATUS_3FOLDREP};
@@ -14,6 +14,7 @@ class Position
 {
 public:
 	Bitset TTKey;
+	Bitset PawnKey;
 	int turn;
 
     int Squares[64];

@@ -51,6 +51,9 @@
     <ClCompile Include="Quiescence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PawnHashTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitops.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TranspositionTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PawnHashTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -406,7 +406,7 @@ int Engine::LeafEval()
 		{
 			PawnStructure[COLOR_WHITE] += PawnsC4D4Bonus;
 			if (Trace)
-				cout << "Bonus for E4D4 Pawns for White: " << PawnsC4D4Bonus << endl;
+				cout << "Bonus for C4D4 Pawns for White: " << PawnsC4D4Bonus << endl;
 		}
 		if (pos.Squares[35] == SQUARE_BLACKPAWN && pos.Squares[36] == SQUARE_BLACKPAWN)
 		{
@@ -418,7 +418,7 @@ int Engine::LeafEval()
 		{
 			PawnStructure[COLOR_BLACK] += PawnsC4D4Bonus;
 			if (Trace)
-				cout << "Bonus for E4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
+				cout << "Bonus for C4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
 		}
 	}
 	
@@ -609,6 +609,9 @@ int Engine::LeafEval()
 	//Pawn Evaluation
 	if (Trace)
 		cout << endl << "Pawn Structure:" << endl;
+	int pawnprobe = PawnTable.Probe(pos.PawnKey);
+
+	if(pawnprobe!=CONS_TTUNKNOWN)
 	for (int i = 0;i < 2;i++)
 	{
 		b = pos.Pieces[i][PIECE_PAWN];
@@ -726,6 +729,8 @@ int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(getPawnAttacks(i, k)&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 		}
 	}
+
+	PawnTable.Save(pos.PawnKey, PawnStructure[COLOR_WHITE] - PawnStructure[COLOR_BLACK], pos.Pieces[COLOR_WHITE][PIECE_PAWN], pos.Pieces[COLOR_BLACK][PIECE_PAWN]);
 
 	//Other pieces
 	if (Trace)
@@ -1037,6 +1042,8 @@ int Engine::LeafEval()
 
 	neteval += Material[COLOR_WHITE] + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];
 	neteval -= Material[COLOR_BLACK] + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK];
+	if(pawnprobe!=CONS_TTUNKNOWN)
+		neteval += pawnprobe;
 
 	if(pos.turn==COLOR_BLACK)
 		return -neteval;

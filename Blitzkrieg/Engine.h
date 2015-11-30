@@ -9,7 +9,6 @@
 //}
 
 #include "Position.h"
-#include "TranspositionTable.h"
 #include "Clock.h"
 
 extern int PieceMaterial[7];

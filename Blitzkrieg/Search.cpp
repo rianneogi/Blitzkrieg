@@ -229,12 +229,11 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 
 int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv)
 {
-	int tablekey = pos.TTKey;
+	int tablekey = pos.PawnKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
-	int oldply = ply;
 
 	bool underCheck = pos.underCheck(pos.turn);
 	if(underCheck) //check extension
@@ -552,10 +551,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 			{
 				setKiller(m, depth, score);
 				int bonus = depth*depth;
-				HistoryScores[m.getFrom()][m.getTo()] += bonus;
-				if (HistoryScores[m.getFrom()][m.getTo()] > 200000) //prevent overflow of history values
+				HistoryScores[movingpiece][m.getTo()] += bonus;
+				if (HistoryScores[movingpiece][m.getTo()] > 200000) //prevent overflow of history values
 				{
-					for (int i = 0;i < 64;i++)
+					for (int i = 0;i < 6;i++)
 					{
 						for (int j = 0;j < 64;j++)
 						{
@@ -565,7 +564,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 				}
 				for (int i = 0;i < quietmoves.size();i++)
 				{
-					HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()] = max((int)(HistoryScores[quietmoves.at(i).getFrom()][quietmoves.at(i).getTo()])-bonus,0);
+					HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] = max((int)(HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()])-bonus,0);
 				}
 			}
 			betacutoff_counter++;
@@ -586,7 +585,7 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 				*variation = line;
 
 				if (noMaterialGain(m))
-					HistoryScores[m.getFrom()][m.getTo()] += depth;
+					HistoryScores[movingpiece][m.getTo()] += depth;
 
 				if (firstalpha == -1)
 				{
@@ -699,13 +698,9 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		//}
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
-	if (pos.TTKey != tablekey)
+	if (pos.PawnKey != tablekey)
 	{
-		cout << "info string ERROR: TT key doesnt match" << endl;
-	}
-	if (ply != oldply)
-	{
-		cout << "info string ERROR: ply doesnt match" << endl;
+		cout << "info string ERROR: Pawn TT key doesnt match" << endl;
 	}
 	return bestscore;
 }
@@ -824,7 +819,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 			//	score += 1000000;
 			//}
 
-			score += HistoryScores[from][to]; //sort the rest by history
+			score += HistoryScores[movingpiece][to]; //sort the rest by history
 			/*int p2sq = getPiece2Square(movingpiece, pos.turn);
 			if (pos.turn == COLOR_BLACK)
 				p2sq = -p2sq;
