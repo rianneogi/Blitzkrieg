@@ -227,7 +227,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 	return bestmove;
 }
 
-int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv)
+int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, bool cannull, bool dopv)
 {
 	int tablekey = pos.PawnKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
@@ -236,15 +236,15 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	}
 
 	bool underCheck = pos.underCheck(pos.turn);
-	if(underCheck) //check extension
+	if (underCheck) //check extension
 	{
 		depth++;
 	}
 
-	if(depth==0)
+	if (depth == 0)
 	{
 		int ttqs = pos.TTKey;
-		int value = QuiescenceSearchStandPat(alpha,beta); //go to quiescence
+		int value = QuiescenceSearchStandPat(alpha, beta); //go to quiescence
 		if (ttqs != pos.TTKey)
 		{
 			cout << "info string ERROR: TT key quiescence fail" << endl;
@@ -256,19 +256,19 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	}
 
 	nodes++;
-	if(nodes%CheckupNodeCount==0)
+	if (nodes%CheckupNodeCount == 0)
 	{
 		checkup();
 		//nodes = 0;
 	}
 
-	if(ply!=0 && pos.isRepetition()) //check for repetition
+	if (ply != 0 && pos.isRepetition()) //check for repetition
 	{
 		//Table.Save(pos.TTKey,depth,0,TT_EXACT,CONS_NULLMOVE);
 		return 0;
 	}
 
-	int probe = Table.Probe(pos.TTKey,depth,alpha,beta);
+	int probe = Table.Probe(pos.TTKey, depth, alpha, beta);
 	if (probe != CONS_TTUNKNOWN)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
@@ -357,30 +357,30 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-	if (cannull && !dopv && depth >= 3 && underCheck == false 
-		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK]) 
+	if (cannull && !dopv && depth >= 3 && underCheck == false
+		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK])
 			|| popcnt(pos.Pieces[pos.turn][PIECE_BISHOP] || popcnt(pos.Pieces[pos.turn][PIECE_KNIGHT]))
 			) //side to move does not have only pawns(to avoid zugzwang)
 		//&& leafeval >= beta
-		) 
-    {
+		)
+	{
 		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
-		int R = ((823 + 67 * depth) / 256 + std::min(max(0,leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
+		int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
 		ply++;
 		int ttkeynull = pos.TTKey;
 		pos.forceMove(m);
-        score = -AlphaBeta(max(0,depth-R),-beta,-beta+1,&line,false,false); //make a null-window search (we don't care by how much it fails high, if it does)
+		score = -AlphaBeta(max(0, depth - R), -beta, -beta + 1, &line, false, false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
-        pos.unmakeMove(m);
-		if(line.size()!=0)
+		pos.unmakeMove(m);
+		if (line.size() != 0)
 			Threats[ply] = line.at(line.size() - 1);
 		if (ttkeynull != pos.TTKey)
 		{
 			cout << "info string ERROR: Null TT fail" << endl;
 			_getch();
 		}
-		if(score >= beta)
+		if (score >= beta)
 		{
 			//cout << "Null move cutoff " << beta << endl;
 			return score;
@@ -389,11 +389,11 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		{
 			depth++;
 		}
-    }
+	}
 
 	//futility pruning
-	bool futilityprune = false; 
-	
+	bool futilityprune = false;
+
 	//if (depth < 4 && !underCheck && 
 	//	(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
 	//{
@@ -411,14 +411,14 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	vector<Move> vec;
 	vec.reserve(128);
 	//movegentime.Start();
-	if(futilityprune)
+	if (futilityprune)
 	{
-    	pos.generateCaptures(vec); //search only captures in futility pruning
+		pos.generateCaptures(vec); //search only captures in futility pruning
 	}
 	else
 	{
 		pos.generateMoves(vec);
-    }
+	}
 	//movegentime.Stop();
 	/*vector<Move> line;
 	line.reserve(128);*/
@@ -428,13 +428,13 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
 	int bestscore = CONS_NEGINF;
-	for(unsigned int i = 0;i<vec.size();i++) //search
+	for (unsigned int i = 0;i < vec.size();i++) //search
 	{
 		line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
-		int tablekey2 = pos.TTKey;
-		m = getHighestScoringMove(vec,i);
+		//int tablekey2 = pos.TTKey;
+		m = getHighestScoringMove(vec, i);
 
 		int capturedpiece = m.getCapturedPiece();
 		int special = m.getSpecial();
@@ -442,24 +442,25 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		int moveto = m.getTo();
 		int movefrom = m.getFrom();
 
+		int iscapture = isCapture(m);
 		int see = 0;
-		if (capturedpiece != SQUARE_EMPTY)
+		if (iscapture)
 		{
 			see = StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece);
 		}
 
-		if (isCapture(m) && depth <= 4 && see < 0)
+		if (iscapture && depth <= 4 && see < 0)
 		{ //prune bad captures at low depths
 			continue;
 		}
 
-		if(!pos.makeMove(m))
+		if (!pos.makeMove(m))
 		{
 			continue;
 		}
 		if (vec.size() == 1) //singular extension, only 1 legal move, so extend
 		{
-			depth++; 
+			depth++;
 		}
 		foundlegal = true;
 		ply++;
@@ -472,10 +473,11 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		//	reductiondepth++;
 		//}
 
-		if (i>=4 
+		if (i >= 4
 			&& !alpharaised
-			&& depth>=4
-			&& !isDangerous(m)
+			&& depth >= 4
+			&& special!=PIECE_QUEEN
+			&& (see < 0 || !iscapture)
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !pos.underCheck(pos.turn)
@@ -532,17 +534,17 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		ply--;
 		pos.unmakeMove(m);
 
-		if (tablekey2 != pos.TTKey)
-		{
-			cout << "info string TT Error at " << m.toString() << " " << ply << " " << PvSize << endl;
-			cout << "info string ";
-			for (int i = 0;i < PvSize;i++)
-			{
-				cout << PrincipalVariation[i].toString() << " ";
-			}
-			cout << endl;
-			//_getch();
-		}
+		//if (tablekey2 != pos.TTKey)
+		//{
+		//	cout << "info string TT Error at " << m.toString() << " " << ply << " " << PvSize << endl;
+		//	cout << "info string ";
+		//	for (int i = 0;i < PvSize;i++)
+		//	{
+		//		cout << PrincipalVariation[i].toString() << " ";
+		//	}
+		//	cout << endl;
+		//	//_getch();
+		//}
 
 		if(score>=beta)
 		{
@@ -698,6 +700,10 @@ int Engine::AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool 
 		//}
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
+	/*if (Table.Probe(pos.TTKey, depth, alpha, beta) != alpha)
+	{
+		cout << "TT NO MATCH" << endl;
+	}*/
 	if (pos.PawnKey != tablekey)
 	{
 		cout << "info string ERROR: Pawn TT key doesnt match" << endl;

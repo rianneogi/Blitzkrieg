@@ -61,6 +61,11 @@ inline bool noMaterialGain(const Move& m)
 	return (m.getCapturedPiece() == SQUARE_EMPTY && m.getSpecial() == PIECE_NONE);
 }
 
+inline bool isCapture(const Move& m)
+{
+	return (m.getCapturedPiece() != SQUARE_EMPTY || m.getSpecial() == PIECE_PAWN);
+}
+
 extern Move CONS_NULLMOVE;
 
 #endif // MOVE_H_INCLUDED

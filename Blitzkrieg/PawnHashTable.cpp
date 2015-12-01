@@ -1,7 +1,7 @@
 #include "PawnHashTable.h"
 
-PawnHashTable PawnTable(32768);
-int PawnSizeMinusOne = 32767;
+PawnHashTable PawnTable(65536);
+int PawnSizeMinusOne = 65535;
 
 PawnHashTable::PawnHashTable(unsigned long long s)
 {
@@ -35,6 +35,18 @@ int PawnHashTable::Probe(Bitset key)
 		return hash->score;
 	}
 	return CONS_TTUNKNOWN;
+}
+
+Bitset PawnHashTable::getPawns(Bitset key, int col)
+{
+	PawnHashEntry* hash = &entries[key&PawnSizeMinusOne];
+	if (hash->key == key)
+	{
+		if (col == COLOR_WHITE)
+			return hash->whitepawns;
+		return hash->blackpawns;
+	}
+	return 1;
 }
 
 PawnHashEntry::PawnHashEntry(): key(0), score(0), whitepawns(0), blackpawns(0)

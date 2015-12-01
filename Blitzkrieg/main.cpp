@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 125;
+const int ENGINEVERSION = 126;
 
 // Best Build so far: 116
 
 ///BUILDS
+// Build 126 - 01-12-2015 - Undid last change, LMR now reduces bad captures also
 // Build 125 - 30-11-2015 - Added Pawn Hash Table
 // Build 124 - 30-11-2015 - History values are now indexed by movingpiece,to instead of from,to
 // Build 123 - 30-11-2015 - Added history value reduction to quiet moves that didnt cause a beta cutoff

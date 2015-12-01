@@ -558,6 +558,10 @@ void Interface::info()
 	{
 		cout << e1.pos.TTKey << endl;
 	}
+	if (s == "pkey")
+	{
+		cout << e1.pos.PawnKey << endl;
+	}
 	if(s=="rep")
 	{
 		cout << board.pos.isRepetition() << endl;

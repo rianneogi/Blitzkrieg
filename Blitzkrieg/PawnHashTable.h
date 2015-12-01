@@ -25,6 +25,7 @@ public:
 
 	void Save(Bitset key, int score, Bitset wp, Bitset bp);
 	int Probe(Bitset key);
+	Bitset getPawns(Bitset key, int col);
 };
 
 extern PawnHashTable PawnTable;

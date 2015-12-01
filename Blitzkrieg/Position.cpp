@@ -39,6 +39,7 @@ Position::Position(Position const& pos,Move const& m)
     epsquare = pos.epsquare;
 
 	TTKey = pos.TTKey;
+	PawnKey = pos.PawnKey;
 
 	movelist = pos.movelist;
 	hashlist = pos.hashlist;
@@ -111,9 +112,9 @@ void Position::setStartPos()
 		if (Squares[i] != SQUARE_EMPTY)
 		{
 			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
-			if (Squares[i] == SQUARE_WHITEPAWN || Squares[i] == SQUARE_BLACKPAWN)
+			if (getSquare2Piece(Squares[i]) == PIECE_PAWN)
 			{
-				TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
+				PawnKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
 			}
 		}
 	}
@@ -174,7 +175,7 @@ void Position::clearBoard()
 			TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][getSquare2Piece(Squares[i])][i];
 			if (Squares[i] == SQUARE_WHITEPAWN || Squares[i] == SQUARE_BLACKPAWN)
 			{
-				TTKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
+				PawnKey ^= TT_PieceKey[getSquare2Color(Squares[i])][PIECE_PAWN][i];
 			}
 		}
 	}
@@ -593,18 +594,6 @@ void Position::forceMove(Move const& m)
 
     if(movingpiece==PIECE_PAWN) //set ep square
     {
-		/*int diff = from - to;
-		if(diff==16 || diff==-16)
-		{
-			if(turn==COLOR_WHITE)
-			{
-			    epsquare = ((from)+8);
-			}
-			else
-			{
-				epsquare = ((to)+8);
-			}
-		}*/
 		if(turn==COLOR_WHITE && getRank(int(from))==1 && getRank(int(to))==3)
 		{
 			TTKey ^= TT_EPKey[epsquare];
@@ -654,9 +643,19 @@ void Position::forceMove(Move const& m)
 		if(special==PIECE_NONE || special==PIECE_PAWN)
 			PawnKey ^= TT_PieceKey[turn][movingpiece][to];
 	}
-	if (capturedpiece == PIECE_PAWN)
+	if (getSquare2Piece(capturedpiece) == PIECE_PAWN)
 	{
-		PawnKey ^= TT_PieceKey[turn][PIECE_PAWN][to];
+		if (special == PIECE_PAWN)
+		{
+			if(turn==COLOR_WHITE)
+				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getMinus8(to)];
+			else
+				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getPlus8(to)];
+		}
+		else
+		{
+			PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][to];
+		}
 	}
 
     turn = getOpponent(turn);
@@ -888,9 +887,17 @@ void Position::unmakeMove(Move const& m)
 		if (special == PIECE_NONE || special == PIECE_PAWN)
 			PawnKey ^= TT_PieceKey[turn][movingpiece][to];
 	}
-	if (capturedpiece == PIECE_PAWN)
+	if (getSquare2Piece(capturedpiece) == PIECE_PAWN)
 	{
-		PawnKey ^= TT_PieceKey[turn][PIECE_PAWN][to];
+		if (special == PIECE_PAWN)
+		{
+			if (turn == COLOR_WHITE)
+				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getMinus8(to)];
+			else
+				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getPlus8(to)];
+		}
+		else
+			PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][to];
 	}
 }
 
