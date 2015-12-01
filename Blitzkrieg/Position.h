@@ -63,8 +63,9 @@ public:
 	void takebackMove();
 	bool isRepetition();
 };
-unsigned long long getRookAttacks(int sq,unsigned long long occ,unsigned long long occ90);
-unsigned long long getBishopAttacks(int sq,unsigned long long occ45,unsigned long long occ135);
+Bitset getRookAttacks(int sq,unsigned long long occ,unsigned long long occ90);
+Bitset getBishopAttacks(int sq,unsigned long long occ45,unsigned long long occ135);
+Bitset getQueenAttacks(int sq, unsigned long long occ, unsigned long long occ90, unsigned long long occ45, unsigned long long occ135);
 
 string getStringToken(string str, char delimiter, int token);
 int getStringTokenPosition(string str, char delimiter, int token);

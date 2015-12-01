@@ -1174,8 +1174,7 @@ void Position::generateMoves(vector<Move>& moves) const
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
         m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
         m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
-		Bitset m = getRookAttacks(n,OccupiedSq,OccupiedSq90);
-		m |= getBishopAttacks(n,OccupiedSq45,OccupiedSq135);
+		Bitset m = getQueenAttacks(n,OccupiedSq,OccupiedSq90,OccupiedSq45,OccupiedSq135);
         m &= m^ColorPieces[turn];
         while(m)
         {
@@ -1353,8 +1352,9 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
         b^=Pos2Bit[n];
-        Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
-        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);
+        /*Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
+        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
+		Bitset m = getBishopAttacks(n, OccupiedSq45, OccupiedSq135);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
@@ -1373,10 +1373,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
         b^=Pos2Bit[n];
-        Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
-        m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
-        m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
-        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);
+		Bitset m = getQueenAttacks(n, OccupiedSq, OccupiedSq90, OccupiedSq45, OccupiedSq135);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
@@ -1432,23 +1429,21 @@ bool Position::isLegal(Move const& m)
 bool Position::isAttacked(int turn,int n) const
 {
     int opp = getOpponent(turn);
-    Bitset b = PawnAttacks[turn][n]&Pieces[opp][PIECE_PAWN];
+	Bitset b = getBishopAttacks(n, OccupiedSq45, OccupiedSq135)&(Pieces[opp][PIECE_BISHOP] | Pieces[opp][PIECE_QUEEN]);
 	if(b!=0)
         return true;
-	b |= KnightMoves[n]&Pieces[opp][PIECE_KNIGHT];
-	if(b!=0)
-        return true;
-    b |= KingMoves[n]&Pieces[opp][PIECE_KING];
-	if(b!=0)
-        return true;
-    b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&(Pieces[opp][PIECE_ROOK]|Pieces[opp][PIECE_QUEEN]);
-    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&(Pieces[opp][PIECE_ROOK]|Pieces[opp][PIECE_QUEEN]);
-	if(b!=0)
-        return true;
-    b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&(Pieces[opp][PIECE_BISHOP]|Pieces[opp][PIECE_QUEEN]);
-    b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&(Pieces[opp][PIECE_BISHOP]|Pieces[opp][PIECE_QUEEN]);
-	if(b!=0)
-        return true;
+	b = getRookAttacks(n, OccupiedSq, OccupiedSq90)&(Pieces[opp][PIECE_ROOK] | Pieces[opp][PIECE_QUEEN]);
+	if (b != 0)
+		return true;
+	b = PawnAttacks[turn][n] & Pieces[opp][PIECE_PAWN];
+	if (b != 0)
+		return true;
+	b = KnightMoves[n] & Pieces[opp][PIECE_KNIGHT];
+	if (b != 0)
+		return true;
+	b = KingMoves[n] & Pieces[opp][PIECE_KING];
+	if (b != 0)
+		return true;
     return false;
 }
 
@@ -1672,18 +1667,25 @@ bool Position::isRepetition()
 	return false;
 }
 
-unsigned long long getRookAttacks(int sq,unsigned long long occ,unsigned long long occ90)
+Bitset getRookAttacks(int sq,unsigned long long occ,unsigned long long occ90)
 {
 	Bitset m = RookRankMoves[sq][(occ>>(RankOffset[sq]))&0xff];
     m |= RookFileMoves[sq][(occ90>>(FileOffset[sq]))&0xff];
     return m;
 }
 
-unsigned long long getBishopAttacks(int sq,unsigned long long occ45,unsigned long long occ135)
+Bitset getBishopAttacks(int sq,unsigned long long occ45,unsigned long long occ135)
 {
 	Bitset m = BishopA1H8Moves[sq][(occ135>>Diagonal[turn135[sq]])&0xff];
     m |= BishopA8H1Moves[sq][(occ45>>Diagonal[turn45[sq]])&0xff];
     return m;
+}
+
+Bitset getQueenAttacks(int sq, Bitset occ, Bitset occ90, Bitset occ45, Bitset occ135)
+{
+	Bitset m = getRookAttacks(sq, occ, occ90);
+	m |= getBishopAttacks(sq, occ45, occ135);
+	return m;
 }
 
 int Position::getColorPieces(int turn)

@@ -176,8 +176,6 @@ int SquareColor[64] = { 0, 1, 0, 1, 0, 1, 0, 1,
                        0, 1, 0, 1, 0, 1, 0, 1,
 					   1, 0, 1, 0, 1, 0, 1, 0};
 
-
-
 string Int2Sq(int n)
 {
     string s = "";

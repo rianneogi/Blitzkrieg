@@ -540,6 +540,10 @@ void Interface::info()
 		}
 		cout << endl;
 	}
+	if (s == "threat")
+	{
+		cout << "Threat: " << e1.Threats[0].toString() << ", Killer: " << e1.KillerMoves[0][0].toString() << " " << e1.KillerMoves[1][0].toString() << endl;
+	}
 	if(s=="bb")
 	{
 		for(int i = 0;i<10;i++)

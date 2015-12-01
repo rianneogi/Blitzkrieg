@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 126;
+const int ENGINEVERSION = 127;
 
-// Best Build so far: 116
+// Best Build so far: 116, 122, 124
 
 ///BUILDS
+// Build 127 - 01-12-2015 - Made an optimization in isAttacked
 // Build 126 - 01-12-2015 - Undid last change, LMR now reduces bad captures also
 // Build 125 - 30-11-2015 - Added Pawn Hash Table
 // Build 124 - 30-11-2015 - History values are now indexed by movingpiece,to instead of from,to
