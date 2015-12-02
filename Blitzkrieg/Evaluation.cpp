@@ -868,7 +868,7 @@ int Engine::LeafEval()
 				unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
 				if (Trace)
-					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] << endl;
+					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << outpostbonus << endl;
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
 				{
@@ -936,10 +936,10 @@ int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				//unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
-				unsigned int outpostbonus = PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
+				unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				//unsigned int outpostbonus = PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
 				if (Trace)
-					cout << "Bonus for Bishop outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
+					cout << "Bonus for Bishop outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << outpostbonus;
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
 				{
