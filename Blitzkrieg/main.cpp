@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 132;
+const int ENGINEVERSION = 133;
 
 // Best Build so far: 129
 
 ///BUILDS
+// Build 133 - 03-12-2015 - Doubled pawn shield bonus
 // Build 132 - 03-12-2015 - Reworking PieceSq values
 // Build 131 - 02-12-2015 - No longer reduces any promotions in LMR
 // Build 130 - 02-12-2015 - No longer reduces queen promotions in LMR
