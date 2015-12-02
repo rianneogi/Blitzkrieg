@@ -25,11 +25,16 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 127;
+const int ENGINEVERSION = 132;
 
-// Best Build so far: 116, 122, 124
+// Best Build so far: 129
 
 ///BUILDS
+// Build 132 - 03-12-2015 - Reworking PieceSq values
+// Build 131 - 02-12-2015 - No longer reduces any promotions in LMR
+// Build 130 - 02-12-2015 - No longer reduces queen promotions in LMR
+// Build 129 - 01-12-2015 - Undid build 126 (No longer reduces bad captures)
+// Build 128 - 01-12-2015 - Now does hash probes at pv nodes also
 // Build 127 - 01-12-2015 - Made an optimization in isAttacked
 // Build 126 - 01-12-2015 - Undid last change, LMR now reduces bad captures also
 // Build 125 - 30-11-2015 - Added Pawn Hash Table

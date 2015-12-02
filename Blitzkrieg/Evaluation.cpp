@@ -26,8 +26,8 @@ int RookPairBonus = 10;
 
 //int KnightOutpostBonus = 25;
 //int BishopOutpostBonus = 10;
-//int KnightOutpostBonus[8] = { 0,0,5,10,15,25,25,15 }; //non-negative values always(code will bug otherwise)
-//int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 10, 6}; //non-negative values always(code will bug otherwise)
+int KnightOutpostBonus[8] = { 0,0,5,10,15,25,15,10 }; //non-negative values always(code will bug otherwise)
+int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 6, 4}; //non-negative values always(code will bug otherwise)
 
 int QueenOutEarlyPenalty = 10; //penalty for queens not on back rank for every minor on back rank
 
@@ -119,9 +119,9 @@ int SquareValues[64] = { 1, 1, 1, 1, 1, 1, 1, 1,
 						 2, 2, 2, 2, 2, 2, 2, 2,
 						 2, 2, 2, 2, 2, 2, 2, 2 };
 
-int PieceSqValues[7][64] = 
+int PieceSqValues[6][64] = 
 {
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, //empty
+	//{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, //empty
 	{  2,  4,  4,  4,  4,  4,  4,  2, //pawn
 	   2,  6,  6,  8,  8,  6,  6,  2,
 	   2,  6, 10, 12, 12, 10,  6,  2,
@@ -177,9 +177,9 @@ int PieceSqValues[7][64] =
 	 -80,-80,-80,-80,-80,-80,-80,-80}
 };
 
-int PieceSqValuesEG[7][64] = 
+int PieceSqValuesEG[6][64] = 
 {
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, //empty
+	//{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, //empty
 	{  0,  0,  0,  0,  0,  0,  0,  0, //pawn
 	   0,  0,  0,  0,  0,  0,  0,  0,
 	   1,  2,  4, 10, 10,  4,  2,  1,
@@ -865,22 +865,22 @@ int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				//unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
-				unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
+				unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
+				//unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
 				if (Trace)
 					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] << endl;
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
 				{
-					outpostbonus += PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)]; //double bonus if there are no opponent minor pieces
+					outpostbonus *= 2; //double bonus if there are no opponent minor pieces
 					if (Trace)
-						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] << endl;
+						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << outpostbonus << endl;
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += ((unsigned)PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)] / 2); //extra bonus if defended by a pawn
+					outpostbonus += ((unsigned)(outpostbonus)) >> 1; //extra bonus if defended by a pawn
 					if (Trace)
-						cout << "	Extra bonus because its defended by a pawn: " << PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)]/2 << endl;
+						cout << "	Extra bonus because its defended by a pawn: " << outpostbonus/2 << endl;
 				}
 				if (isEG)
 				{
@@ -943,15 +943,15 @@ int Engine::LeafEval()
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
 				{
-					outpostbonus += PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)]; //double bonus if there are no opponent minor pieces
+					outpostbonus *= 2; //double bonus if there are no opponent minor pieces
 					if (Trace)
-						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)] << endl;
+						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << outpostbonus << endl;
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += (unsigned)(PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)])>>1; //extra bonus if defended by a pawn
+					outpostbonus += ((unsigned)(outpostbonus))>>1; //extra bonus if defended by a pawn
 					if (Trace)
-						cout << "	Extra bonus because its defended by a pawn: " << PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)] / 2 << endl;
+						cout << "	Extra bonus because its defended by a pawn: " << outpostbonus / 2 << endl;
 				}
 				if (isEG)
 				{
@@ -1186,81 +1186,39 @@ int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 	return gain[0];
 }
 
-//int Engine::StaticExchangeEvaluation2(Move m)
-//{
-//	//cout << "see " << m.toString() << endl;
-//	int value = 0;
-//	if(m.getSpecial()!=PIECE_PAWN)
-//	{
-//		value = MaterialValues[getSquare2Piece(m.getCapturedPiece())+1];
-//	}
-//	else
-//	{
-//		value = MaterialValues[SQUARE_WHITEPAWN];
-//	}
-//	pos.forceMove(m);
-//	int piece = pos.getSmallestAttacker2(pos.turn,m.getTo());
-//	if(piece!=PIECE_NONE)
-//	{
-//		Move mov = pos.makeCapture(piece,m.getTo());
-//		//cout << "move " << mov.toString() << endl;
-//		//int piece = mov.getMovingPiece();
-//		if(mov!=CONS_NULLMOVE)
-//		{
-//			value -= StaticExchangeEvaluation2(mov);
-//		}
-//	}
-//	pos.unmakeMove(m);
-//	return value;
-//}
-//
-//int Engine::StaticExchangeEvaluation(Move m)
-//{
-//	//cout << "see " << m.toString() << endl;
-//	int value = 0;
-//	if(m.getSpecial()!=PIECE_PAWN)
-//	{
-//		value = MaterialValues[getSquare2Piece(m.getCapturedPiece())+1];
-//	}
-//	else
-//	{
-//		value = MaterialValues[SQUARE_WHITEPAWN];
-//	}
-//	pos.forceMove(m);
-//	Move mov = pos.getSmallestAttacker(pos.turn,m.getTo());
-//	if(mov!=CONS_NULLMOVE)
-//	{
-//		//cout << "move " << mov.toString() << endl;
-//		int piece = mov.getMovingPiece();
-//		if(piece!=PIECE_NONE)
-//		{
-//			value -= StaticExchangeEvaluation(mov);
-//		}
-//	}
-//	pos.unmakeMove(m);
-//	return value;
-//}
-//
-//int Engine::StaticExchangeEvaluation(int square,int side)
-//{
-//	int value = 0;
-//	int piece = pos.getSmallestAttacker2(side,square);
-//	if(piece!=PIECE_NONE)
-//	{
-//		Move m = pos.makeCapture(piece,square);
-//		if(m!=CONS_NULLMOVE)
-//		{
-//			pos.forceMove(m);
-//			value = max(0,MaterialValues[piece] - StaticExchangeEvaluation(square,getOpponent(side)));
-//			pos.unmakeMove(m);
-//		}
-//	}
-//	return value;
-//}
-
 void evalinit()
 {
-	for(int i = 0;i<13;i++)
+	int KnightAggrValues[8] = { -10,-5,0,5,10,15,10,5 };
+	int KnightFileValues[8] = { -20,-10,0,5,5,0,-10,-20 };
+	int KnightRankValues[8] = { -20,-10,0,5,5,0,-10,-20 };
+	int BishopRankValues[8] = { -6, -2, 0, 2, 2, 0, -2, -6 };
+	int BishopFileValues[8] = { -6, -2, 0, 2, 2, 0, -2, -6 };
+	int BishopDiagBonus = 4;
+	int RookFileValues[8] = {-6,-3,0,3,3,0,-3,-6};
+	int QueenCentralizationValues[8] = { -12,-4,0,4,4,0,-4,-12 };
+	int KingRankValues[8] = { 10,0,-20,-30,-40,-50,-60,-70 };
+	int KingFileValues[8] = { 30,40,20,0,0,20,40,30 };
+	int KingCentralizationValues[8] = { -36,-12,0,12,12,0,-12,-36 };
+	for (int i = 0;i < 64;i++)
+	{
+		int rank = getRank(i);
+		int file = getFile(i);
+		PieceSqValues[PIECE_KNIGHT][i] = KnightRankValues[rank] + KnightFileValues[file] + KnightAggrValues[rank];
+		PieceSqValuesEG[PIECE_KNIGHT][i] = KnightRankValues[rank] + KnightFileValues[file];
+		PieceSqValues[PIECE_BISHOP][i] = BishopRankValues[rank] + BishopFileValues[file];
+		PieceSqValuesEG[PIECE_BISHOP][i] = BishopRankValues[rank] + BishopFileValues[file];
+		if (rank == file || rank == (7 - file))
+		{
+			PieceSqValues[PIECE_BISHOP][i] += BishopDiagBonus;
+		}
+		PieceSqValues[PIECE_ROOK][i] = RookFileValues[file];
+		PieceSqValuesEG[PIECE_ROOK][i] = 0;
+		PieceSqValues[PIECE_QUEEN][i] -= 10;
+		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];
+		PieceSqValues[PIECE_KING][i] = KingRankValues[rank] + KingFileValues[file];
+		PieceSqValuesEG[PIECE_KING][i] = KingCentralizationValues[rank] + KingCentralizationValues[file];
+	}
+	for(int i = 1;i<13;i++)
 	{
 		//cout << "Piece " << i << endl;
 		int avg = 0;
@@ -1285,14 +1243,14 @@ void evalinit()
 		{
 			if(i<7)
 			{
-				PieceSq[i][j] = PieceSqValues[i][j]-avg;
-				PieceSqEG[i][j] = PieceSqValuesEG[i][j]-avg;
+				PieceSq[i][j] = PieceSqValues[i-1][j]-avg;
+				PieceSqEG[i][j] = PieceSqValuesEG[i-1][j]-avg;
 				//cout << PieceSq[i][j] << " ";
 			}
 			else
 			{
-				PieceSq[i][j] = -PieceSqValues[i-6][getMirror(j)]+avg;
-				PieceSqEG[i][j] = -PieceSqValuesEG[i-6][getMirror(j)]+avgEG;
+				PieceSq[i][j] = -PieceSqValues[i-7][getMirror(j)]+avg;
+				PieceSqEG[i][j] = -PieceSqValuesEG[i-7][getMirror(j)]+avgEG;
 				//cout << PieceSq[i][j] << " ";
 			}
 			/*if((j+1)%8==0)
@@ -1300,354 +1258,3 @@ void evalinit()
 		}
 	}
 }
-
-//int Engine::Trace(int alpha,int beta)
-//{
-//	//nodes++;
-//	//if(nodes%1024==0)
-//	//{
-//	//	checkup();
-//	//	//nodes = 0;
-//	//}
-//	int eval = 0;
-//	//Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
-//	//int pieceCount = popcnt(Pieces);
-//	bool isEG = false;
-//	if(getBoardMaterial() <= EndgameMaterial)
-//	{
-//		isEG = true;
-//		cout << "It is endgame" << endl;
-//	}
-//
-//	//Material eval
-//	cout << "Material:" << endl;
-//	for(int i = 0;i<64;i++)
-//	{
-//		eval += MaterialValues[pos.Squares[i]];
-//		if(isEG)
-//		{
-//			eval += PieceSqEG[pos.Squares[i]][i];
-//			cout << PieceSqEG[pos.Squares[i]][i] << " for " << Int2Sq(i) << endl;
-//		}
-//		else
-//		{
-//			eval += PieceSq[pos.Squares[i]][i];
-//			cout << PieceSq[pos.Squares[i]][i] << " for " << Int2Sq(i) << endl;
-//		}
-//	}
-//
-//	Bitset b = 0x0;
-//	Bitset KingField[2];
-//	Bitset ColorPieces[2];
-//	int MinorsOnBackRank[2] = {0,0};
-//	cout << "King Safety: " << endl;
-//	for(int i = 0;i<2;i++) //king safety
-//	{
-//		b = pos.Pieces[i][PIECE_KING];
-//		unsigned long k = 0;
-//		_BitScanForward64(&k,b);
-//		KingField[i] = getKingField(i,k);
-//		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
-//                         pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
-//                         pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
-//
-//		if(!isEG)
-//		{
-//			if(getRank(getColorMirror(i,k))<2)
-//			{
-//				if(pos.Squares[getColorMirror(i,getPlus8(getColorMirror(i,k)))]==getPiece2Square(PIECE_PAWN,i))
-//				{
-//					eval += ColorFactor[i]*PawnShield1Bonus;
-//					cout << ColorFactor[i]*PawnShield1Bonus << " for pawn shield 1 on " << Int2Sq(k) << endl;
-//				}
-//				else if(pos.Squares[getColorMirror(i,getPlus8(getColorMirror(i,k)))]==getPiece2Square(PIECE_BISHOP,i))
-//				{
-//					eval += ColorFactor[i]*BishopShieldBonus;
-//					cout << ColorFactor[i]*BishopShieldBonus << " for bishop shield on " << Int2Sq(k) << endl;
-//				}
-//				if(pos.Squares[getColorMirror(i,getPlus8(getPlus8(getColorMirror(i,k))))]==getPiece2Square(PIECE_PAWN,i))
-//				{
-//					eval += ColorFactor[i]*PawnShield2Bonus;
-//					cout << ColorFactor[i]*PawnShield2Bonus << " for pawn shield 2 on " << Int2Sq(k) << endl;
-//				}
-//				if(getFile(k)!=7)
-//				{
-//					if(pos.Squares[k+7*ColorFactor[i]]==getPiece2Square(PIECE_PAWN,i))
-//					{
-//						eval += ColorFactor[i]*PawnShield1Bonus;
-//						cout << ColorFactor[i]*PawnShield1Bonus << " for pawn shield 1 on " << Int2Sq(k) << endl;
-//					}
-//					if(pos.Squares[k+15*ColorFactor[i]]==getPiece2Square(PIECE_PAWN,i))
-//					{
-//						eval += ColorFactor[i]*PawnShield2Bonus;
-//						cout << ColorFactor[i]*PawnShield2Bonus << " for pawn shield 2 on " << Int2Sq(k) << endl;
-//					}
-//				}
-//				if(getFile(k)!=0)
-//				{
-//					if(pos.Squares[k+9*ColorFactor[i]]==getPiece2Square(PIECE_PAWN,i))
-//					{
-//						eval += ColorFactor[i]*PawnShield1Bonus;
-//						cout << ColorFactor[i]*PawnShield1Bonus << " for pawn shield 1 on " << Int2Sq(k) << endl;
-//					}
-//					if(pos.Squares[k+17*ColorFactor[i]]==getPiece2Square(PIECE_PAWN,i))
-//					{
-//						eval += ColorFactor[i]*PawnShield2Bonus;
-//						cout << ColorFactor[i]*PawnShield2Bonus << " for pawn shield 2 on " << Int2Sq(k) << endl;
-//					}
-//				}
-//			}
-//		}
-//
-//		if((getAboveBits(i,k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there arent friendly pawns in the same file
-//		{
-//			if(getAboveBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) //checks if there are opponent pawns in the same file
-//			{
-//				eval -= ColorFactor[i]*KingOnHalfOpenFilePenalty;
-//				cout << ColorFactor[i]*KingOnHalfOpenFilePenalty << " for king on half open on " << Int2Sq(k) << endl;
-//			}
-//			else
-//			{
-//				eval -= ColorFactor[i]*KingOnOpenFilePenalty;
-//				cout << ColorFactor[i]*KingOnOpenFilePenalty << " for king on open on " << Int2Sq(k) << endl;
-//			}
-//		}
-//		if((getAboveBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]==0) && (getAboveBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_ROOK]!=0))
-//		{ //checks if there are no opponent pawns on the file and there are rooks on the file
-//			eval -= ColorFactor[i]*KingOnRookFilePenalty;
-//			cout << ColorFactor[i]*KingOnRookFilePenalty << " for king on rook file on " << Int2Sq(k) << endl;
-//		}
-//		if(getFile(k)!=0)
-//		{
-//			if((getAboveBits(i,k+1)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there arent friendly pawns in the same file
-//			{
-//				if(getAboveBits(i,k+1)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) //checks if there are opponent pawns in the same file
-//				{
-//					eval -= ColorFactor[i]*KingAdjHalfOpenFilePenalty;
-//					cout << ColorFactor[i]*KingAdjHalfOpenFilePenalty << " for king adj half open file on " << Int2Sq(k) << endl;
-//				}
-//				else
-//				{
-//					eval -= ColorFactor[i]*KingAdjOpenFilePenalty;
-//					cout << ColorFactor[i]*KingAdjOpenFilePenalty << " for king adj open file on " << Int2Sq(k) << endl;
-//				}
-//			}
-//			if((getAboveBits(i,k+1)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0 && (getAboveBits(i,k+1)&pos.Pieces[getOpponent(i)][PIECE_ROOK]!=0))
-//			{ //checks if there are no opponent pawns on the file and there are rooks on the file
-//				eval -= ColorFactor[i]*KingAdjRookFilePenalty;
-//				cout << ColorFactor[i]*KingAdjRookFilePenalty << " for king adj rook file on " << Int2Sq(k) << endl;
-//			}
-//		}
-//		if(getFile(k)!=7)
-//		{
-//			if((getAboveBits(i,k-1)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there arent friendly pawns in the same file
-//			{
-//				if(getAboveBits(i,k-1)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) //checks if there are opponent pawns in the same file
-//				{
-//					eval -= ColorFactor[i]*KingAdjHalfOpenFilePenalty;
-//					cout << ColorFactor[i]*KingAdjHalfOpenFilePenalty << " for king adj half open file on " << Int2Sq(k) << endl;
-//				}
-//				else
-//				{
-//					eval -= ColorFactor[i]*KingAdjOpenFilePenalty;
-//					cout << ColorFactor[i]*KingAdjOpenFilePenalty << " for king adj open file on " << Int2Sq(k) << endl;
-//				}
-//			}
-//			if(getAboveBits(i,k-1)&pos.Pieces[getOpponent(i)][PIECE_PAWN]==0 && getAboveBits(i,k-1)&pos.Pieces[getOpponent(i)][PIECE_ROOK]!=0)
-//			{ //checks if there are no opponent pawns on the file and there are rooks on the file
-//				eval -= ColorFactor[i]*KingAdjRookFilePenalty;
-//				cout << ColorFactor[i]*KingAdjRookFilePenalty << " for king adj rook file on " << Int2Sq(k) << endl;
-//			}
-//		}
-//	}
-//
-//	//Lazy eval
-//	cout << "Lazy eval checking, eval is " << eval << endl;
-//	int lazy;
-//	if(pos.turn==COLOR_WHITE)
-//	{
-//		lazy = eval;
-//	}
-//	else
-//	{
-//		lazy = -eval;
-//	}
-//	if((lazy + LazyEval1 < alpha) || (lazy - LazyEval1 > beta))
-//	{
-//		cout << "Lazy eval success" << endl;
-//		return lazy;
-//	}
-//
-//	cout << "Positional eval " << endl;
-//	//Positional evaluation
-//	for(int i = 0;i<2;i++)
-//	{
-//		//Pawns
-//		b = pos.Pieces[i][PIECE_PAWN];
-//		int pawncount = popcnt(b);
-//		if(!b) //penalty for having no pawns
-//		{
-//			eval -= ColorFactor[i]*NoPawnsPenalty;
-//			cout << ColorFactor[i]*NoPawnsPenalty << " for no pawns" << endl;
-//		}
-//		while(b)
-//		{
-//			//int k = firstOf(b);
-//			unsigned long k = 0;
-//			_BitScanForward64(&k,b);
-//			b ^= getPos2Bit(k);
-//			if(getAboveBits(i,k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
-//			{
-//				eval -= ColorFactor[i]*DoubledPawnPenalty[getFile(k)];
-//				cout << ColorFactor[i]*DoubledPawnPenalty[getFile(k)] << " for doubled pawn on " << Int2Sq(k) << endl;
-//			}
-//			if((getAboveAndAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if the pawn is a passer
-//			{
-//				eval += ColorFactor[i]*PassedPawnBonus[getColorMirror(i,k)];
-//				cout << ColorFactor[i]*PassedPawnBonus[getColorMirror(i,k)] << " for passed pawn on " << Int2Sq(k) << endl;
-//			}
-//			if((getSideBits(k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there are no friendly pawns on the adjacent files
-//			{
-//				eval -= ColorFactor[i]*IsolatedPawnPenalty[getFile(k)];
-//				cout << ColorFactor[i]*IsolatedPawnPenalty[getFile(k)] << " for isolated pawn on " << Int2Sq(k) << endl;
-//			}
-//			if(pos.Squares[getColorMirror(i,getPlus8(getColorMirror(i,k)))]!=SQUARE_EMPTY) //checks if pawn is blocked
-//			{
-//				eval -= ColorFactor[i]*BlockedPawnPenalty[getColorMirror(i,k)];
-//				cout << ColorFactor[i]*BlockedPawnPenalty[getColorMirror(i,k)] << " for blocked pawn on " << Int2Sq(k) << endl;
-//			}
-//
-//			//pawn attacks near opposing king
-//			eval += ColorFactor[i]*long(popcnt(KingField[getOpponent(i)]&getPawnAttacks(i,k))*AttackWeights[PIECE_PAWN]);
-//			cout << ColorFactor[i]*long(popcnt(KingField[getOpponent(i)]&getPawnAttacks(i,k))*AttackWeights[PIECE_PAWN]) << " attacking pawn on " << Int2Sq(k) << endl;
-//		}
-//
-//		//Rooks
-//		b = pos.Pieces[i][PIECE_ROOK];
-//		int rookcount = popcnt(b);
-//		eval += ColorFactor[i]*RookPawnAdj[pawncount]*rookcount; //adjustment for pawns
-//		if(rookcount >= 2) //Pair Bonus
-//		{
-//			eval += ColorFactor[i]*RookPairBonus;
-//		}
-//		while(b)
-//		{
-//			//int k = firstOf(b);
-//			unsigned long k = 0;
-//			_BitScanForward64(&k,b);
-//			b ^= getPos2Bit(k);
-//			if((getAboveBits(i,k)&pos.Pieces[i][PIECE_PAWN])==0) //checks if there arent friendly pawns in the same file
-//			{
-//				if(getAboveBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) //checks if there are opponent pawns in the same file
-//				{
-//					eval += ColorFactor[i]*RookHalfOpenBonus[getFile(k)];
-//					cout << ColorFactor[i]*RookHalfOpenBonus[getFile(k)] << " for half open file rook on " << Int2Sq(k) << endl;
-//				}
-//				else
-//				{
-//					eval += ColorFactor[i]*RookOpenBonus[getFile(k)];
-//					cout << ColorFactor[i]*RookOpenBonus[getFile(k)] << " for open file rook on " << Int2Sq(k) << endl;
-//				}
-//			}
-//
-//			//Rook Attacks
-//			Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
-//			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
-//			m &= m^ColorPieces[i];
-//			eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK];
-//			cout << ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK] << " attacking rook on " << Int2Sq(k) << endl;
-//		}
-//
-//		//Knights
-//		b = pos.Pieces[i][PIECE_KNIGHT];
-//		int knightcount = popcnt(b);
-//		eval += ColorFactor[i]*KnightPawnAdj[pawncount]*knightcount; //adjustment for pawns
-//		if(popcnt(b) >= 2)
-//		{
-//			eval += ColorFactor[i]*KnightPairBonus;
-//			cout << ColorFactor[i]*KnightPairBonus << " for knight pair " << endl;
-//		}
-//		while(b)
-//		{
-//			unsigned long k = 0;
-//			_BitScanForward64(&k,b);
-//			b ^= getPos2Bit(k);
-//			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
-//			{
-//				eval += ColorFactor[i]*KnightOutpostBonus[getRank(getColorMirror(i,k))];
-//				cout << ColorFactor[i]* KnightOutpostBonus[getRank(getColorMirror(i, k))] << " for knight outpost " << Int2Sq(k) << endl;
-//			}
-//
-//			//knight attacks near opposing king
-//			eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&getKnightMoves(k))*AttackWeights[PIECE_KNIGHT];
-//			cout << ColorFactor[i]*popcnt(KingField[getOpponent(i)]&getKnightMoves(k))*AttackWeights[PIECE_KNIGHT] << " attacking knight on " << Int2Sq(k) << endl;
-//			if(getRank(getColorMirror(i,k))==0)
-//			{
-//				MinorsOnBackRank[i]++;
-//			}
-//		}
-//
-//		//Bishops
-//		b = pos.Pieces[i][PIECE_BISHOP];
-//		int bishopcount = popcnt(b);
-//		eval += ColorFactor[i]*BishopPawnAdj[pawncount]*bishopcount; //adjustment for pawns
-//		if(popcnt(b) >= 2)
-//		{
-//			eval += ColorFactor[i]*BishopPairBonus;
-//			cout << ColorFactor[i]*BishopPairBonus << " for bishop pair " << endl;
-//		}
-//		while(b)
-//		{
-//			unsigned long k = 0;
-//			_BitScanForward64(&k,b);
-//			b ^= getPos2Bit(k);
-//			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
-//			{
-//				eval += ColorFactor[i]* BishopOutpostBonus[getRank(getColorMirror(i, k))];
-//				cout << ColorFactor[i]* BishopOutpostBonus[getRank(getColorMirror(i, k))] << " for bishop outpost " << Int2Sq(k) << endl;
-//			}
-//
-//			//bishop attacks near opposing king
-//			Bitset m = getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
-//			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
-//			m &= m^ColorPieces[i];
-//			eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
-//			cout << ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP] << " attacking bishop on " << Int2Sq(k) << endl;
-//			if(getRank(getColorMirror(i,k))==0)
-//			{
-//				MinorsOnBackRank[i]++;
-//			}
-//		}
-//
-//		//Queens
-//		b = pos.Pieces[i][PIECE_QUEEN];
-//		while(b)
-//		{
-//			unsigned long k = 0;
-//			_BitScanForward64(&k,b);
-//			b ^= getPos2Bit(k);
-//
-//			//queen attacks near opposing king
-//			Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
-//			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
-//			m |= getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
-//			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
-//			m &= m^ColorPieces[i];
-//			eval += ColorFactor[i]*long(popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN]);
-//			cout << ColorFactor[i]*long(popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN]) << " attacking queen on " << Int2Sq(k) << endl;
-//
-//			if(!isEG)
-//			{
-//				if(getRank(getColorMirror(i,k))!=0)
-//				{
-//					eval -= ColorFactor[i]*QueenOutEarlyPenalty*MinorsOnBackRank[i];
-//					cout << "-" << ColorFactor[i]*QueenOutEarlyPenalty*MinorsOnBackRank[i] << " for queen out early " << MinorsOnBackRank[i] << endl;
-//				}
-//			}
-//		}
-//	}
-//
-//	if(pos.turn==COLOR_BLACK)
-//		return -eval;
-//	return eval;
-//}

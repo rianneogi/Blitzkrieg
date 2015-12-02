@@ -570,6 +570,14 @@ void Interface::info()
 	{
 		cout << board.pos.isRepetition() << endl;
 	}
+	if (s == "piecesq")
+	{
+		for (int i = 0;i < 64;i++)
+		{
+			if (i % 8 == 0) cout << endl;
+			cout << PieceSq[SQUARE_BLACKKNIGHT][i] << " ";
+		}
+	}
 }
 
 void Interface::help()

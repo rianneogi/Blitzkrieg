@@ -272,7 +272,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	if (probe != CONS_TTUNKNOWN)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
-		if (ply != 0 && (!dopv || (probe > alpha && probe < beta)))
+		if (ply != 0)
 		{
 			Move ttbestmove = Table.getBestMove(pos.TTKey);
 			if (!ttbestmove.isNullMove())
@@ -476,8 +476,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		if (i >= 4
 			&& !alpharaised
 			&& depth >= 4
-			&& special!=PIECE_QUEEN
-			&& (see < 0 || !iscapture)
+			//&& special!=PIECE_QUEEN
+			//&& (see < 0 || !iscapture)
+			&& noMaterialGain(m)
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !pos.underCheck(pos.turn)
