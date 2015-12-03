@@ -473,8 +473,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	reductiondepth++;
 		//}
 
-		if (i >= 4
-			&& !alpharaised
+		if (!alpharaised
+			//&& i >= 4
 			&& depth >= 4
 			//&& special!=PIECE_QUEEN
 			//&& (see < 0 || !iscapture)

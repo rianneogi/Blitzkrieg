@@ -25,13 +25,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 133;
+const int ENGINEVERSION = 134;
 
 // Best Build so far: 129
 
 ///BUILDS
+// Build 134 - 03-12-2015 - Removed i>=4 condition in LMR
 // Build 133 - 03-12-2015 - Doubled pawn shield bonus
-// Build 132 - 03-12-2015 - Reworking PieceSq values
+// Build 132 - 03-12-2015 - Reworked PieceSq values
 // Build 131 - 02-12-2015 - No longer reduces any promotions in LMR
 // Build 130 - 02-12-2015 - No longer reduces queen promotions in LMR
 // Build 129 - 01-12-2015 - Undid build 126 (No longer reduces bad captures)
