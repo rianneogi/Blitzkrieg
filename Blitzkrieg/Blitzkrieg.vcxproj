@@ -129,6 +129,7 @@
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Move.cpp" />
+    <ClCompile Include="MoveSort.cpp" />
     <ClCompile Include="PawnHashTable.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Quiescence.cpp" />

@@ -44,6 +44,7 @@ void Engine::initialize()
 	betacutoff_sum = 0;
 
 	ply = 0;
+	SelectiveDepth = 0;
 
 	for (int i = 0;i<2;i++)
 	{
@@ -59,7 +60,7 @@ void Engine::initialize()
 		Threats[i] = CONS_NULLMOVE;
 		incheck[i] = false;
 	}
-	for (unsigned int i = 0;i<64;i++) //ages the history table
+	for (unsigned int i = 0;i<64;i++)
 	{
 		for (unsigned int j = 0;j<64;j++)
 		{

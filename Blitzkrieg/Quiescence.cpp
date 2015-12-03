@@ -75,6 +75,10 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		}
 		//pos.forceMove(m);
 		ply++;
+		if (ply > SelectiveDepth)
+		{
+			SelectiveDepth = ply;
+		}
 		score = -QuiescenceSearchStandPat(-beta,-alpha);
 		pos.unmakeMove(m);
 		ply--;
