@@ -25,11 +25,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 134;
+const int ENGINEVERSION = 136;
 
 // Best Build so far: 129
 
 ///BUILDS
+// Build 136 - 03-12-2015 - Doubled pawn piecesq values and readded pawn duo bonuses
+// Build 135 - 03-12-2015 - Optimized so that we check whether a position is underCheck only once
 // Build 134 - 03-12-2015 - Removed i>=4 condition in LMR
 // Build 133 - 03-12-2015 - Doubled pawn shield bonus
 // Build 132 - 03-12-2015 - Reworked PieceSq values

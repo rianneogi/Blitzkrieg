@@ -76,6 +76,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 	for (int j = 0;j<100;j++)
 	{
 		Threats[j] = CONS_NULLMOVE;
+		incheck[j] = false;
 	}
 	for(unsigned int i = 0;i<64;i++) //ages the history table
 	{
@@ -140,7 +141,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 		ply = 0;
 		return bestmove;
 	}
-	
+	incheck[0] = pos.underCheck(pos.turn);
 	for (int i = 2;i <= MAXDEPTH;i++)
 	{
 		//mr = think(i,CONS_NEGINF,CONS_INF);
@@ -235,8 +236,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
 
-	bool underCheck = pos.underCheck(pos.turn);
-	if (underCheck) //check extension
+	//bool underCheck = pos.underCheck(pos.turn);
+	if (incheck[ply]) //check extension
 	{
 		depth++;
 	}
@@ -325,7 +326,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		leafeval = LeafEval<false>();
 	}
 
-	if (!dopv && ply != 0 && depth < 4 && !underCheck &&
+	if (!dopv && ply != 0 && depth < 4 && !incheck[ply] &&
 		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
 	{
 		prunednodes++;
@@ -338,7 +339,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			return v;
 	}
 
-	if (depth < 7 && ply != 0 && !underCheck && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
+	if (depth < 7 && ply != 0 && !incheck[ply] && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
 		prunednodes++;
 		return (leafeval - getFutilityMargin(depth));
@@ -357,7 +358,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	//adaptive null move pruning
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
-	if (cannull && !dopv && depth >= 3 && underCheck == false
+	if (cannull && !dopv && depth >= 3 && incheck[ply] == false
 		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK])
 			|| popcnt(pos.Pieces[pos.turn][PIECE_BISHOP] || popcnt(pos.Pieces[pos.turn][PIECE_KNIGHT]))
 			) //side to move does not have only pawns(to avoid zugzwang)
@@ -466,6 +467,15 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		ply++;
 		score = 0;
 
+		if (pos.underCheck(pos.turn))
+		{
+			incheck[ply] = true;
+		}
+		else
+		{
+			incheck[ply] = false;
+		}
+
 		int reductiondepth = 1;
 
 		//if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
@@ -481,7 +491,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			&& noMaterialGain(m)
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
-			&& !pos.underCheck(pos.turn)
+			&& !incheck[ply]
 			) //latemove reduction
 		{
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
@@ -532,9 +542,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				latemoveresearch++;
 			}
 		}
+		incheck[ply] = false;
 		ply--;
 		pos.unmakeMove(m);
-
 		//if (tablekey2 != pos.TTKey)
 		//{
 		//	cout << "info string TT Error at " << m.toString() << " " << ply << " " << PvSize << endl;

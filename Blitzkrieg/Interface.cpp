@@ -575,7 +575,7 @@ void Interface::info()
 		for (int i = 0;i < 64;i++)
 		{
 			if (i % 8 == 0) cout << endl;
-			cout << PieceSqEG[SQUARE_WHITEPAWN][i] << " ";
+			cout << PieceSq[SQUARE_WHITEPAWN][i] << " ";
 		}
 	}
 }

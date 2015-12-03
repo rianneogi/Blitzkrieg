@@ -37,6 +37,7 @@ class Engine
 	Move KillerMoves[2][100];
 	unsigned int HistoryScores[64][64];
 	Move Threats[100];
+	bool incheck[100];
 	//int KillerScores[2][100];
 	int ply;
 

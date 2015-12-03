@@ -57,6 +57,7 @@ void Engine::initialize()
 	for (int i = 0;i < 100;i++)
 	{
 		Threats[i] = CONS_NULLMOVE;
+		incheck[i] = false;
 	}
 	for (unsigned int i = 0;i<64;i++) //ages the history table
 	{
