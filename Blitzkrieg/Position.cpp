@@ -1561,7 +1561,9 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ,unsigne
 
 bool Position::underCheck(int turn)
 {
-    return isAttacked(turn,firstOf(Pieces[turn][PIECE_KING]));
+	unsigned long k = 0;
+	_BitScanForward64(&k, Pieces[turn][PIECE_KING]);
+    return isAttacked(turn,k);
 }
 
 Move Position::makeCapture(int piece, int n)
