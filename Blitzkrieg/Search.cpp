@@ -453,10 +453,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			&& depth >= 4
 			//&& special!=PIECE_QUEEN
 			//&& (see < 0 || !iscapture)
-			&& SortPhase == SORTPHASE_HISTORY
-			&& noMaterialGain(m)
-			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
-			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
+			&& SortPhase >= SORTPHASE_HISTORY
+			//&& noMaterialGain(m)
+			//&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
+			//&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !incheck[ply]
 			&& !incheck[ply-1]
 			) //latemove reduction
