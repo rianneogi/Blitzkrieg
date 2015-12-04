@@ -215,7 +215,7 @@ inline int getRank(unsigned long n)
 inline int getRank(int n)
 {
     //return Rank[n];
-	return (n >> 3);
+	return ((unsigned)(n) >> 3);
 }
 
 inline int getDiag(int n)

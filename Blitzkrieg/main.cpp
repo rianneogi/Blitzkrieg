@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 139;
+const int ENGINEVERSION = 140;
 
 // Best Build so far: 129
 
 ///BUILDS
+// Build 140 - 04-12-2015 - Now does not use LMR when under check
 // Build 139 - 04-12-2015 - Made underCheck() faster
 // Build 138 - 04-12-2015 - LMR now only reduces history moves
 // Build 137 - 03-12-2015 - Undid build 133

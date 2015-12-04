@@ -1430,7 +1430,7 @@ bool Position::isAttacked(int turn,int n) const
 {
     int opp = getOpponent(turn);
 	Bitset b = getBishopAttacks(n, OccupiedSq45, OccupiedSq135)&(Pieces[opp][PIECE_BISHOP] | Pieces[opp][PIECE_QUEEN]);
-	if(b!=0)
+	if (b != 0)
         return true;
 	b = getRookAttacks(n, OccupiedSq, OccupiedSq90)&(Pieces[opp][PIECE_ROOK] | Pieces[opp][PIECE_QUEEN]);
 	if (b != 0)
@@ -1563,7 +1563,7 @@ bool Position::underCheck(int turn)
 {
 	unsigned long k = 0;
 	_BitScanForward64(&k, Pieces[turn][PIECE_KING]);
-    return isAttacked(turn,k);
+    return isAttacked(turn, k);
 }
 
 Move Position::makeCapture(int piece, int n)

@@ -12,7 +12,7 @@ public:
 	Board(void);
 	~Board(void);
 
-	void makeMove(Move const& m);
+	bool makeMove(Move const& m);
 	void makeMove(int n);
 	void unmakeMove();
 	void generateMoves();

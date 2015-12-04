@@ -676,12 +676,14 @@ void Interface::makeMove()
     int flag = 0;
     for(unsigned int i = 0;i<board.moves.size();i++)
     {
-        if(board.moves.at(i).getTo() == to && board.moves.at(i).getFrom() == from && (board.moves.at(i).getSpecial() == sp 
-			|| board.moves.at(i).getSpecial() == PIECE_KING || board.moves.at(i).getSpecial()==PIECE_PAWN))
+		Move m = board.moves.at(i);
+        if(m.getTo() == to && m.getFrom() == from && (m.getSpecial() == sp
+			|| m.getSpecial() == PIECE_KING || m.getSpecial()==PIECE_PAWN))
         {
             flag = 1;
-            board.makeMove(i);
-			e1.makeMove(i);
+            if(!board.makeMove(m))
+				continue;
+			e1.makeMove(m);
 			int status = board.getGameStatus();
 			if(status==STATUS_WHITEMATED) //post the game end status
 			{

@@ -11,10 +11,12 @@ Board::~Board(void)
 {
 }
 
-void Board::makeMove(Move const& m)
+bool Board::makeMove(Move const& m)
 {
-	pos.forceMove(m);
+	if (!pos.makeMove(m))
+		return false;
 	prevmoves.push_back(m);
+	return true;
 }
 
 void Board::makeMove(int n)
