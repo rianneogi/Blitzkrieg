@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 144;
+const int ENGINEVERSION = 145;
 
-// Best Build so far: 139
+// Best Build so far: 143
 
 ///BUILDS
+// Build 145 - 05-12-2015 - Does not use LMR when under check (Build 140)
 // Build 144 - 04-12-2015 - Undid Build 140, pawn duo bonuses are added to PieceActivity instead of PawnStructure
 // Build 143 - 04-12-2015 - Added bonus for Rook on 7th, reduced Queen early penalty, reduced rook connected bonus
 // Build 142 - 04-12-2015 - Doubled Pawn Shield Bonus (Build 133)
