@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 137;
+const int ENGINEVERSION = 138;
 
 // Best Build so far: 129
 
 ///BUILDS
+// Build 138 - 04-12-2015 - LMR now only reduces history moves
 // Build 137 - 03-12-2015 - Undid build 133
 // Build 136 - 03-12-2015 - Doubled pawn piecesq values and readded pawn duo bonuses
 // Build 135 - 03-12-2015 - Optimized so that we check whether a position is underCheck only once

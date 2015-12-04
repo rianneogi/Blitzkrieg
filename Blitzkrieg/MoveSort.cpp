@@ -34,6 +34,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		if (m == PrincipalVariation.at(PrincipalVariation.size() - 1 - ply))
 		{
 			score += 6000000;
+			SortPhase = SORTPHASE_PV;
 			//cout << "info string pv hit " << ply << " " << m.toString() << " " << (PrincipalVariation.size() - 1 - ply) << endl;
 			return score;
 		}
@@ -41,11 +42,13 @@ unsigned long long Engine::getMoveScore(const Move& m)
 	if (m == Table.getBestMove(pos.TTKey)) //history best move is always first, give it a big advantage of 400000
 	{
 		score += 4000000;
+		SortPhase = SORTPHASE_HASH;
 		//tthitcount++;
 		return score;
 	}
 	if (m.getSpecial() == PIECE_QUEEN) //queen promotion
 	{
+		SortPhase = SORTPHASE_GOODCAP;
 		score += 3100000;
 		return score;
 	}
@@ -59,11 +62,15 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		//int x = movescore;
 		if (x >= 0) //if it is a good capture
 		{
+			SortPhase = SORTPHASE_GOODCAP;
 			score += 3000000 + x;
+			return score;
 		}
 		else //bad capture
 		{
+			SortPhase = SORTPHASE_BADCAP;
 			score += -500000 + x;
+			return score;
 		}
 	}
 	else if (special == PIECE_PAWN) //enpassant are also captures
@@ -71,29 +78,38 @@ unsigned long long Engine::getMoveScore(const Move& m)
 		int x = StaticExchangeEvaluation(to, from, movingpiece, capturedpiece);
 		if (x >= 0)
 		{
+			SortPhase = SORTPHASE_GOODCAP;
 			score += 3000000 + x;
+			return score;
 		}
 		else
 		{
+			SortPhase = SORTPHASE_BADCAP;
 			score += -500000 + x;
+			return score;
 		}
 	}
 	else
 	{
+		SortPhase = SORTPHASE_KILLER;
 		if (from == KillerMoves[0][ply].getFrom() && to == KillerMoves[0][ply].getTo()) //if its a killer move
 		{
 			score += 2500000;
+			return score;
 		}
 		else if (from == KillerMoves[1][ply].getFrom() && to == KillerMoves[1][ply].getTo())
 		{
 			score += 2000000;
+			return score;
 		}
 		else if (from == KillerMoves[2][ply].getFrom() && to == KillerMoves[2][ply].getTo())
 		{
 			score += 1500000;
+			return score;
 		}
 		else
 		{
+			SortPhase = SORTPHASE_HISTORY;
 			//if (pos.underCheck(pos.turn) == false) //move a threatened piece
 			//{
 			//	Move null = createNullMove(pos.epsquare);
@@ -119,8 +135,10 @@ unsigned long long Engine::getMoveScore(const Move& m)
 													 if (pos.turn == COLOR_BLACK)
 													 p2sq = -p2sq;
 													 score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
+			return score;
 		}
 	}
+	cout << "info string Move sort error" << endl;
 	return score;
 }
 
@@ -131,6 +149,7 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 	Move bigmove = moves.at(currentmove);
 	unsigned long long bigscore = getMoveScore(bigmove);
 	unsigned long long x;
+	int bigphase = SortPhase;
 	for (int i = currentmove + 1;i<moves.size();i++)
 	{
 		x = getMoveScore(moves.at(i));
@@ -139,11 +158,13 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 			bigscore = x;
 			bigmoveid = i;
 			bigmove = moves.at(i);
+			bigphase = SortPhase;
 		}
 	}
 	Move m = bigmove; //swap move
 	moves.at(bigmoveid) = moves.at(currentmove);
 	moves.at(currentmove) = m;
+	SortPhase = bigphase;
 	//int sc = scores.at(bigmove); //swap score
 	//scores.at(bigmove) = scores.at(currentmove);
 	//scores.at(currentmove) = sc;

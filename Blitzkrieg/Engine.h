@@ -18,6 +18,7 @@ extern int PieceSqValues[6][64];
 extern int SquareValues[64];
 
 enum EvalConstants{CONS_INF = 20000,CONS_NEGINF = -20000, CONS_DRAW = 0, CONS_MATED = -10000};
+enum SortPhases{SORTPHASE_NONE,SORTPHASE_PV,SORTPHASE_HASH,SORTPHASE_GOODCAP,SORTPHASE_KILLER,SORTPHASE_HISTORY,SORTPHASE_BADCAP};
 
 extern int EndgameMaterial;
 extern int MAXTIME;
@@ -41,6 +42,7 @@ class Engine
 	//int KillerScores[2][100];
 	int ply;
 	int SelectiveDepth;
+	int SortPhase;
 
 	//stats
 	unsigned long long nodes;

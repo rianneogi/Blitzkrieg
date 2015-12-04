@@ -389,13 +389,18 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
 	int bestscore = CONS_NEGINF;
+	//int oldsortphase = SORTPHASE_NONE;
 	for (unsigned int i = 0;i < vec.size();i++) //search
 	{
 		line.clear();
 		//dummyline.clear();
 		//m = vec.at(i);
 		//int tablekey2 = pos.TTKey;
+		//SortPhase = oldsortphase;
 		m = getHighestScoringMove(vec, i);
+
+		if (SortPhase == SORTPHASE_NONE)
+			cout << "info string Sort Phase error" << endl;
 
 		int capturedpiece = m.getCapturedPiece();
 		int special = m.getSpecial();
@@ -448,6 +453,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			&& depth >= 4
 			//&& special!=PIECE_QUEEN
 			//&& (see < 0 || !iscapture)
+			&& SortPhase == SORTPHASE_HISTORY
 			&& noMaterialGain(m)
 			&& (KillerMoves[0][ply].getTo() != moveto || KillerMoves[0][ply].getFrom() != movefrom)
 			&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
