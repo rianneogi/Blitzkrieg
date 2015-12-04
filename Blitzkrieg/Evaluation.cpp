@@ -29,7 +29,7 @@ int RookPairBonus = 10;
 int KnightOutpostBonus[8] = { 0,0,5,10,15,25,15,10 }; //non-negative values always(code will bug otherwise)
 int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 6, 4}; //non-negative values always(code will bug otherwise)
 
-int QueenOutEarlyPenalty = 10; //penalty for queens not on back rank for every minor on back rank
+int QueenOutEarlyPenalty = 4; //penalty for queens not on back rank for every minor on back rank
 
 // mobility bonus based on how many squares the pieces attack
 int BishopMobility[16]  = {-12, -4,  0,  2,  4,  4,  6,  6,  8,  8, 10, 10, 12, 14, 16};
@@ -103,7 +103,7 @@ int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 //Rooks
 int RookHalfOpenBonus[8] = {5,5,8,10,10,8,5,5};
 int RookOpenBonus[8] = {10,10,15,20,20,15,10,10};
-int RookConnectedBonus = 10;
+int RookConnectedBonus = 5;
 int RookBehindPassedPawnBonus = 20;
 int OppRookBehindPassedPawnPenalty = 15;
 
@@ -1195,6 +1195,7 @@ void evalinit()
 	int BishopFileValues[8] = { -6, -2, 0, 2, 2, 0, -2, -6 };
 	int BishopDiagBonus = 4;
 	int RookFileValues[8] = {-6,-3,0,3,3,0,-3,-6};
+	int Rook7thRankBonus = 5;
 	int QueenCentralizationValues[8] = { -12,-4,0,4,4,0,-4,-12 };
 	int KingRankValues[8] = { 10,0,-20,-30,-40,-50,-60,-70 };
 	int KingFileValues[8] = { 30,40,20,0,0,20,40,30 };
@@ -1212,6 +1213,8 @@ void evalinit()
 			PieceSqValues[PIECE_BISHOP][i] += BishopDiagBonus;
 		}
 		PieceSqValues[PIECE_ROOK][i] = RookFileValues[file];
+		if(i/8==6)
+			PieceSqValues[PIECE_ROOK][i] += Rook7thRankBonus;
 		PieceSqValuesEG[PIECE_ROOK][i] = 0;
 		PieceSqValues[PIECE_QUEEN][i] -= 10;
 		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];

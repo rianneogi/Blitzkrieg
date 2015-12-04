@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 142;
+const int ENGINEVERSION = 143;
 
 // Best Build so far: 139
 
 ///BUILDS
+// Build 143 - 04-12-2015 - Added bonus for Rook on 7th, reduced Queen early penalty, reduced rook connected bonus
 // Build 142 - 04-12-2015 - Doubled Pawn Shield Bonus (Build 133)
 // Build 141 - 04-12-2015 - Now does LMR on bad captures also
 // Build 140 - 04-12-2015 - Now does not use LMR when under check
