@@ -50,9 +50,9 @@ int BishopPawnSameColor[9] = {15,12,9,6,3,0,-3,-6,-9};
 int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
 
 //King Safety
-int PawnShield1Bonus = 10;
-int PawnShield2Bonus = 5;
-int BishopShieldBonus = 7;
+int PawnShield1Bonus = 20;
+int PawnShield2Bonus = 10;
+int BishopShieldBonus = 15;
 int KingOnHalfOpenFilePenalty = 15; //penalty for king being on half open files
 int KingOnOpenFilePenalty = 25; //penalty for king being on open files
 int KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half open files
