@@ -398,25 +398,25 @@ int Engine::LeafEval()
 	{
 		if (pos.Squares[27] == SQUARE_WHITEPAWN && pos.Squares[28] == SQUARE_WHITEPAWN)
 		{
-			PawnStructure[COLOR_WHITE] += PawnsE4D4Bonus;
+			PieceActivity[COLOR_WHITE] += PawnsE4D4Bonus;
 			if (Trace)
 				cout << "Bonus for E4D4 Pawns for White: " << PawnsE4D4Bonus << endl;
 		}
 		if (pos.Squares[28] == SQUARE_WHITEPAWN && pos.Squares[29] == SQUARE_WHITEPAWN)
 		{
-			PawnStructure[COLOR_WHITE] += PawnsC4D4Bonus;
+			PieceActivity[COLOR_WHITE] += PawnsC4D4Bonus;
 			if (Trace)
 				cout << "Bonus for C4D4 Pawns for White: " << PawnsC4D4Bonus << endl;
 		}
 		if (pos.Squares[35] == SQUARE_BLACKPAWN && pos.Squares[36] == SQUARE_BLACKPAWN)
 		{
-			PawnStructure[COLOR_BLACK] += PawnsE4D4Bonus;
+			PieceActivity[COLOR_BLACK] += PawnsE4D4Bonus;
 			if (Trace)
 				cout << "Bonus for E4D4 Pawns for Black: " << PawnsE4D4Bonus << endl;
 		}
 		if (pos.Squares[36] == SQUARE_BLACKPAWN && pos.Squares[37] == SQUARE_BLACKPAWN)
 		{
-			PawnStructure[COLOR_BLACK] += PawnsC4D4Bonus;
+			PieceActivity[COLOR_BLACK] += PawnsC4D4Bonus;
 			if (Trace)
 				cout << "Bonus for C4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
 		}
