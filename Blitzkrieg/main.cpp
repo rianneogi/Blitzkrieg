@@ -25,11 +25,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 146;
+const int ENGINEVERSION = 148;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 148 - 05-12-2015 - Undid last change, undid Build 142
+// Build 147 - 05-12-2015 - LMR reduction depth is now 1
 // Build 146 - 05-12-2015 - Removed pawn duo bonus
 // Build 145 - 05-12-2015 - Does not use LMR when under check (Build 140)
 // Build 144 - 04-12-2015 - Undid Build 140, pawn duo bonuses are added to PieceActivity instead of PawnStructure
