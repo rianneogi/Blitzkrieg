@@ -620,7 +620,7 @@ template<bool Trace> int Engine::LeafEval()
 		PawnCountColor[i][COLOR_BLACK] = popcnt(b&ColoredSquares[COLOR_BLACK]);
 	}
 
-	Bitset WeakPawns[2] = { 0,0 };
+	Bitset WeakPawns[2] = { pos.Pieces[COLOR_WHITE][PIECE_PAWN],pos.Pieces[COLOR_BLACK][PIECE_PAWN] };
 
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	for (int i = 0;i < 2;i++)
@@ -641,7 +641,7 @@ template<bool Trace> int Engine::LeafEval()
 
 			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[COLOR_WHITE][PIECE_PAWN]) //checks if this pawn is defended by a friendly pawn
 			{
-				WeakPawns[i] |= getPos2Bit(k);
+				WeakPawns[i] ^= getPos2Bit(k);
 			}
 
 			if (getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
