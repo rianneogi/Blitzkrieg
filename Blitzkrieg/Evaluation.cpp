@@ -77,6 +77,8 @@ int SafetyTable[100] = {
 };
 
 //Pawn Structure
+int PawnPressureBonus[8] = { 0,3,7,12,18,25,33,42 };
+//int ProtectedPawnPressureBonus[8] = { 0,1,2,3,5,7,9,11 };
 int NoPawnsPenalty = 32;
 int PawnsE4D4Bonus = 30;
 int PawnsC4D4Bonus = 20;
@@ -283,8 +285,7 @@ int PieceSqValuesEG[6][64] =
 //	lua_close(L);
 //}
 
-template<bool Trace>
-int Engine::LeafEval()
+template<bool Trace> int Engine::LeafEval()
 {
 	nodes++;
 	if (nodes%CheckupNodeCount == 0)
@@ -619,6 +620,8 @@ int Engine::LeafEval()
 		PawnCountColor[i][COLOR_BLACK] = popcnt(b&ColoredSquares[COLOR_BLACK]);
 	}
 
+	Bitset WeakPawns[2] = { 0,0 };
+
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	for (int i = 0;i < 2;i++)
 	{
@@ -635,6 +638,12 @@ int Engine::LeafEval()
 			//unsigned long k = 0;
 			_BitScanForward64(&k, b);
 			b ^= getPos2Bit(k);
+
+			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[COLOR_WHITE][PIECE_PAWN]) //checks if this pawn is defended by a friendly pawn
+			{
+				WeakPawns[i] |= getPos2Bit(k);
+			}
+
 			if (getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
 			{
 				PawnStructure[i] -= DoubledPawnPenalty[getFile(getColorMirror(i, k))];
@@ -835,6 +844,12 @@ int Engine::LeafEval()
 			PieceActivity[i] += RookMobility[popcnt(m)];
 			if (Trace)
 				cout << "Rook on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << RookMobility[popcnt(m)] << endl;
+
+			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
+			if (Trace)
+			{
+				cout << "Pawn pressure bonus for rook on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])] << endl;
+			}
 			
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK];
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK];
@@ -901,6 +916,12 @@ int Engine::LeafEval()
 			PieceActivity[i] += KnightMobility[popcnt(m)];
 			if (Trace)
 				cout << "Knight on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << KnightMobility[popcnt(m)] << endl;
+
+			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
+			if (Trace)
+			{
+				cout << "Pawn pressure bonus for knight on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])] << endl;
+			}
 
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_KNIGHT];
 
@@ -975,12 +996,19 @@ int Engine::LeafEval()
 			PieceActivity[i] += BishopMobility[popcnt(m)];
 			if (Trace)
 				cout << "Bishop on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << BishopMobility[popcnt(m)] << endl;
+
 			PieceActivity[i] += BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]]; //bishop pawn same color adjustment
 			PieceActivity[i] += BishopOppPawnSameColor[PawnCountColor[getOpponent(i)][SquareColor[k]]]; //bishop opp pawn same color adjustment
 			if (Trace)
 			{
 				cout << "Bishop on " << Int2Sq(k) << " Adj for our pawns on the same color for " << PlayerStrings[i] << ": " << BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]] << endl;
 				cout << "Bishop on " << Int2Sq(k) << " Adj for opponent pawns on the same color for " << PlayerStrings[i] << ": " << BishopOppPawnSameColor[PawnCountColor[getOpponent(i)][SquareColor[k]]] << endl;
+			}
+
+			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
+			if (Trace)
+			{
+				cout << "Pawn pressure bonus for bishop on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])] << endl;
 			}
 				
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
@@ -1018,6 +1046,12 @@ int Engine::LeafEval()
 			PieceActivity[i] += QueenMobility[popcnt(m)]; //mobility factor
 			if (Trace)
 				cout << "Queen on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << QueenMobility[popcnt(m)] << endl;
+
+			PieceActivity[i] += (unsigned)(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])])>>1; //half bonus for queens
+			if (Trace)
+			{
+				cout << "Pawn pressure bonus for queen on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]/2 << endl;
+			}
 
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN];
 			KingAttackUnits[getOpponent(i)] += long(popcnt(KingField[getOpponent(i)]&m))*AttackWeights[PIECE_QUEEN];

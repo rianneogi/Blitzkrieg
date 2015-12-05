@@ -325,8 +325,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//&& leafeval >= beta
 		)
 	{
-		int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
-		//int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
+		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
+		int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
 		ply++;
 		int ttkeynull = pos.TTKey;
@@ -353,7 +353,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 
 	//futility pruning
-	bool futilityprune = false;
+	//bool futilityprune = false;
 
 	//if (depth < 4 && !underCheck && 
 	//	(((leafeval + FutilityMargin[depth]) <= alpha))) //futility pruning
@@ -372,14 +372,14 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	vector<Move> vec;
 	vec.reserve(128);
 	//movegentime.Start();
-	if (futilityprune)
-	{
-		pos.generateCaptures(vec); //search only captures in futility pruning
-	}
-	else
-	{
+	//if (futilityprune)
+	//{
+	//	pos.generateCaptures(vec); //search only captures in futility pruning
+	//}
+	//else
+	//{
 		pos.generateMoves(vec);
-	}
+	//}
 	//movegentime.Stop();
 	/*vector<Move> line;
 	line.reserve(128);*/
@@ -583,35 +583,35 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 	if(!foundlegal)
 	{
-		if(futilityprune)
-		{
-			//movegentime.Start();
-			vec.clear();
-			pos.generateMoves(vec);
-			//movegentime.Stop();
-			int flag = 1;
-			for(int i = 0;i<vec.size();i++)
-			{
-				if(pos.makeMove(m))
-				{
-					unmakeMove(m);
-					flag = 0;
-					break;
-				}
-			}
-			if(flag)
-			{
-				if(pos.underCheck(pos.turn))
-				{
-					return CONS_MATED-ply;
-				}
-				else
-				{
-					return CONS_DRAW;
-				}
-			}
-		}
-		else
+		//if(futilityprune)
+		//{
+		//	//movegentime.Start();
+		//	vec.clear();
+		//	pos.generateMoves(vec);
+		//	//movegentime.Stop();
+		//	int flag = 1;
+		//	for(int i = 0;i<vec.size();i++)
+		//	{
+		//		if(pos.makeMove(m))
+		//		{
+		//			unmakeMove(m);
+		//			flag = 0;
+		//			break;
+		//		}
+		//	}
+		//	if(flag)
+		//	{
+		//		if(pos.underCheck(pos.turn))
+		//		{
+		//			return CONS_MATED-ply;
+		//		}
+		//		else
+		//		{
+		//			return CONS_DRAW;
+		//		}
+		//	}
+		//}
+		//else
 		{
 			if(pos.underCheck(pos.turn))
 			{

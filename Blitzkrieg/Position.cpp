@@ -1354,7 +1354,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         b^=Pos2Bit[n];
         /*Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
         m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
-		Bitset m = getBishopAttacks(n, OccupiedSq45, OccupiedSq135);
+		Bitset m = getBishopAttacks(n, OccupiedSq45,OccupiedSq135);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
@@ -1373,7 +1373,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
         b^=Pos2Bit[n];
-		Bitset m = getQueenAttacks(n, OccupiedSq, OccupiedSq90, OccupiedSq45, OccupiedSq135);
+		Bitset m = getQueenAttacks(n, OccupiedSq,OccupiedSq90,OccupiedSq45,OccupiedSq135);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
@@ -1429,10 +1429,10 @@ bool Position::isLegal(Move const& m)
 bool Position::isAttacked(int turn,int n) const
 {
     int opp = getOpponent(turn);
-	Bitset b = getBishopAttacks(n, OccupiedSq45, OccupiedSq135)&(Pieces[opp][PIECE_BISHOP] | Pieces[opp][PIECE_QUEEN]);
+	Bitset b = getBishopAttacks(n, OccupiedSq45,OccupiedSq135)&(Pieces[opp][PIECE_BISHOP] | Pieces[opp][PIECE_QUEEN]);
 	if (b != 0)
         return true;
-	b = getRookAttacks(n, OccupiedSq, OccupiedSq90)&(Pieces[opp][PIECE_ROOK] | Pieces[opp][PIECE_QUEEN]);
+	b = getRookAttacks(n, OccupiedSq,OccupiedSq90)&(Pieces[opp][PIECE_ROOK] | Pieces[opp][PIECE_QUEEN]);
 	if (b != 0)
 		return true;
 	b = PawnAttacks[turn][n] & Pieces[opp][PIECE_PAWN];
@@ -1536,8 +1536,8 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ,unsigne
 		//if(isLegal(mov))
 			return mov;
 	}
-	b |= getBishopAttacks(n,occ45,occ135);
-	b |= getRookAttacks(n,occ,occ90);
+	b |= getBishopAttacks(n, occ45, occ135);
+	b |= getRookAttacks(n, occ90, occ);
 	b &= Pieces[turn][PIECE_QUEEN];
 	if(b!=0)
 	{
@@ -1669,21 +1669,33 @@ bool Position::isRepetition()
 	return false;
 }
 
-Bitset getRookAttacks(int sq,unsigned long long occ,unsigned long long occ90)
+Bitset getRookAttacks(int sq, Bitset occ,Bitset occ90)
 {
 	Bitset m = RookRankMoves[sq][(occ>>(RankOffset[sq]))&0xff];
     m |= RookFileMoves[sq][(occ90>>(FileOffset[sq]))&0xff];
+	/*int rank = getRank(sq);
+	int occupancy = (int)((occ&SixBitRankMask[rank]) >> RankOffset[sq]);
+	Bitset m = RankAttacks[sq][(occupancy >> 1) & 63];
+	int file = getFile(sq);
+	occupancy = (int)((occ&SixBitFileMask[file])*(FileMagic[file]>>56));
+	m |= FileAttacks[sq][(occupancy >> 1) & 63];*/
     return m;
 }
 
-Bitset getBishopAttacks(int sq,unsigned long long occ45,unsigned long long occ135)
+Bitset getBishopAttacks(int sq,Bitset occ45, Bitset occ135)
 {
 	Bitset m = BishopA1H8Moves[sq][(occ135>>Diagonal[turn135[sq]])&0xff];
     m |= BishopA8H1Moves[sq][(occ45>>Diagonal[turn45[sq]])&0xff];
+	/*int diag = getA1H8DiagonalIndex(sq);
+	int occupancy = (int)((occ&A1H8DiagonalMask[diag])*(A1H8DiagonalMagic[diag] >> 56));
+	Bitset m = A1H8DiagonalAttacks[sq][(occupancy >> 1) & 63];
+	diag = getH1A8AntiDiagonalIndex(sq);
+	occupancy = (int)((occ&H1A8DiagonalMask[diag])*(H1A8DiagonalMagic[diag] >> 56));
+	m |= H1A8DiagonalAttacks[sq][(occupancy >> 1) & 63];*/
     return m;
 }
 
-Bitset getQueenAttacks(int sq, Bitset occ, Bitset occ90, Bitset occ45, Bitset occ135)
+Bitset getQueenAttacks(int sq, Bitset occ, Bitset occ90,Bitset occ45,Bitset occ135)
 {
 	Bitset m = getRookAttacks(sq, occ, occ90);
 	m |= getBishopAttacks(sq, occ45, occ135);
