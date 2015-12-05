@@ -4,13 +4,13 @@
 
 jmp_buf env;
 
-int FutilityMargin[4] = {0,100,100,500};
-int ForwardPruningMargin[4] = { 0,1000,1000,1500};
-int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
+//int FutilityMargin[4] = {0,100,100,500};
+//int ForwardPruningMargin[4] = { 0,1000,1000,1500};
+//int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
 
 int MAXTIME = 1000;
 int MAXDEPTH = 100;
-int CheckupNodeCount = 16384;
+const int CheckupNodeCount = 16384;
 
 inline int getRazorMargin(int depth)
 {

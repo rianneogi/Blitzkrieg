@@ -23,7 +23,7 @@ enum SortPhases{SORTPHASE_NONE,SORTPHASE_PV,SORTPHASE_HASH,SORTPHASE_GOODCAP,SOR
 extern int EndgameMaterial;
 extern int MAXTIME;
 extern int MAXDEPTH;
-extern int CheckupNodeCount;
+extern const int CheckupNodeCount;
 
 class Engine
 {

@@ -923,13 +923,13 @@ void Position::generateMoves(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         Bitset m = PawnMoves[turn][n]&(PawnMoves[turn][n]^OccupiedSq);
         while(m)
         {
 			unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
 			if(getRank(k)==7 || getRank(k)==0) //promotion
 			{
 				Move movq(n,k,PIECE_PAWN,Squares[k],PIECE_QUEEN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1054,12 +1054,12 @@ void Position::generateMoves(vector<Move>& moves) const
 		if(epsquare==0)
 			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)]);
 		else
-			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | Pos2Bit[epsquare]);
+			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | getPos2Bit(epsquare));
         while(x)
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,x);
-            x^=Pos2Bit[k];
+			x ^= getPos2Bit(k);
 			if(getRank(int(k))==7 || getRank(int(k))==0) //promotion
 			{
 				Move movq(n,k,PIECE_PAWN,Squares[k],PIECE_QUEEN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1094,13 +1094,13 @@ void Position::generateMoves(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         Bitset m = KnightMoves[n]&(KnightMoves[n]^ColorPieces[turn]);
         while(m)
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KNIGHT,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1111,13 +1111,13 @@ void Position::generateMoves(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         Bitset m = KingMoves[n]&(KingMoves[n]^ColorPieces[turn]);
         while(m)
         {
 			unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KING,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1129,7 +1129,7 @@ void Position::generateMoves(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
 		Bitset m = getRookAttacks(n,OccupiedSq,OccupiedSq90);
@@ -1138,7 +1138,7 @@ void Position::generateMoves(vector<Move>& moves) const
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_ROOK,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1150,14 +1150,14 @@ void Position::generateMoves(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
 		Bitset m = getBishopAttacks(n,OccupiedSq45,OccupiedSq135);
         m &= m^ColorPieces[turn];
         while(m)
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+            m^=getPos2Bit(k);
             Move mov(n,k,PIECE_BISHOP,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1169,7 +1169,7 @@ void Position::generateMoves(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
         m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
@@ -1180,7 +1180,7 @@ void Position::generateMoves(vector<Move>& moves) const
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_QUEEN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1256,19 +1256,19 @@ void Position::generateCaptures(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
 
         //Pawn Attacks
         Bitset x = 0x0;
 		if(epsquare==0)
 			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)]);
 		else
-			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | Pos2Bit[epsquare]);
+			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | getPos2Bit(epsquare));
         while(x)
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,x);
-            x^=Pos2Bit[k];
+			x ^= getPos2Bit(k);
 			if(getRank(k)==7 || getRank(k)==0) //promotion
 			{
 				Move movq(n,k,PIECE_PAWN,Squares[k],PIECE_QUEEN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1295,13 +1295,13 @@ void Position::generateCaptures(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+        b^=getPos2Bit(n);
         Bitset m = getKnightMoves(n)&ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+            m^=getPos2Bit(k);
             Move mov(n,k,PIECE_KNIGHT,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1312,13 +1312,13 @@ void Position::generateCaptures(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         Bitset m = KingMoves[n]&ColorPieces[getOpponent(turn)];
         while(m)
         {
 			unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KING,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1330,7 +1330,7 @@ void Position::generateCaptures(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
 		Bitset m = getRookAttacks(n,OccupiedSq,OccupiedSq90);
@@ -1339,7 +1339,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_ROOK,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1351,7 +1351,7 @@ void Position::generateCaptures(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
         /*Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
         m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
 		Bitset m = getBishopAttacks(n, OccupiedSq45,OccupiedSq135);
@@ -1360,7 +1360,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_BISHOP,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
@@ -1372,14 +1372,14 @@ void Position::generateCaptures(vector<Move>& moves) const
     {
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
-        b^=Pos2Bit[n];
+		b ^= getPos2Bit(n);
 		Bitset m = getQueenAttacks(n, OccupiedSq,OccupiedSq90,OccupiedSq45,OccupiedSq135);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
 			_BitScanForward64(&k,m);
-            m^=Pos2Bit[k];
+			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_QUEEN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
         }
