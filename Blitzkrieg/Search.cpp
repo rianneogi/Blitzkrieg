@@ -325,8 +325,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//&& leafeval >= beta
 		)
 	{
-		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
-		int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
+		int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
+		//int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
 		ply++;
 		int ttkeynull = pos.TTKey;

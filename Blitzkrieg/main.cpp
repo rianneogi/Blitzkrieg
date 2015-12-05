@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 148;
+const int ENGINEVERSION = 149;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 149 - 05-12-2015 - Changed null move reduction value to d>5?3:2
 // Build 148 - 05-12-2015 - Undid last change, undid Build 142
 // Build 147 - 05-12-2015 - LMR reduction depth is now 1
 // Build 146 - 05-12-2015 - Removed pawn duo bonus
