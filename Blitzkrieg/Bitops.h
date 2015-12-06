@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 #include <assert.h>
+#include <fstream>
 
 using namespace std;
 
@@ -18,18 +19,6 @@ SQUARE_WHITEQUEEN,SQUARE_WHITEKING,SQUARE_BLACKPAWN,SQUARE_BLACKKNIGHT,
 SQUARE_BLACKBISHOP,SQUARE_BLACKROOK,SQUARE_BLACKQUEEN,SQUARE_BLACKKING};
 enum COLORS {COLOR_WHITE,COLOR_BLACK,COLOR_NONE};
 enum OUTPUTTYPE {OUTPUT_CONSOLE,OUTPUT_XBOARD,OUTPUT_UCI};
-
-extern Bitset RookAttacks[64][4096];
-extern Bitset BishopAttacks[64][512];
-
-struct Magic
-{
-	Bitset mask;
-	Bitset magic;
-};
-
-extern Magic BishopMagicTable[64];
-extern Magic RookMagicTable[64];
 
 extern int OUTPUT;
 extern bool DEBUG;

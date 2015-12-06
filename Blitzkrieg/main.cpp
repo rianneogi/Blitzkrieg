@@ -25,11 +25,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 153;
+const int ENGINEVERSION = 155;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 155 - 06-12-2015 - Reduced Pawn Pressure bonus, added code to support magic bitboards
+// Build 154 - 06-12-2015 - Halfed pawn duo bonuses
 // Build 153 - 06-12-2015 - Doubled pawn shield bonus, doubled pawn duo bonus
 // Build 152 - 06-12-2015 - Added small bonus for pawn duo
 // Build 151 - 05-12-2015 - Optimized a bit
@@ -395,15 +397,24 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 	f2.close();
 }
 
+void initialize()
+{
+	attacksinit();
+	magicinit();
+	datainit();
+	searchinit();
+	evalinit();
+	TTinit();
+	cout << "Initialization done" << endl;
+}
+
 int main(int argc, char* args[])
 {
 	srand(time(0));
 	//loadFromLua("Personalities\\Wierd.lua");
-    datainit();
-	searchinit();
-	evalinit();
-	TTinit();
-    cout << "Initialization done" << endl;
+	
+	initialize();
+	//generateMagics();
 
 	Interface i = Interface();
 
@@ -422,8 +433,29 @@ int main(int argc, char* args[])
 		}
 		cout << val << " ";
 	}*/
+
+
+	/*for (int i = 63;i >= 0;i--)
+	{
+		printBitset(BishopAttacks[i][4]);
+		cout << endl;
+	}*/
+	//cout << j&(getPos2Bit(BBits[i]) - 1) << endl;
+	/*for (int i = 0;i < 64;i++)
+	{
+		printBitset(BishopAttacks[i][4]);
+		cout << endl;
+	}*/
 	
 	//testpositions("wac", 0, 0, 1000, i.e1);
+
+	//cout << find_magic(0, 0, 1);
+
+	/*printBitset(0x1111111111111111); cout << endl;
+	printBitset(0x480014006803021ULL); cout << endl;
+	printBitset(0x1111111111111111 * 0x80008040002010ULL);*/
+
+
     
 	try{
     i.start();

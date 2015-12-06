@@ -37,12 +37,6 @@ Bitset KingShield1[2][64];
 Bitset KingShield2[2][64];
 Bitset KingField[2][64];
 
-Bitset RookAttacks[64][4096];
-Bitset BishopAttacks[64][512];
-
-Magic BishopMagicTable[64];
-Magic RookMagicTable[64];
-
 int Opponent[2] = {COLOR_BLACK,COLOR_WHITE};
 
 int Square2Piece[13] = {PIECE_NONE,PIECE_PAWN,PIECE_KNIGHT,PIECE_BISHOP,PIECE_ROOK,PIECE_QUEEN,

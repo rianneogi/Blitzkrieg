@@ -10,7 +10,8 @@ const float KingSafetyFactor = 1;
 
 int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
 int MaterialValues[13] = {0,100,325,335,500,975,-CONS_MATED,-100,-325,-335,-500,-975,CONS_MATED};
-int TotalMaterial = 2 * (8*PieceMaterial[0] + 2*PieceMaterial[1] + 2*PieceMaterial[2] + 2*PieceMaterial[3] + PieceMaterial[4]);
+int TotalMaterial = (8*PieceMaterial[0] + 2*PieceMaterial[1] + 2*PieceMaterial[2] + 2*PieceMaterial[3] + PieceMaterial[4]);
+int TotalMaterialBothSides = TotalMaterial * 2;
 
 int EndgameMaterial = 3800;
 
@@ -77,11 +78,11 @@ int SafetyTable[100] = {
 };
 
 //Pawn Structure
-int PawnPressureBonus[8] = { 0,3,7,12,18,25,33,42 };
+int PawnPressureBonus[8] = { 0,1,3,6,10,15,21,28 };
 //int ProtectedPawnPressureBonus[8] = { 0,1,2,3,5,7,9,11 };
 int NoPawnsPenalty = 32;
-int PawnsE4D4Bonus = 30;
-int PawnsC4D4Bonus = 20;
+int PawnsE4D4Bonus = 15;
+int PawnsC4D4Bonus = 10;
 int DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
 int IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
 int BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
@@ -1098,8 +1099,8 @@ template<bool Trace> int Engine::LeafEval()
 	for (int i = 0;i < 2;i++)
 	{
 		PieceActivity[i] = PieceActivity[i] * PieceActivityFactor;
-		KingSafety[i] = (KingSafety[i] * KingSafetyFactor * currentMaterial) / TotalMaterial;
-		PawnStructure[i] = ((PawnStructure[i] * PawnStructureFactor)/2) + (((PawnStructure[i]*PawnStructureFactor) * (TotalMaterial-currentMaterial)) / (TotalMaterial*2));
+		KingSafety[i] = (KingSafety[i] * KingSafetyFactor * Material[getOpponent(i)]) / TotalMaterial;
+		PawnStructure[i] = ((PawnStructure[i] * PawnStructureFactor)/2) + (((PawnStructure[i]*PawnStructureFactor) * (TotalMaterial- Material[getOpponent(i)])) / (TotalMaterial*2));
 	}
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	//	pawnprobe = ((pawnprobe * PawnStructureFactor) / 2) + (((pawnprobe * PawnStructureFactor) * (TotalMaterial - currentMaterial)) / (TotalMaterial * 2));

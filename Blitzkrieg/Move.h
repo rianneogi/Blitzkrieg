@@ -1,7 +1,7 @@
 #ifndef MOVE_H_INCLUDED
 #define MOVE_H_INCLUDED
 
-#include "Bitops.h"
+#include "MagicBitboards.h"
 #include <vector>
 #include <deque>
 
