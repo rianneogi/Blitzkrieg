@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 152;
+const int ENGINEVERSION = 153;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 153 - 06-12-2015 - Doubled pawn shield bonus, doubled pawn duo bonus
 // Build 152 - 06-12-2015 - Added small bonus for pawn duo
 // Build 151 - 05-12-2015 - Optimized a bit
 // Build 150 - 05-12-2015 - Undid last change, added bonus for attacking unprotected pawns

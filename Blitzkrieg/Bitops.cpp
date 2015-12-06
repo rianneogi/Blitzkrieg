@@ -37,6 +37,12 @@ Bitset KingShield1[2][64];
 Bitset KingShield2[2][64];
 Bitset KingField[2][64];
 
+Bitset RookAttacks[64][4096];
+Bitset BishopAttacks[64][512];
+
+Magic BishopMagicTable[64];
+Magic RookMagicTable[64];
+
 int Opponent[2] = {COLOR_BLACK,COLOR_WHITE};
 
 int Square2Piece[13] = {PIECE_NONE,PIECE_PAWN,PIECE_KNIGHT,PIECE_BISHOP,PIECE_ROOK,PIECE_QUEEN,
@@ -51,6 +57,8 @@ Bitset EnemyTerritory[2] = { 0xffffffff00000000, 0x00000000ffffffff };
 
 Bitset CenterBits = 0x0000001818000000;
 Bitset CenterBorderBits = 0x00003C24243C0000;
+
+
 
 int Plus8[64] = { 8, 9,10,11,12,13,14,15,
                  16,17,18,19,20,21,22,23,
