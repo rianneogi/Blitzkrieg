@@ -25,11 +25,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 155;
+const int ENGINEVERSION = 156;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 156 - 06-12-2015 - Removed pawn duo bonus, KingSafety now scales with opponent's material instead of total material
 // Build 155 - 06-12-2015 - Reduced Pawn Pressure bonus, added code to support magic bitboards
 // Build 154 - 06-12-2015 - Halfed pawn duo bonuses
 // Build 153 - 06-12-2015 - Doubled pawn shield bonus, doubled pawn duo bonus
