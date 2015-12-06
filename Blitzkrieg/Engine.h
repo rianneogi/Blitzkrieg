@@ -36,7 +36,7 @@ class Engine
 	int PvSize;
 	int PvPly;
 	Move KillerMoves[2][100];
-	unsigned int HistoryScores[64][64];
+	long HistoryScores[64][64];
 	Move Threats[100];
 	bool incheck[100];
 	//int KillerScores[2][100];
@@ -79,7 +79,7 @@ class Engine
 	Move IterativeDeepening(int movetime, bool print);
 	int AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv);
 	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
-	unsigned long long getMoveScore(const Move& m);
+	long long getMoveScore(const Move& m);
 	void generateCaptureScores(vector<Move>& moves, vector<int>& scores);
 	void checkup();
 	void setKiller(Move m,int depth,int score);

@@ -8,13 +8,11 @@ using namespace std;
 
 ///TODO
 // Use arrays instead of vectors to improve speed
-// check ep
 // find a way to make PV generation faster my making lineptr a pointer instead of an object
-// add enpassant values to Hash Entries
 ///TODO
 
 ///BUGS
-// Rare crash
+// Rare crash at move 196
 // FIXED - Search doesn't consider enpassant moves even though they are generated my movegen
 // FIXED - Engine crashes when near mate
 // FIXED - Bug where after calculating upto depth 6 then calculating upto depth 5 after e2e4 e7e5 leads to messed up engine position
@@ -25,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 156;
+const int ENGINEVERSION = 157;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 157 - 06-12-2015 - Added extra history-based reduction in LMR
 // Build 156 - 06-12-2015 - Removed pawn duo bonus, KingSafety now scales with opponent's material instead of total material
 // Build 155 - 06-12-2015 - Reduced Pawn Pressure bonus, added code to support magic bitboards
 // Build 154 - 06-12-2015 - Halfed pawn duo bonuses
@@ -400,9 +399,9 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 
 void initialize()
 {
+	datainit();
 	attacksinit();
 	magicinit();
-	datainit();
 	searchinit();
 	evalinit();
 	TTinit();
@@ -418,7 +417,20 @@ int main(int argc, char* args[])
 	//generateMagics();
 
 	Interface i = Interface();
-
+	/*printBitset(RookMagicTable[0].mask);
+	cout << endl;
+	printBitset((RookMagicTable[0].mask* RookMagicTable[0].magic)>>RookMagicTable[0].shift);
+	cout << endl;
+	printBitset((0x1111111111111111ULL&RookMagicTable[0].mask));
+	cout << endl;
+	printBitset(((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[0].magic)>> RookMagicTable[0].shift);
+	cout << endl;*/
+	/*for (int i = 63;i >= 0;i--)
+	{
+		printBitset(RookAttacks[i][(int)(((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[i].magic) >> RookMagicTable[i].shift)]);
+		cout << endl;
+	}*/
+	
 	/*for (int i = 0;i < 64;i++)
 	{
 		if (i % 8 == 0)
@@ -438,7 +450,7 @@ int main(int argc, char* args[])
 
 	/*for (int i = 63;i >= 0;i--)
 	{
-		printBitset(BishopAttacks[i][4]);
+		printBitset(RookAttacks[i][0]);
 		cout << endl;
 	}*/
 	//cout << j&(getPos2Bit(BBits[i]) - 1) << endl;
@@ -453,8 +465,8 @@ int main(int argc, char* args[])
 	//cout << find_magic(0, 0, 1);
 
 	/*printBitset(0x1111111111111111); cout << endl;
-	printBitset(0x480014006803021ULL); cout << endl;
-	printBitset(0x1111111111111111 * 0x80008040002010ULL);*/
+	printBitset(0x480014006803021ULL); cout << endl;*/
+	//printBitset(0x1111111111111111 * 0x80008040002010ULL);
 
 
     

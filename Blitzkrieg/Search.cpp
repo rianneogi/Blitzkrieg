@@ -464,6 +464,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
 				//reductiondepth += depth > 4 ? 2 : 1;
 			reductiondepth += depth > 4 ? 2 : 1;
+			if (HistoryScores[movingpiece][moveto] < 0)
+			{
+				reductiondepth++;
+			}
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
@@ -544,7 +548,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				}
 				for (int i = 0;i < quietmoves.size();i++)
 				{
-					HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] = max((int)(HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()])-bonus,0);
+					HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] -= bonus;
 				}
 			}
 			betacutoff_counter++;

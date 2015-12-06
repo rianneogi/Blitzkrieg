@@ -1673,17 +1673,12 @@ Bitset getRookAttacks(int sq, Bitset occ,Bitset occ90)
 {
 	Bitset m = RookRankMoves[sq][(occ>>(RankOffset[sq]))&0xff];
     m |= RookFileMoves[sq][(occ90>>(FileOffset[sq]))&0xff];
-	/*int rank = getRank(sq);
-	int occupancy = (int)((occ&SixBitRankMask[rank]) >> RankOffset[sq]);
-	Bitset m = RankAttacks[sq][(occupancy >> 1) & 63];
-	int file = getFile(sq);
-	occupancy = (int)((occ&SixBitFileMask[file])*(FileMagic[file]>>56));
-	m |= FileAttacks[sq][(occupancy >> 1) & 63];*/
     return m;
+	//occ = ((occ&RookMagicTable[sq].mask)*RookMagicTable[sq].magic) >> RookMagicTable[sq].shift;
 	/*occ &= RookMagicTable[sq].mask;
 	occ *= RookMagicTable[sq].magic;
-	occ >>= RookMagicTable[sq].shift;
-	return RookAttacks[sq][occ];*/
+	occ >>= RookMagicTable[sq].shift;*/
+	//return RookAttacks[sq][occ];
 }
 
 Bitset getBishopAttacks(int sq, Bitset occ45, Bitset occ135)

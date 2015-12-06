@@ -21,14 +21,14 @@ void Engine::generateCaptureScores(vector<Move>& moves, vector<int>& scores)
 	}
 }
 
-unsigned long long Engine::getMoveScore(const Move& m)
+long long Engine::getMoveScore(const Move& m)
 {
 	int from = m.getFrom();
 	int to = m.getTo();
 	int capturedpiece = m.getCapturedPiece();
 	int special = m.getSpecial();
 	int movingpiece = m.getMovingPiece();
-	unsigned long long score = 1000000;
+	long long score = 1000000;
 	if (ply < PrincipalVariation.size())
 	{
 		if (m == PrincipalVariation.at(PrincipalVariation.size() - 1 - ply))
@@ -135,7 +135,7 @@ unsigned long long Engine::getMoveScore(const Move& m)
 													 if (pos.turn == COLOR_BLACK)
 													 p2sq = -p2sq;
 													 score += PieceSq[p2sq][to] - PieceSq[p2sq][from];*/
-			return score;
+			return max(score,(long long)0);
 		}
 	}
 	cout << "info string Move sort error" << endl;
@@ -147,8 +147,8 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 	//sorttime.Start();
 	int bigmoveid = currentmove;
 	Move bigmove = moves.at(currentmove);
-	unsigned long long bigscore = getMoveScore(bigmove);
-	unsigned long long x;
+	long long bigscore = getMoveScore(bigmove);
+	long long x;
 	int bigphase = SortPhase;
 	for (int i = currentmove + 1;i<moves.size();i++)
 	{

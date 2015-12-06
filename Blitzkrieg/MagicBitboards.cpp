@@ -7,137 +7,159 @@ Magic BishopMagicTable[64];
 Magic RookMagicTable[64];
 
 const Bitset RookMagic[64] = {
-	0x8001d026804000ULL,
-	0x40004020001000ULL,
-	0xa00108008204200ULL,
-	0x2080100008020480ULL,
-	0x200020010080420ULL,
-	0x200020008044190ULL,
-	0x400040208210090ULL,
-	0x10801ac100002180ULL,
-	0x42002041020080ULL,
-	0x1400040201002ULL,
-	0x82002040820810ULL,
-	0x4421001000082100ULL,
-	0xc01001004080102ULL,
-	0x4002000402000910ULL,
-	0x2004841040200ULL,
-	0x3005000040810012ULL,
-	0x120410020800104ULL,
-	0x10044000200248ULL,
-	0x30120022804200ULL,
-	0x2100090021011000ULL,
-	0x124008004080080ULL,
-	0x600c080110402004ULL,
-	0x40008212210ULL,
-	0xa06200004c0089ULL,
-	0x480004140002000ULL,
-	0xc10081002c4000ULL,
-	0x1001100200041ULL,
-	0x4000100100200900ULL,
-	0x22002200040810ULL,
-	0x1000400801042090ULL,
-	0x440040101000200ULL,
-	0x40082001c4405ULL,
-	0x2920401020800080ULL,
-	0x410002002400048ULL,
-	0x28208042001201ULL,
-	0x10004400400800ULL,
-	0x880100501000801ULL,
-	0x84000824012050ULL,
-	0x5000411002200ULL,
-	0x14a302000144ULL,
-	0x410200820022ULL,
-	0x830500020004004ULL,
-	0x2445408112060020ULL,
-	0x2008100100210009ULL,
-	0x4021001008010004ULL,
-	0x1142001020040400ULL,
-	0x2100802040001ULL,
-	0x800004400820001ULL,
-	0x1440008000204080ULL,
-	0x401002200804200ULL,
-	0xa2448122001200ULL,
-	0x10100100082100ULL,
-	0x200a000c0600ULL,
-	0x4004002010040ULL,
-	0x20801500400ULL,
-	0x42084004d1200ULL,
-	0x8012004080210aULL,
-	0x440008210482101ULL,
-	0x41422001080400aULL,
-	0x201002004100109ULL,
-	0x4200a01044082aULL,
-	0x13000400020801ULL,
-	0x200102102081084ULL,
-	0x2800240020410082ULL,
+	0x80002010804001ULL,
+	0x840002003100940ULL,
+	0x2100150040082000ULL,
+	0x1100092101100004ULL,
+	0x600041042002018ULL,
+	0x200100408020001ULL,
+	0x80020000800100ULL,
+	0x200003204004081ULL,
+	0x34a002042010081ULL,
+	0x1800400050002002ULL,
+	0x10a1002001001040ULL,
+	0x1001000200904ULL,
+	0x2101000800061100ULL,
+	0x26000825120010ULL,
+	0x4024000401100802ULL,
+	0x5011000040820100ULL,
+	0x480004000200040ULL,
+	0x4030004020004000ULL,
+	0x210410010200100ULL,
+	0x30004008040040ULL,
+	0x188110004080100ULL,
+	0x941010004000802ULL,
+	0x21040010020841ULL,
+	0x25060000440289ULL,
+	0x4080004140002006ULL,
+	0x2140500040002000ULL,
+	0x20410100200810ULL,
+	0x1000090100100420ULL,
+	0x1080050100080011ULL,
+	0x2401000900040002ULL,
+	0x200010400080290ULL,
+	0x85408a00040041ULL,
+	0x80012003400140ULL,
+	0x1010002001404000ULL,
+	0x220080141401000ULL,
+	0x18081001002100ULL,
+	0x9000411000800ULL,
+	0x5c000200800480ULL,
+	0x2101001431000200ULL,
+	0x501038242002411ULL,
+	0x1180022000414000ULL,
+	0x1410004020004019ULL,
+	0x201004020010011ULL,
+	0x98010200101000ULL,
+	0x801000800130004ULL,
+	0x802001004020009ULL,
+	0x2002008001004040ULL,
+	0x251000d4881000aULL,
+	0x1020208042010200ULL,
+	0x10200040100a40ULL,
+	0x2008146112200ULL,
+	0x10102042000a00ULL,
+	0x4884004800800480ULL,
+	0x10402004100801ULL,
+	0x420a280102700400ULL,
+	0x830088044210200ULL,
+	0x200e708003402b01ULL,
+	0x100400120810617ULL,
+	0x4088011402202ULL,
+	0x100100200409ULL,
+	0x2002000410082046ULL,
+	0x10e002104881022ULL,
+	0x2005500800c10204ULL,
+	0x1027004400209aULL,
 };
 
 const Bitset BishopMagic[64] = {
-	0x2040020409102108ULL,
-	0x42080218120c2008ULL,
-	0x90010061004001ULL,
-	0x13804ad02010400ULL,
-	0x4042000100100ULL,
-	0x2582020220a02004ULL,
-	0x2000480210110008ULL,
-	0xb01140608040400ULL,
-	0x14111d010510040ULL,
-	0x80208022420ULL,
-	0x6014484801022201ULL,
-	0x824082042410010ULL,
-	0xc00045040000100ULL,
-	0x508220202401ULL,
-	0x10040082113040d8ULL,
-	0xa010042022020ULL,
-	0xa0000802102201ULL,
-	0x5464100188090bULL,
-	0x4010180204820008ULL,
-	0x3a94002804624a04ULL,
-	0x1000811400002ULL,
-	0x802000241101100ULL,
-	0x480110c404020200ULL,
-	0x2038d229c0440ULL,
-	0x2020054049102404ULL,
-	0x124044402280800ULL,
-	0x10c404020e080058ULL,
-	0x404004010200ULL,
-	0x4001001041004000ULL,
-	0x2002022101002ULL,
-	0x108018002025502ULL,
-	0x2400420140420200ULL,
-	0x4a04200900041080ULL,
-	0x101280200481000ULL,
-	0x809044101080800ULL,
-	0x802008020120200ULL,
-	0x4200200002080ULL,
-	0x401210a00010801ULL,
-	0x1016040140050861ULL,
-	0x2001110200002200ULL,
-	0x1012060223088ULL,
-	0x1011009004001003ULL,
-	0x5082804040800ULL,
-	0x1000004200880800ULL,
-	0x43012100400ULL,
-	0x4012042010100ULL,
-	0x10010204310080ULL,
-	0x2022052000d00ULL,
-	0x4008208220502ULL,
-	0x80100484404002cULL,
-	0x2080a8420880021ULL,
-	0x140020108480001ULL,
-	0x834404005010504ULL,
-	0x8042900a022106ULL,
-	0x50802080a0120ULL,
-	0x420428061c4005ULL,
-	0x2002008201100304ULL,
-	0x1201212028a2800ULL,
-	0x280010042080400ULL,
-	0x44110c09086800ULL,
-	0x440402810020220ULL,
-	0x80064002182240ULL,
-	0x2000403024810440ULL,
-	0x4c0020421043300ULL,
+	0x10a5204080210c0ULL,
+	0x1010648800802010ULL,
+	0x3610040848490000ULL,
+	0x1022408100096022ULL,
+	0x21104020800200ULL,
+	0x2080404000001ULL,
+	0x102021002080002ULL,
+	0x804104210042002ULL,
+	0x2008c208120410ULL,
+	0x4000082204204201ULL,
+	0x404084204102000ULL,
+	0x4000040412821490ULL,
+	0x1000411040460200ULL,
+	0x410402402080ULL,
+	0x41160844020800ULL,
+	0x2ea020201493800ULL,
+	0x405000810300200ULL,
+	0x2104808081080ULL,
+	0x2144005204240100ULL,
+	0x8002220204108ULL,
+	0x4002022401210800ULL,
+	0x6002001240500440ULL,
+	0x4200401208040420ULL,
+	0x1003020200860908ULL,
+	0x5010014002024cULL,
+	0x2011204030042f01ULL,
+	0x700240008004404ULL,
+	0x8080000202020ULL,
+	0x10030001200801ULL,
+	0x10002001040100ULL,
+	0x404042261140cULL,
+	0x42108100c42280ULL,
+	0xa02202008100254ULL,
+	0x2140208010210c0ULL,
+	0x102011000010044ULL,
+	0x1820080800220a01ULL,
+	0x240082008c0104ULL,
+	0x429010102020048ULL,
+	0x61b00121101a0081ULL,
+	0x8010052010040ULL,
+	0x880484040320eaULL,
+	0x202280c04801a00ULL,
+	0x4101804040800ULL,
+	0x140004208010080ULL,
+	0x2080052012000300ULL,
+	0x104101040401600ULL,
+	0xcc4041404120054ULL,
+	0x4412441400820020ULL,
+	0x201240202400000ULL,
+	0x1800240202100011ULL,
+	0x40002010a98648cULL,
+	0x1004004210540008ULL,
+	0x184005010000ULL,
+	0x5001102001044260ULL,
+	0x20080220c40058ULL,
+	0x404041800530040ULL,
+	0x400420210010400ULL,
+	0x28204064046008ULL,
+	0x2000130044022131ULL,
+	0x1080000004420214ULL,
+	0x704040082200ULL,
+	0x80500403a040108ULL,
+	0x200404242020200ULL,
+	0x40820080a084a10ULL,
+};
+
+int RookBits[64] = {
+	12, 11, 11, 11, 11, 11, 11, 12,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	12, 11, 11, 11, 11, 11, 11, 12
+};
+
+int BishopBits[64] = {
+	6, 5, 5, 5, 5, 5, 5, 6,
+	5, 5, 5, 5, 5, 5, 5, 5,
+	5, 5, 7, 7, 7, 7, 5, 5,
+	5, 5, 7, 9, 9, 7, 5, 5,
+	5, 5, 7, 9, 9, 7, 5, 5,
+	5, 5, 7, 7, 7, 7, 5, 5,
+	5, 5, 5, 5, 5, 5, 5, 5,
+	6, 5, 5, 5, 5, 5, 5, 6
 };
 
 Bitset random_uint64() {
@@ -245,57 +267,9 @@ Bitset generateBishopAttacks(int sq, Bitset block) {
 	return result;
 }
 
-int transform(Bitset b, Bitset magic, int bits) {
+int magictransform(Bitset b, Bitset magic, int bits) {
 	return (int)((b * magic) >> (64 - bits));
 }
-
-Bitset find_magic(int sq, int m, int bishop) {
-	Bitset mask, b[4096], a[4096], used[4096], magic;
-	int i, j, k, n, fail;
-
-	mask = bishop ? generateBishopMask(sq) : generateRookMask(sq);
-	n = count_1s(mask);
-
-	for (i = 0; i < (1 << n); i++) {
-		b[i] = index_to_uint64(i, n, mask);
-		a[i] = bishop ? generateBishopAttacks(sq, b[i]) : generateRookAttacks(sq, b[i]);
-	}
-	for (k = 0; k < 100000000; k++) {
-		magic = random_uint64_fewbits();
-		if (count_1s((mask * magic) & 0xFF00000000000000ULL) < 6) continue;
-		for (i = 0; i < 4096; i++) used[i] = 0ULL;
-		for (i = 0, fail = 0; !fail && i < (1 << n); i++) {
-			j = transform(b[i], magic, m);
-			if (used[j] == 0ULL) used[j] = a[i];
-			else if (used[j] != a[i]) fail = 1;
-		}
-		if (!fail) return magic;
-	}
-	printf("***Failed***\n");
-	return 0ULL;
-}
-
-int RookBits[64] = {
-	12, 11, 11, 11, 11, 11, 11, 12,
-	11, 10, 10, 10, 10, 10, 10, 11,
-	11, 10, 10, 10, 10, 10, 10, 11,
-	11, 10, 10, 10, 10, 10, 10, 11,
-	11, 10, 10, 10, 10, 10, 10, 11,
-	11, 10, 10, 10, 10, 10, 10, 11,
-	11, 10, 10, 10, 10, 10, 10, 11,
-	12, 11, 11, 11, 11, 11, 11, 12
-};
-
-int BishopBits[64] = {
-	6, 5, 5, 5, 5, 5, 5, 6,
-	5, 5, 5, 5, 5, 5, 5, 5,
-	5, 5, 7, 7, 7, 7, 5, 5,
-	5, 5, 7, 9, 9, 7, 5, 5,
-	5, 5, 7, 9, 9, 7, 5, 5,
-	5, 5, 7, 7, 7, 7, 5, 5,
-	5, 5, 5, 5, 5, 5, 5, 5,
-	6, 5, 5, 5, 5, 5, 5, 6
-};
 
 void attacksinit()
 {
@@ -324,38 +298,41 @@ void attacksinit()
 		//Rook
 		for (int j = 0;j < 4096;j++)
 		{
-			RookAttacks[i][j] = 0;
+			//Bitset j2 = index_to_uint64(j, RookBits[i], generateRookMask(i));
+			//j2 = (int)((j2*RookMagic[i]) >> (64-RookBits[i]));
+			//RookAttacks[i][j2] = 0;
+			int j2 = j;
 			int rankocc = j >> 5;
 			if (getFile(i) == 0 || getFile(i) == 7) rankocc = j >> 6;
 			//Rank Moves
 			if (getFile(i) == 0)
 			{
 				int rankocc = j >> 6;
-				RookAttacks[i][j] |= SlidesEnd[0][rankocc] << (8 * (i / 8));
+				RookAttacks[i][j2] |= SlidesEnd[0][rankocc] << (8 * (i / 8));
 			}
 			else if (getFile(i) == 7)
 			{
 				int rankocc = j >> 6;
-				RookAttacks[i][j] |= SlidesEnd[1][rankocc] << (8 * (i / 8));
+				RookAttacks[i][j2] |= SlidesEnd[1][rankocc] << (8 * (i / 8));
 			}
 			else
 			{
 				int rankocc = j >> 5;
-				RookAttacks[i][j] |= Slides[(i % 8) - 1][rankocc] << (8 * (i / 8));
+				RookAttacks[i][j2] |= Slides[(i % 8) - 1][rankocc] << (8 * (i / 8));
 			}
 
 			//File Moves
 			if (getRank(i) == 0)
 			{
 				int fileocc = j & 0x3f;
-				Bitset b = SlidesEnd[0][fileocc];
+				Bitset b = SlidesEnd[1][fileocc];
 				Bitset p = 0x0;
 				for (int k = 0;k<8;k++)
 				{
 					Bitset s = (b >> k) % 2;
 					p |= Pos2Bit[turn270[k]] * s;
 				}
-				RookAttacks[i][j] |= (p >> (getFile(i)));
+				RookAttacks[i][j2] |= (p >> (getFile(i)));
 			}
 			else if (getRank(i) == 7)
 			{
@@ -367,7 +344,7 @@ void attacksinit()
 					Bitset s = (b >> k) % 2;
 					p |= Pos2Bit[turn270[k]] * s;
 				}
-				RookAttacks[i][j] |= (p >> (getFile(i)));
+				RookAttacks[i][j2] |= (p >> (getFile(i)));
 			}
 			else
 			{
@@ -379,7 +356,7 @@ void attacksinit()
 					Bitset s = (b >> k) % 2;
 					p |= Pos2Bit[turn270[k]] * s;
 				}
-				RookAttacks[i][j] |= (p >> (getFile(i)));
+				RookAttacks[i][j2] |= (p >> (getFile(i)));
 			}
 		}
 
@@ -523,6 +500,37 @@ void attacksinit()
 	}
 }
 
+Bitset find_magic(int sq, int m, int bishop) {
+	Bitset mask, b[4096], a[4096], used[4096], magic;
+	int i, j, k, n, fail;
+
+	mask = bishop ? generateBishopMask(sq) : generateRookMask(sq);
+	n = count_1s(mask);
+
+	for (i = 0; i < (1 << n); i++) {
+		b[i] = index_to_uint64(i, n, mask);
+		a[i] = bishop ? generateBishopAttacks(sq, b[i]) : generateRookAttacks(sq, b[i]);
+	}
+	for (k = 0; k < 100000000; k++) {
+		magic = random_uint64_fewbits();
+		if (count_1s((mask * magic) & 0xFF00000000000000ULL) < 6) continue;
+		for (i = 0; i < 4096; i++) used[i] = 0ULL;
+		for (i = 0, fail = 0; !fail && i < (1 << n); i++) 
+		{
+			j = magictransform(b[i], magic, m);
+			if (used[j] == 0ULL) used[j] = a[i];
+			else if (used[j] != a[i]) fail = 1;
+			/*if (popcnt(j) != popcnt(b[i]))
+			{
+				fail = 1;
+			}*/
+		}
+		if (!fail) return magic;
+	}
+	printf("***Failed***\n");
+	return 0ULL;
+}
+
 void magicinit()
 {
 	for (int i = 0;i < 64;i++)
@@ -531,8 +539,8 @@ void magicinit()
 		RookMagicTable[i].mask = generateRookMask(i);
 		RookMagicTable[i].shift = 64 - RookBits[i];
 
-		BishopMagicTable[i].magic = RookMagic[i];
-		BishopMagicTable[i].mask = generateRookMask(i);
+		BishopMagicTable[i].magic = BishopMagic[i];
+		BishopMagicTable[i].mask = generateBishopMask(i);
 		BishopMagicTable[i].shift = 64 - BishopBits[i];
 	}
 }
@@ -548,19 +556,27 @@ void generateMagics()
 		return;
 	}
 
-	file << "const uint64 RookMagic[64] = {\n";
+	file << "const Bitset RookMagic[64] = {\n";
+	file << hex;
 	//printf("const uint64 RMagic[64] = {\n");
 	for (square = 0; square < 64; square++)
-		//printf("  0x%llxULL,\n", find_magic(square, RookBits[square], 0));
-		file << "  0x" << hex << find_magic(square, RookBits[square], 0) << "ULL,\n";
+	{
+		Bitset b = find_magic(square, RookBits[square], 0);
+		printf("  0x%llxULL,\n", b);
+		file << "  0x" << b << "ULL,\n";
+	}
+		
 	//printf("};\n\n");
 	file << "};\n\n";
 	
 	//printf("const uint64 BMagic[64] = {\n");
-	file << "const uint64 BishopMagic[64] = {\n";
+	file << "const Bitset BishopMagic[64] = {\n";
 	for (square = 0; square < 64; square++)
-		//printf("  0x%llxULL,\n", find_magic(square, BishopBits[square], 1));
-		file << "  0x" << hex << find_magic(square, BishopBits[square], 1) << "ULL,\n";
+	{
+		Bitset b = find_magic(square, BishopBits[square], 1);
+		printf("  0x%llxULL,\n", b);
+		file << "  0x" << b << "ULL,\n";
+	}
 	//printf("};\n\n");
 	file << "};\n\n";
 
