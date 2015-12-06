@@ -80,8 +80,8 @@ int SafetyTable[100] = {
 int PawnPressureBonus[8] = { 0,3,7,12,18,25,33,42 };
 //int ProtectedPawnPressureBonus[8] = { 0,1,2,3,5,7,9,11 };
 int NoPawnsPenalty = 32;
-int PawnsE4D4Bonus = 30;
-int PawnsC4D4Bonus = 20;
+int PawnsE4D4Bonus = 15;
+int PawnsC4D4Bonus = 10;
 int DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
 int IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
 int BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
@@ -395,7 +395,7 @@ template<bool Trace> int Engine::LeafEval()
 		}
 	}
 
-	/*if (!isEG)
+	if (!isEG)
 	{
 		if (pos.Squares[27] == SQUARE_WHITEPAWN && pos.Squares[28] == SQUARE_WHITEPAWN)
 		{
@@ -421,7 +421,7 @@ template<bool Trace> int Engine::LeafEval()
 			if (Trace)
 				cout << "Bonus for C4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
 		}
-	}*/
+	}
 
 	unsigned long k = 0;
 	/*for (int i = 0;i < 2;i++)
