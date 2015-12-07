@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 161;
+const int ENGINEVERSION = 162;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 162 - 07-12-2015 - Reduced blocked pawn penalty, made blocked pawn check faster
 // Build 161 - 07-12-2015 - Removed OccupiedSq90/45/135 updating
 // Build 160 - 07-12-2015 - Now uses Magic Bitboards instead of Rotated Bitboards
 // Build 159 - 07-12-2015 - Removed history reductions

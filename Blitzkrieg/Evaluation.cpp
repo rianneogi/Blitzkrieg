@@ -95,7 +95,7 @@ int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0, //non-negative value
 						    90,120,120,120,120,120,120, 90,
 						   200,200,200,200,200,200,200,200};
 int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
-	                             1,  1, 14, 16, 16, 14,  1,  1,
+	                             1,  1, 10, 16, 16, 10,  1,  1,
 								 0,  0,  0,  4,  4,  0,  0,  0,
 								 0,  0,  0,  0,  0,  0,  0,  0,
 								 2,  2,  2,  2,  2,  2,  2,  2,
@@ -749,7 +749,8 @@ template<bool Trace> int Engine::LeafEval()
 		{
 			_BitScanForward64(&k, b);
 			b ^= getPos2Bit(k);
-			if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] != SQUARE_EMPTY) //checks if pawn is blocked
+			//if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] != SQUARE_EMPTY) //checks if pawn is blocked
+			if(pos.OccupiedSq&getPawnMoves(i,k)) //checks if pawn is blocked
 			{
 				PawnStructure[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
 				if (Trace)
