@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 164;
+const int ENGINEVERSION = 165;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 165 - 07-12-2015 - Added leafeval>=beta condition in null move search
 // Build 164 - 07-12-2015 - Undid last change, fixed null move extension
 // Build 163 - 07-12-2015 - Increased null move extension margin
 // Build 162 - 07-12-2015 - Reduced blocked pawn penalty, made blocked pawn check faster
