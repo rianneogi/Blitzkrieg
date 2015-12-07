@@ -64,7 +64,7 @@ public:
 	bool isRepetition();
 };
 Bitset getRookAttacks(int sq,Bitset occ,Bitset occ90);
-Bitset getBishopAttacks(int sq, Bitset occ45, Bitset occ135);
+Bitset getBishopAttacks(int sq, Bitset occ);
 Bitset getQueenAttacks(int sq, Bitset occ, Bitset occ90, Bitset occ45, Bitset occ135);
 
 string getStringToken(string str, char delimiter, int token);

@@ -320,8 +320,9 @@ void attacksinit()
 			cout << i << " " << j << endl;
 			printBitset(jf | jr);
 			cout << endl;*/
-			Bitset jr = index_to_uint64(j, RookBits[i], generateRookMask(i));
-			int j2 = (int)(((jr)*RookMagic[i]) >> (64-RookBits[i]));
+			Bitset jr = index_to_uint64(j, count_1s(generateRookMask(i)), generateRookMask(i));
+			//int j2 = (int)(((jr)*RookMagic[i]) >> (64-RookBits[i]));
+			int j2 = magictransform(jr, RookMagic[i], RookBits[i]);
 			//int j2 = j;
 
 			
@@ -386,139 +387,143 @@ void attacksinit()
 		//Bishop
 		for (int j = 0;j < 512;j++)
 		{
-			int occ1 = j >> BishopBits[i];
-			int occ2 = j&(getPos2Bit(BishopBits[i]) - 1);
+			Bitset jr = index_to_uint64(j, count_1s(generateBishopMask(i)), generateBishopMask(i));
+			int j2 = magictransform(jr, BishopMagic[i], BishopBits[i]);
 
-			//Bishop A1H8 Moves
-			int flag = 0;
-			Bitset b;
-			if ((getFile(i) == 0 || getFile(i) == 7) && (getRank(i) == 0 || getRank(i) == 7))
-			{
-				if (getFile(i) == 0)
-					b = SlidesEnd[0][occ1];
-				else
-					b = SlidesEnd[1][occ1];
-			}
-			else if (turn135[i] >= 32)
-			{
-				b = Slides[7 - getRank(i) - 1][occ1];
-				flag = 1;
-			}
-			else
-				b = Slides[7 - getFile(i) - 1][occ1];
-			Bitset p = 0x0;
-			int m = i;
-			if (getFile(m) != 0 && getRank(m) != 0)
-			{
-				while (true)
-				{
-					m = m - 7;
-					if (m<0 || m>63)
-					{
-						break;
-					}
-					int k = 0;
-					if (flag == 1)
-						k = 7 - getRank(m);
-					else
-						k = 7 - getFile(m);
-					Bitset s = (b >> k) % 2;
-					p |= Pos2Bit[m] * s;
-					if (getFile(m) == 0 || getRank(m) == 0)
-					{
-						break;
-					}
-				}
-			}
-			m = i;
-			if (getFile(m) != 7 && getRank(m) != 7)
-			{
-				while (true)
-				{
-					m = m + 7;
-					if (m<0 || m>63)
-					{
-						break;
-					}
-					int k = 0;
-					if (flag == 1)
-						k = 7 - getRank(m);
-					else
-						k = 7 - getFile(m);
-					Bitset s = (b >> k) % 2;
-					p |= Pos2Bit[m] * s;
-					if (getFile(m) == 7 || getRank(m) == 7)
-					{
-						break;
-					}
-				}
-			}
-			BishopAttacks[i][j] = p;
+			BishopAttacks[i][j2] = generateBishopAttacks(i, jr);
+			//int occ1 = j >> BishopBits[i];
+			//int occ2 = j&(getPos2Bit(BishopBits[i]) - 1);
 
-			//Bishop A8H1 Moves
-			flag = 0;
-			if ((getFile(i) == 0 || getFile(i) == 7) && (getRank(i) == 0 || getRank(i) == 7))
-			{
-				if (getFile(i) == 0)
-					b = SlidesEnd[0][occ2];
-				else
-					b = SlidesEnd[1][occ2];
-			}
-			else if (turn45[i] >= 32)
-			{
-				b = Slides[7 - getFile(i) - 1][occ2];
-				flag = 1;
-			}
-			else
-				b = Slides[getRank(i) - 1][occ2];
-			p = 0x0;
-			m = i;
-			if (getFile(m) != 7 && getRank(m) != 0)
-			{
-				while (true)
-				{
-					m = m - 9;
-					if (m<0 || m>63)
-					{
-						break;
-					}
-					int k = 0;
-					if (flag == 1)
-						k = 7 - getFile(m);
-					else
-						k = getRank(m);
-					Bitset s = (b >> k) % 2;
-					p |= Pos2Bit[m] * s;
-					if (getFile(m) == 7 || getRank(m) == 0)
-					{
-						break;
-					}
-				}
-			}
-			m = i;
-			if (getFile(m) != 0 && getRank(m) != 7)
-			{
-				while (true)
-				{
-					m = m + 9;
-					if (m<0 || m>63)
-					{
-						break;
-					}
-					int k = 0;
-					if (flag == 1)
-						k = 7 - getFile(m);
-					else
-						k = getRank(m);
-					Bitset s = (b >> k) % 2;
-					p |= Pos2Bit[m] * s;
-					if (getFile(m) == 0 || getRank(m) == 7)
-					{
-						break;
-					}
-				}
-			}
-			BishopAttacks[i][j] |= p;
+			////Bishop A1H8 Moves
+			//int flag = 0;
+			//Bitset b;
+			//if ((getFile(i) == 0 || getFile(i) == 7) && (getRank(i) == 0 || getRank(i) == 7))
+			//{
+			//	if (getFile(i) == 0)
+			//		b = SlidesEnd[0][occ1];
+			//	else
+			//		b = SlidesEnd[1][occ1];
+			//}
+			//else if (turn135[i] >= 32)
+			//{
+			//	b = Slides[7 - getRank(i) - 1][occ1];
+			//	flag = 1;
+			//}
+			//else
+			//	b = Slides[7 - getFile(i) - 1][occ1];
+			//Bitset p = 0x0;
+			//int m = i;
+			//if (getFile(m) != 0 && getRank(m) != 0)
+			//{
+			//	while (true)
+			//	{
+			//		m = m - 7;
+			//		if (m<0 || m>63)
+			//		{
+			//			break;
+			//		}
+			//		int k = 0;
+			//		if (flag == 1)
+			//			k = 7 - getRank(m);
+			//		else
+			//			k = 7 - getFile(m);
+			//		Bitset s = (b >> k) % 2;
+			//		p |= Pos2Bit[m] * s;
+			//		if (getFile(m) == 0 || getRank(m) == 0)
+			//		{
+			//			break;
+			//		}
+			//	}
+			//}
+			//m = i;
+			//if (getFile(m) != 7 && getRank(m) != 7)
+			//{
+			//	while (true)
+			//	{
+			//		m = m + 7;
+			//		if (m<0 || m>63)
+			//		{
+			//			break;
+			//		}
+			//		int k = 0;
+			//		if (flag == 1)
+			//			k = 7 - getRank(m);
+			//		else
+			//			k = 7 - getFile(m);
+			//		Bitset s = (b >> k) % 2;
+			//		p |= Pos2Bit[m] * s;
+			//		if (getFile(m) == 7 || getRank(m) == 7)
+			//		{
+			//			break;
+			//		}
+			//	}
+			//}
+			//BishopAttacks[i][j] = p;
+
+			////Bishop A8H1 Moves
+			//flag = 0;
+			//if ((getFile(i) == 0 || getFile(i) == 7) && (getRank(i) == 0 || getRank(i) == 7))
+			//{
+			//	if (getFile(i) == 0)
+			//		b = SlidesEnd[0][occ2];
+			//	else
+			//		b = SlidesEnd[1][occ2];
+			//}
+			//else if (turn45[i] >= 32)
+			//{
+			//	b = Slides[7 - getFile(i) - 1][occ2];
+			//	flag = 1;
+			//}
+			//else
+			//	b = Slides[getRank(i) - 1][occ2];
+			//p = 0x0;
+			//m = i;
+			//if (getFile(m) != 7 && getRank(m) != 0)
+			//{
+			//	while (true)
+			//	{
+			//		m = m - 9;
+			//		if (m<0 || m>63)
+			//		{
+			//			break;
+			//		}
+			//		int k = 0;
+			//		if (flag == 1)
+			//			k = 7 - getFile(m);
+			//		else
+			//			k = getRank(m);
+			//		Bitset s = (b >> k) % 2;
+			//		p |= Pos2Bit[m] * s;
+			//		if (getFile(m) == 7 || getRank(m) == 0)
+			//		{
+			//			break;
+			//		}
+			//	}
+			//}
+			//m = i;
+			//if (getFile(m) != 0 && getRank(m) != 7)
+			//{
+			//	while (true)
+			//	{
+			//		m = m + 9;
+			//		if (m<0 || m>63)
+			//		{
+			//			break;
+			//		}
+			//		int k = 0;
+			//		if (flag == 1)
+			//			k = 7 - getFile(m);
+			//		else
+			//			k = getRank(m);
+			//		Bitset s = (b >> k) % 2;
+			//		p |= Pos2Bit[m] * s;
+			//		if (getFile(m) == 0 || getRank(m) == 7)
+			//		{
+			//			break;
+			//		}
+			//	}
+			//}
+			//BishopAttacks[i][j] |= p;
 		}
 	}
 }
