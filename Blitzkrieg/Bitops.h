@@ -77,6 +77,7 @@ extern Bitset AboveBits[2][64];
 extern Bitset AboveSideBits[2][64];
 extern Bitset AboveAndAboveSideBits[2][64];
 extern Bitset FileBits[64];
+extern Bitset RankBits[64];
 extern Bitset SideBits[64];
 extern Bitset FileAndSideBits[64];
 

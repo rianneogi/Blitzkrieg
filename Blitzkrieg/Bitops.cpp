@@ -31,6 +31,7 @@ Bitset AboveBits[2][64];
 Bitset AboveSideBits[2][64];
 Bitset AboveAndAboveSideBits[2][64];
 Bitset FileBits[64];
+Bitset RankBits[64];
 Bitset SideBits[64];
 Bitset FileAndSideBits[64];
 Bitset KingShield1[2][64];
@@ -584,11 +585,13 @@ void datainit()
 		FileBits[i] = 0x0;
 		FileAndSideBits[i] = 0x0;
 		SideBits[i] = 0x0;
+		RankBits[i] = 0x0;
 		int add = i%8;
 		for(int j = 0;j<8;j++)
 		{
 			FileBits[i] |= Pos2Bit[j*8+add];
 			FileAndSideBits[i] |= Pos2Bit[j*8+add];
+			RankBits[i] |= Pos2Bit[i - add + j];
 			if(add!=0)
 			{
 				FileAndSideBits[i] |= Pos2Bit[j*8+add-1];

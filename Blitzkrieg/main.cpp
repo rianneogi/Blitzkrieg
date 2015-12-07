@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 158;
+const int ENGINEVERSION = 159;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 159 - 07-12-2015 - Removed history reductions
 // Build 158 - 07-12-2015 - Increased Pawn Pressure bonus
 // Build 157 - 06-12-2015 - Added extra history-based reduction in LMR
 // Build 156 - 06-12-2015 - Removed pawn duo bonus, KingSafety now scales with opponent's material instead of total material
@@ -330,8 +331,8 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 		getline(f, s);
 		if (onlyfailed && (oldfailed.size() == 0 || count != oldfailed.at(0)))
 		{
-			count++;
-			continue;
+count++;
+continue;
 		}
 		e.pos.loadFromFEN(s);
 		Move m = e.IterativeDeepening(time, false);
@@ -371,14 +372,14 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 
 	f.close();
 
-	fstream f2("Test Suites//"+test+"_results.txt", ios::out | ios::trunc);
+	fstream f2("Test Suites//" + test + "_results.txt", ios::out | ios::trunc);
 	if (!f2.is_open())
 	{
 		cout << "Cant open test suite results" << endl;
 		return;
 	}
 
-	if(onlyfailed)
+	if (onlyfailed)
 		f2 << "Total passed: " << passed << "/" << oldfailedcount << " ";
 	else
 		f2 << "Total passed: " << passed << "/" << (count - 1) << " ";
@@ -413,22 +414,32 @@ int main(int argc, char* args[])
 {
 	srand(time(0));
 	//loadFromLua("Personalities\\Wierd.lua");
-	
+
 	initialize();
 	//generateMagics();
 
 	Interface i = Interface();
 	/*printBitset(RookMagicTable[0].mask);
 	cout << endl;
-	printBitset((RookMagicTable[0].mask* RookMagicTable[0].magic)>>RookMagicTable[0].shift);
+	printBitset((RookMagicTable[0].mask* RookMagicTable[0].magic) >> RookMagicTable[0].shift);
 	cout << endl;
 	printBitset((0x1111111111111111ULL&RookMagicTable[0].mask));
 	cout << endl;
-	printBitset(((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[0].magic)>> RookMagicTable[0].shift);
-	cout << endl;*/
-	/*for (int i = 63;i >= 0;i--)
+	printBitset(((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[0].magic) >> RookMagicTable[0].shift);
+	cout << endl;
+	printBitset(RookAttacks[0][((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[0].magic) >> RookMagicTable[0].shift]);
+	for (int i = 63;i >= 0;i--)
 	{
+		if ((((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[i].magic) >> RookMagicTable[i].shift) >= 4096)
+		{
+			cout << "ERROR" << endl;
+		}
 		printBitset(RookAttacks[i][(int)(((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[i].magic) >> RookMagicTable[i].shift)]);
+		cout << endl;
+	}*/
+	/*for (int i = 0;i < 64;i++)
+	{
+		printBitset(RankBits[i]);
 		cout << endl;
 	}*/
 	
