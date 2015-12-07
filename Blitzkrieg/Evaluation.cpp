@@ -78,7 +78,7 @@ int SafetyTable[100] = {
 };
 
 //Pawn Structure
-int PawnPressureBonus[8] = { 0,1,3,6,10,15,21,28 };
+int PawnPressureBonus[8] = { 0,3,7,12,18,25,33,42 };
 //int ProtectedPawnPressureBonus[8] = { 0,1,2,3,5,7,9,11 };
 int NoPawnsPenalty = 32;
 int PawnsE4D4Bonus = 15;

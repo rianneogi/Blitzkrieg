@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 157;
+const int ENGINEVERSION = 158;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 158 - 07-12-2015 - Increased Pawn Pressure bonus
 // Build 157 - 06-12-2015 - Added extra history-based reduction in LMR
 // Build 156 - 06-12-2015 - Removed pawn duo bonus, KingSafety now scales with opponent's material instead of total material
 // Build 155 - 06-12-2015 - Reduced Pawn Pressure bonus, added code to support magic bitboards

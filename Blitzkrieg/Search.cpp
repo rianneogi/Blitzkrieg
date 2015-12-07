@@ -334,7 +334,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		score = -AlphaBeta(max(0, depth - R), -beta, -beta + 1, &line, false, false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
 		pos.unmakeMove(m);
-		if (line.size() != 0)
+		if (line.empty()!=true)
 			Threats[ply] = line.at(line.size() - 1);
 		if (ttkeynull != pos.TTKey)
 		{
