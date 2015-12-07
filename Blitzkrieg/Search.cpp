@@ -346,7 +346,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//cout << "Null move cutoff " << beta << endl;
 			return score;
 		}
-		if (score < CONS_NEGINF + 1000) //score is so bad, we are in danger, so increase depth
+		if (score < CONS_MATED + 1000) //score is so bad, we are in danger, so increase depth
 		{
 			depth++;
 		}
