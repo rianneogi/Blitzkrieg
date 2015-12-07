@@ -1671,37 +1671,6 @@ bool Position::isRepetition()
 	return false;
 }
 
-Bitset getRookAttacks(int sq, Bitset occ)
-{
-	/*Bitset m = RookRankMoves[sq][(occ>>(RankOffset[sq]))&0xff];
-    m |= RookFileMoves[sq][(occ90>>(FileOffset[sq]))&0xff];
-    return m;*/
-	/*occ &= RookMagicTable[sq].mask;
-	occ *= RookMagicTable[sq].magic;
-	occ >>= RookMagicTable[sq].shift;*/
-	occ = ((occ&RookMagicTable[sq].mask)*RookMagicTable[sq].magic) >> RookMagicTable[sq].shift;
-	return RookAttacks[sq][occ];
-}
-
-Bitset getBishopAttacks(int sq, Bitset occ)
-{
-	/*Bitset m = BishopA1H8Moves[sq][(occ135>>Diagonal[turn135[sq]])&0xff];
-    m |= BishopA8H1Moves[sq][(occ45>>Diagonal[turn45[sq]])&0xff];*/
-	//return m;
-	/*occ &= BishopMagicTable[sq].mask;
-	occ *= BishopMagicTable[sq].magic;
-	occ >>= BishopMagicTable[sq].shift;*/
-	occ = ((occ&BishopMagicTable[sq].mask)*BishopMagicTable[sq].magic) >> BishopMagicTable[sq].shift;
-	return BishopAttacks[sq][occ];
-}
-
-Bitset getQueenAttacks(int sq, Bitset occ)
-{
-	Bitset m = getRookAttacks(sq, occ);
-	m |= getBishopAttacks(sq, occ);
-	return m;
-}
-
 int Position::getColorPieces(int turn)
 {
 	return (Pieces[turn][PIECE_PAWN] | Pieces[turn][PIECE_KNIGHT] |

@@ -62,9 +62,28 @@ public:
 	void takebackMove();
 	bool isRepetition();
 };
-Bitset getRookAttacks(int sq,Bitset occ);
-Bitset getBishopAttacks(int sq, Bitset occ);
-Bitset getQueenAttacks(int sq, Bitset occ);
+//Bitset getRookAttacks(int sq,Bitset occ);
+//Bitset getBishopAttacks(int sq, Bitset occ);
+//Bitset getQueenAttacks(int sq, Bitset occ);
+
+inline Bitset getRookAttacks(int sq, Bitset occ)
+{
+	occ = ((occ&RookMagicTable[sq].mask)*RookMagicTable[sq].magic) >> RookMagicTable[sq].shift;
+	return RookAttacks[sq][occ];
+}
+
+inline Bitset getBishopAttacks(int sq, Bitset occ)
+{
+	occ = ((occ&BishopMagicTable[sq].mask)*BishopMagicTable[sq].magic) >> BishopMagicTable[sq].shift;
+	return BishopAttacks[sq][occ];
+}
+
+inline Bitset getQueenAttacks(int sq, Bitset occ)
+{
+	Bitset m = getRookAttacks(sq, occ);
+	m |= getBishopAttacks(sq, occ);
+	return m;
+}
 
 string getStringToken(string str, char delimiter, int token);
 int getStringTokenPosition(string str, char delimiter, int token);

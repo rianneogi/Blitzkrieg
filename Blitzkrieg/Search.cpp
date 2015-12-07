@@ -322,7 +322,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK])
 			|| popcnt(pos.Pieces[pos.turn][PIECE_BISHOP] || popcnt(pos.Pieces[pos.turn][PIECE_KNIGHT]))
 			) //side to move does not have only pawns(to avoid zugzwang)
-		&& leafeval >= beta
+		//&& leafeval >= beta
 		)
 	{
 		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction

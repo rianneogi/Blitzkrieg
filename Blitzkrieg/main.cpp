@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 165;
+const int ENGINEVERSION = 166;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 166 - 07-12-2015 - Undid last change, made getAttacks functions inline
 // Build 165 - 07-12-2015 - Added leafeval>=beta condition in null move search
 // Build 164 - 07-12-2015 - Undid last change, fixed null move extension
 // Build 163 - 07-12-2015 - Increased null move extension margin
