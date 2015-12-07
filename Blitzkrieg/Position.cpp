@@ -18,9 +18,9 @@ Position::Position(Position const& pos,Move const& m)
         }
     }
     OccupiedSq = pos.OccupiedSq;
-    OccupiedSq90 = pos.OccupiedSq90;
+    /*OccupiedSq90 = pos.OccupiedSq90;
     OccupiedSq45 = pos.OccupiedSq45;
-    OccupiedSq135 = pos.OccupiedSq135;
+    OccupiedSq135 = pos.OccupiedSq135;*/
 
     for(int i = 0;i<64;i++)
     {
@@ -66,13 +66,13 @@ void Position::setStartPos()
 	Pieces[COLOR_WHITE][PIECE_KING] = 0x0000000000000008;
 	Pieces[COLOR_BLACK][PIECE_KING] = 0x0800000000000000;
 	OccupiedSq = 0xffff00000000ffff;
-	OccupiedSq90 = 0xc3c3c3c3c3c3c3c3;
+	/*OccupiedSq90 = 0xc3c3c3c3c3c3c3c3;
 	OccupiedSq45 = 0x0;
-	OccupiedSq135 = 0x0;
+	OccupiedSq135 = 0x0;*/
 	for (int i = 0;i<64;i++)
 	{
-		OccupiedSq45 |= getPos2Bit(getturn45(i))*((OccupiedSq >> i) % 2);
-		OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq >> i) % 2);
+		/*OccupiedSq45 |= getPos2Bit(getturn45(i))*((OccupiedSq >> i) % 2);
+		OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq >> i) % 2);*/
 		Squares[i] = SQUARE_EMPTY;
 	}
 
@@ -147,9 +147,9 @@ void Position::clearBoard()
 	Pieces[COLOR_WHITE][PIECE_KING] = 0;
 	Pieces[COLOR_BLACK][PIECE_KING] = 0;
 	OccupiedSq = 0;
-	OccupiedSq90 = 0;
+	/*OccupiedSq90 = 0;
 	OccupiedSq45 = 0;
-	OccupiedSq135 = 0;
+	OccupiedSq135 = 0;*/
 	for (int i = 0;i<64;i++)
 	{
 		Squares[i] = SQUARE_EMPTY;
@@ -196,9 +196,9 @@ void Position::clearBoard()
 void Position::initializeBitsets()
 {
 	OccupiedSq = 0;
-	OccupiedSq90 = 0;
+	/*OccupiedSq90 = 0;
 	OccupiedSq45 = 0;
-	OccupiedSq135 = 0;
+	OccupiedSq135 = 0;*/
 	for (int i = 0;i < 2;i++)
 	{
 		for (int j = 0;j < 6;j++)
@@ -215,12 +215,12 @@ void Position::initializeBitsets()
 		}
 		
 	}
-	for (int i = 0;i<64;i++)
+	/*for (int i = 0;i<64;i++)
 	{
 		OccupiedSq45 |= getPos2Bit(getturn45(i))*((OccupiedSq >> i) % 2);
 		OccupiedSq135 |= getPos2Bit(getturn135(i))*((OccupiedSq >> i) % 2);
 		OccupiedSq90 |= getPos2Bit(getturn90(i))*((OccupiedSq >> i) % 2);
-	}
+	}*/
 	TTKey = 0x0;
 	PawnKey = 0x0;
 	for (int i = 0;i<64;i++)
@@ -413,9 +413,9 @@ void Position::forceMove(Move const& m)
 		if(special==PIECE_QUEEN || special==PIECE_KNIGHT || special==PIECE_ROOK || special==PIECE_BISHOP) //promotion
 		{
 			OccupiedSq ^= getPos2Bit(from);
-			OccupiedSq45 ^= getPos2Bit(getturn45(from));
+			/*OccupiedSq45 ^= getPos2Bit(getturn45(from));
 			OccupiedSq135 ^= getPos2Bit(getturn135(from));
-			OccupiedSq90 ^= getPos2Bit(getturn90(from));;
+			OccupiedSq90 ^= getPos2Bit(getturn90(from));*/
 			Pieces[turn][movingpiece] ^= getPos2Bit(from);
 			Pieces[getOpponent(turn)][getSquare2Piece(capturedpiece)] ^= getPos2Bit(to);
 			Pieces[turn][special] |= getPos2Bit(to);
@@ -428,9 +428,9 @@ void Position::forceMove(Move const& m)
 		else
 		{
 			OccupiedSq ^= getPos2Bit(from);
-			OccupiedSq45 ^= getPos2Bit(getturn45(from));
+			/*OccupiedSq45 ^= getPos2Bit(getturn45(from));
 			OccupiedSq135 ^= getPos2Bit(getturn135(from));
-			OccupiedSq90 ^= getPos2Bit(getturn90(from));
+			OccupiedSq90 ^= getPos2Bit(getturn90(from));*/
 			Pieces[turn][movingpiece] ^= m.getbit();
 			Pieces[getOpponent(turn)][getSquare2Piece(capturedpiece)] ^= getPos2Bit(to);
 			Squares[to] = Squares[from];
@@ -443,9 +443,9 @@ void Position::forceMove(Move const& m)
 	else if(special==PIECE_QUEEN || special==PIECE_KNIGHT || special==PIECE_ROOK || special==PIECE_BISHOP) //promotion
 	{
 		OccupiedSq ^= m.getbit();
-		OccupiedSq45 ^= m.getbit45();
+		/*OccupiedSq45 ^= m.getbit45();
 		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();
+		OccupiedSq90 ^= m.getbit90();*/
 		Pieces[turn][movingpiece] ^= getPos2Bit(from);
 		Pieces[turn][special] |= getPos2Bit(to);
 		Squares[to] = getPiece2Square(special,turn);
@@ -457,9 +457,9 @@ void Position::forceMove(Move const& m)
 	{
 		Bitset bit = m.getbit();
 		OccupiedSq ^= bit;
-		OccupiedSq45 ^= m.getbit45();
+		/*OccupiedSq45 ^= m.getbit45();
 		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();
+		OccupiedSq90 ^= m.getbit90();*/
 		Pieces[turn][movingpiece] ^= bit;
 		Squares[to] = Squares[from];
 		Squares[from] = SQUARE_EMPTY;
@@ -503,9 +503,9 @@ void Position::forceMove(Move const& m)
         Bitset cas135 = getPos2Bit(getturn135(f)) | getPos2Bit(getturn135(t));
         Bitset cas90 = getPos2Bit(getturn90(f)) | getPos2Bit(getturn90(t));
         OccupiedSq ^= cas;
-        OccupiedSq45 ^= cas45;
+        /*OccupiedSq45 ^= cas45;
         OccupiedSq135 ^= cas135;
-        OccupiedSq90 ^= cas90;
+        OccupiedSq90 ^= cas90;*/
         Pieces[turn][PIECE_ROOK] ^= cas;
         Squares[t] = Squares[f];
         Squares[f] = SQUARE_EMPTY;
@@ -529,9 +529,9 @@ void Position::forceMove(Move const& m)
 			TTKey ^= TT_PieceKey[COLOR_WHITE][PIECE_PAWN][x];
         }
         OccupiedSq ^= getPos2Bit(x);
-        OccupiedSq45 ^= getPos2Bit(getturn45(x));
+        /*OccupiedSq45 ^= getPos2Bit(getturn45(x));
         OccupiedSq135 ^= getPos2Bit(getturn135(x));
-        OccupiedSq90 ^= getPos2Bit(getturn90(x));
+        OccupiedSq90 ^= getPos2Bit(getturn90(x));*/
         Squares[x] = SQUARE_EMPTY;
     }
 
@@ -703,9 +703,9 @@ void Position::unmakeMove(Move const& m)
 		if(special==PIECE_QUEEN || special==PIECE_KNIGHT || special==PIECE_ROOK || special==PIECE_BISHOP) //promotion
 		{
 			OccupiedSq |= getPos2Bit(from);
-			OccupiedSq45 |= getPos2Bit(getturn45(from));
+			/*OccupiedSq45 |= getPos2Bit(getturn45(from));
 			OccupiedSq135 |= getPos2Bit(getturn135(from));
-			OccupiedSq90 |= getPos2Bit(getturn90(from));
+			OccupiedSq90 |= getPos2Bit(getturn90(from));*/
 			Pieces[turn][getSquare2Piece(capturedpiece)] |= getPos2Bit(to);
 
 			TTKey ^= TT_PieceKey[turn][getSquare2Piece(capturedpiece)][to];
@@ -725,9 +725,9 @@ void Position::unmakeMove(Move const& m)
 		else
 		{
 			OccupiedSq |= getPos2Bit(from);
-			OccupiedSq45 |= getPos2Bit(getturn45(from));
+			/*OccupiedSq45 |= getPos2Bit(getturn45(from));
 			OccupiedSq135 |= getPos2Bit(getturn135(from));
-			OccupiedSq90 |= getPos2Bit(getturn90(from));
+			OccupiedSq90 |= getPos2Bit(getturn90(from));*/
 			Pieces[turn][getSquare2Piece(capturedpiece)] |= getPos2Bit(to);
 
 			TTKey ^= TT_PieceKey[turn][getSquare2Piece(capturedpiece)][to];
@@ -747,9 +747,9 @@ void Position::unmakeMove(Move const& m)
 	{
 		Bitset bit = m.getbit();
 		OccupiedSq ^= bit;
-		OccupiedSq45 ^= m.getbit45();
+		/*OccupiedSq45 ^= m.getbit45();
 		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();
+		OccupiedSq90 ^= m.getbit90();*/
 
 		turn = getOpponent(turn);
 		TTKey ^= TT_ColorKey;
@@ -766,9 +766,9 @@ void Position::unmakeMove(Move const& m)
 	else
 	{
 		OccupiedSq ^= bit;
-		OccupiedSq45 ^= m.getbit45();
+		/*OccupiedSq45 ^= m.getbit45();
 		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();
+		OccupiedSq90 ^= m.getbit90();*/
 
 		turn = getOpponent(turn);
 		TTKey ^= TT_ColorKey;
@@ -816,9 +816,9 @@ void Position::unmakeMove(Move const& m)
         Bitset cas135 = getPos2Bit(getturn135(f)) | getPos2Bit(getturn135(t));
         Bitset cas90 = getPos2Bit(getturn90(f)) | getPos2Bit(getturn90(t));
         OccupiedSq ^= cas;
-        OccupiedSq45 ^= cas45;
+        /*OccupiedSq45 ^= cas45;
         OccupiedSq135 ^= cas135;
-        OccupiedSq90 ^= cas90;
+        OccupiedSq90 ^= cas90;*/
         Pieces[turn][PIECE_ROOK] ^= cas;
         Squares[f] = Squares[t];
         Squares[t] = SQUARE_EMPTY;
@@ -844,9 +844,9 @@ void Position::unmakeMove(Move const& m)
 			TTKey ^= TT_PieceKey[COLOR_WHITE][PIECE_PAWN][x];
         }
         OccupiedSq ^= getPos2Bit(x);
-        OccupiedSq45 ^= getPos2Bit(getturn45(x));
+        /*OccupiedSq45 ^= getPos2Bit(getturn45(x));
         OccupiedSq135 ^= getPos2Bit(getturn135(x));
-        OccupiedSq90 ^= getPos2Bit(getturn90(x));
+        OccupiedSq90 ^= getPos2Bit(getturn90(x));*/
     }
 
 	int wkc = m.getWKC();
@@ -1132,7 +1132,7 @@ void Position::generateMoves(vector<Move>& moves) const
 		b ^= getPos2Bit(n);
         /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
-		Bitset m = getRookAttacks(n,OccupiedSq,OccupiedSq90);
+		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
@@ -1174,7 +1174,7 @@ void Position::generateMoves(vector<Move>& moves) const
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
         m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
         m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
-		Bitset m = getQueenAttacks(n,OccupiedSq,OccupiedSq90,OccupiedSq45,OccupiedSq135);
+		Bitset m = getQueenAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
@@ -1333,7 +1333,7 @@ void Position::generateCaptures(vector<Move>& moves) const
 		b ^= getPos2Bit(n);
         /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
         m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
-		Bitset m = getRookAttacks(n,OccupiedSq,OccupiedSq90);
+		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
@@ -1373,7 +1373,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-		Bitset m = getQueenAttacks(n, OccupiedSq,OccupiedSq90,OccupiedSq45,OccupiedSq135);
+		Bitset m = getQueenAttacks(n, OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
@@ -1432,7 +1432,7 @@ bool Position::isAttacked(int turn,int n) const
 	Bitset b = getBishopAttacks(n, OccupiedSq)&(Pieces[opp][PIECE_BISHOP] | Pieces[opp][PIECE_QUEEN]);
 	if (b != 0)
         return true;
-	b = getRookAttacks(n, OccupiedSq,OccupiedSq90)&(Pieces[opp][PIECE_ROOK] | Pieces[opp][PIECE_QUEEN]);
+	b = getRookAttacks(n, OccupiedSq)&(Pieces[opp][PIECE_ROOK] | Pieces[opp][PIECE_QUEEN]);
 	if (b != 0)
 		return true;
 	b = PawnAttacks[turn][n] & Pieces[opp][PIECE_PAWN];
@@ -1455,32 +1455,35 @@ int Position::getSmallestAttacker2(int turn,int n)
 	{
 		return PIECE_PAWN;
 	}
-	b |= KnightMoves[n]&Pieces[turn][PIECE_KNIGHT];
+	b = KnightMoves[n]&Pieces[turn][PIECE_KNIGHT];
 	if(b!=0)
 	{
 		return PIECE_KNIGHT;
 	}
-	b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&Pieces[turn][PIECE_BISHOP];
-    b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&Pieces[turn][PIECE_BISHOP];
+	b = getBishopAttacks(n, OccupiedSq)&Pieces[turn][PIECE_BISHOP];
+	/*b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&Pieces[turn][PIECE_BISHOP];
+    b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&Pieces[turn][PIECE_BISHOP];*/
 	if(b!=0)
 	{
 		return PIECE_BISHOP;
 	}
-    b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&Pieces[turn][PIECE_ROOK];
-    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&Pieces[turn][PIECE_ROOK];
+	b = getRookAttacks(n, OccupiedSq)&Pieces[turn][PIECE_ROOK];
+    /*b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&Pieces[turn][PIECE_ROOK];
+    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&Pieces[turn][PIECE_ROOK];*/
 	if(b!=0)
 	{
 		return PIECE_ROOK;
 	}
-	b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&Pieces[turn][PIECE_QUEEN];
+	/*b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&Pieces[turn][PIECE_QUEEN];
     b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&Pieces[turn][PIECE_QUEEN];
 	b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&Pieces[turn][PIECE_QUEEN];
-    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&Pieces[turn][PIECE_QUEEN];
+    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&Pieces[turn][PIECE_QUEEN];*/
+	b = getQueenAttacks(n, OccupiedSq)&Pieces[turn][PIECE_QUEEN];
 	if(b!=0)
 	{
 		return PIECE_QUEEN;
 	}
-	b |= KingMoves[n]&Pieces[turn][PIECE_KING];
+	b = KingMoves[n]&Pieces[turn][PIECE_KING];
     if(b!=0)
 	{
         return PIECE_KING;
@@ -1490,11 +1493,10 @@ int Position::getSmallestAttacker2(int turn,int n)
 
 Move Position::getSmallestAttacker(int turn,int n)
 {
-	return getSmallestAttacker(turn,n,OccupiedSq,OccupiedSq90,OccupiedSq45,OccupiedSq135);
+	return getSmallestAttacker(turn,n,OccupiedSq);
 }
 
-Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ,unsigned long long occ90,unsigned long long occ45,
-								   unsigned long long occ135)
+Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 {
     int opp = getOpponent(turn);
 	Bitset b = 0x0;
@@ -1526,7 +1528,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ,unsigne
 		//if(isLegal(mov))
 			return mov;
 	}
-    b |= getRookAttacks(n,occ,occ90);
+    b |= getRookAttacks(n,occ);
 	b &= Pieces[turn][PIECE_ROOK];
 	if(b!=0)
 	{
@@ -1537,7 +1539,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ,unsigne
 			return mov;
 	}
 	b |= getBishopAttacks(n, occ);
-	b |= getRookAttacks(n, occ90, occ);
+	b |= getRookAttacks(n, occ);
 	b &= Pieces[turn][PIECE_QUEEN];
 	if(b!=0)
 	{
@@ -1669,15 +1671,15 @@ bool Position::isRepetition()
 	return false;
 }
 
-Bitset getRookAttacks(int sq, Bitset occ,Bitset occ90)
+Bitset getRookAttacks(int sq, Bitset occ)
 {
 	/*Bitset m = RookRankMoves[sq][(occ>>(RankOffset[sq]))&0xff];
     m |= RookFileMoves[sq][(occ90>>(FileOffset[sq]))&0xff];
     return m;*/
-	occ = ((occ&RookMagicTable[sq].mask)*RookMagicTable[sq].magic) >> RookMagicTable[sq].shift;
 	/*occ &= RookMagicTable[sq].mask;
 	occ *= RookMagicTable[sq].magic;
 	occ >>= RookMagicTable[sq].shift;*/
+	occ = ((occ&RookMagicTable[sq].mask)*RookMagicTable[sq].magic) >> RookMagicTable[sq].shift;
 	return RookAttacks[sq][occ];
 }
 
@@ -1685,22 +1687,17 @@ Bitset getBishopAttacks(int sq, Bitset occ)
 {
 	/*Bitset m = BishopA1H8Moves[sq][(occ135>>Diagonal[turn135[sq]])&0xff];
     m |= BishopA8H1Moves[sq][(occ45>>Diagonal[turn45[sq]])&0xff];*/
-	/*int diag = getA1H8DiagonalIndex(sq);
-	int occupancy = (int)((occ&A1H8DiagonalMask[diag])*(A1H8DiagonalMagic[diag] >> 56));
-	Bitset m = A1H8DiagonalAttacks[sq][(occupancy >> 1) & 63];
-	diag = getH1A8AntiDiagonalIndex(sq);
-	occupancy = (int)((occ&H1A8DiagonalMask[diag])*(H1A8DiagonalMagic[diag] >> 56));
-	m |= H1A8DiagonalAttacks[sq][(occupancy >> 1) & 63];*/
-	occ &= BishopMagicTable[sq].mask;
+	//return m;
+	/*occ &= BishopMagicTable[sq].mask;
 	occ *= BishopMagicTable[sq].magic;
-	occ >>= BishopMagicTable[sq].shift;
+	occ >>= BishopMagicTable[sq].shift;*/
+	occ = ((occ&BishopMagicTable[sq].mask)*BishopMagicTable[sq].magic) >> BishopMagicTable[sq].shift;
 	return BishopAttacks[sq][occ];
-    //return m;
 }
 
-Bitset getQueenAttacks(int sq, Bitset occ, Bitset occ90,Bitset occ45,Bitset occ135)
+Bitset getQueenAttacks(int sq, Bitset occ)
 {
-	Bitset m = getRookAttacks(sq, occ, occ90);
+	Bitset m = getRookAttacks(sq, occ);
 	m |= getBishopAttacks(sq, occ);
 	return m;
 }

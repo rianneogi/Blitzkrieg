@@ -20,9 +20,9 @@ public:
     int Squares[64];
     Bitset Pieces[2][6];
     Bitset OccupiedSq;
-    Bitset OccupiedSq90;
+    /*Bitset OccupiedSq90;
     Bitset OccupiedSq45;
-    Bitset OccupiedSq135;
+    Bitset OccupiedSq135;*/
     
     Bitset castling[2][2];
     Bitset epsquare;
@@ -52,8 +52,7 @@ public:
     bool checkLegal(Move* m);
     bool isAttacked(int turn,int n) const;
 	Move getSmallestAttacker(int turn,int n);
-	Move getSmallestAttacker(int turn,int n,unsigned long long occ,unsigned long long occ90,unsigned long long occ45,
-								   unsigned long long occ135);
+	Move getSmallestAttacker(int turn,int n,unsigned long long occ);
 	int getSmallestAttacker2(int turn,int n);
 	Move makeCapture(int piece,int n); //makes the first legal move by piece to square n, returns the move made
     bool underCheck(int turn);
@@ -63,9 +62,9 @@ public:
 	void takebackMove();
 	bool isRepetition();
 };
-Bitset getRookAttacks(int sq,Bitset occ,Bitset occ90);
+Bitset getRookAttacks(int sq,Bitset occ);
 Bitset getBishopAttacks(int sq, Bitset occ);
-Bitset getQueenAttacks(int sq, Bitset occ, Bitset occ90, Bitset occ45, Bitset occ135);
+Bitset getQueenAttacks(int sq, Bitset occ);
 
 string getStringToken(string str, char delimiter, int token);
 int getStringTokenPosition(string str, char delimiter, int token);

@@ -827,9 +827,9 @@ template<bool Trace> int Engine::LeafEval()
 			}
 
 			//Rook Attacks
-			Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
-			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
-
+			/*Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
+			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);*/
+			Bitset m = getRookAttacks(k, pos.OccupiedSq);
 			if (m&b)
 			{
 				PieceActivity[i] += RookConnectedBonus;
@@ -985,8 +985,9 @@ template<bool Trace> int Engine::LeafEval()
 			}
 
 			//bishop attacks near opposing king
-			Bitset m = getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
-			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
+			/*Bitset m = getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
+			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);*/
+			Bitset m = getBishopAttacks(k, pos.OccupiedSq);
 
 			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
@@ -1033,10 +1034,11 @@ template<bool Trace> int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 
 			//queen attacks near opposing king
-			Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
+			/*Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
 			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
 			m |= getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
-			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);
+			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);*/
+			Bitset m = getQueenAttacks(k, pos.OccupiedSq);
 
 			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
@@ -1164,9 +1166,9 @@ int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 	}*/
 	int gain[100],d=0;
     Bitset occ = pos.OccupiedSq;
-    Bitset occ90 = pos.OccupiedSq90;
+    /*Bitset occ90 = pos.OccupiedSq90;
 	Bitset occ45 = pos.OccupiedSq45;
-    Bitset occ135 = pos.OccupiedSq135;
+    Bitset occ135 = pos.OccupiedSq135;*/
 	Bitset pieces[2][6];
 	for(int i = 0;i<2;i++)
 	{
@@ -1188,9 +1190,9 @@ int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 		//cout << "gain " << d << " is " << gain[d] << endl;
 
         pos.OccupiedSq ^= getPos2Bit(from); // reset bit in temporary occupancy (for x-Rays)
-		pos.OccupiedSq90 ^= getPos2Bit(getturn90(from));
+		/*pos.OccupiedSq90 ^= getPos2Bit(getturn90(from));
 		pos.OccupiedSq45 ^= getPos2Bit(getturn45(from));
-		pos.OccupiedSq135 ^= getPos2Bit(getturn135(from));
+		pos.OccupiedSq135 ^= getPos2Bit(getturn135(from));*/
 		pos.Pieces[turn][movpiece] ^= getPos2Bit(from);
 		turn = getOpponent(turn);
 
@@ -1201,9 +1203,9 @@ int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
 	}while(m.isNullMove()==false);
 
     pos.OccupiedSq = occ;
-    pos.OccupiedSq90 = occ90;
+    /*pos.OccupiedSq90 = occ90;
 	pos.OccupiedSq45 = occ45;
-    pos.OccupiedSq135 = occ135;
+    pos.OccupiedSq135 = occ135;*/
 	for(int i = 0;i<2;i++)
 	{
 		for(int j = 0;j<6;j++)

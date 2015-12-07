@@ -458,7 +458,7 @@ void Interface::info()
 	{
 		printBitset(e1.pos.OccupiedSq);
 	}
-	if(s=="os90")
+	/*if(s=="os90")
 	{
 		printBitset(board.pos.OccupiedSq90);
 	}
@@ -469,7 +469,7 @@ void Interface::info()
 	if(s=="os135")
 	{
 		printBitsetDiag(board.pos.OccupiedSq135);
-	}
+	}*/
 	if(s=="wp")
 	{
 		printBitset(board.pos.Pieces[COLOR_WHITE][PIECE_PAWN]);

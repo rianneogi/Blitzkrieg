@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 160;
+const int ENGINEVERSION = 161;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 161 - 07-12-2015 - Removed OccupiedSq90/45/135 updating
 // Build 160 - 07-12-2015 - Now uses Magic Bitboards instead of Rotated Bitboards
 // Build 159 - 07-12-2015 - Removed history reductions
 // Build 158 - 07-12-2015 - Increased Pawn Pressure bonus
