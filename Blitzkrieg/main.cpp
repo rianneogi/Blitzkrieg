@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 169;
+const int ENGINEVERSION = 171;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 171 - 08-12-2015 - Removed bad capture pruning
+// Build 170 - 08-12-2015 - Decreased depth margin of bad capture pruning to 1
 // Build 169 - 08-12-2015 - Decreased depth margin of bad capture pruning to 2
 // Build 168 - 07-12-2015 - Readded Build 165
 // Build 167 - 07-12-2015 - Added pre nullmove quiescence search for high depths 
@@ -341,8 +343,8 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 		getline(f, s);
 		if (onlyfailed && (oldfailed.size() == 0 || count != oldfailed.at(0)))
 		{
-count++;
-continue;
+			count++;
+			continue;
 		}
 		e.pos.loadFromFEN(s);
 		Move m = e.IterativeDeepening(time, false);

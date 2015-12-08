@@ -425,10 +425,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			see = StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece);
 		}
 
-		if (iscapture && depth <= 2 && see < 0)
-		{ //prune bad captures at low depths
-			continue;
-		}
+		//if (iscapture && depth <= 1 && see < 0)
+		//{ //prune bad captures at low depths
+		//	continue;
+		//}
 
 		if (!pos.makeMove(m))
 		{
