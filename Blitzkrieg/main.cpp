@@ -23,11 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 166;
+const int ENGINEVERSION = 169;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 169 - 08-12-2015 - Decreased depth margin of bad capture pruning to 2
+// Build 168 - 07-12-2015 - Readded Build 165
+// Build 167 - 07-12-2015 - Added pre nullmove quiescence search for high depths 
 // Build 166 - 07-12-2015 - Undid last change, made getAttacks functions inline
 // Build 165 - 07-12-2015 - Added leafeval>=beta condition in null move search
 // Build 164 - 07-12-2015 - Undid last change, fixed null move extension

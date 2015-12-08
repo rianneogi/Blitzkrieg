@@ -331,6 +331,16 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		ply++;
 		int ttkeynull = pos.TTKey;
 		pos.forceMove(m);
+
+		/*bool fullnullmovesearch = true;
+
+		if (depth >= 7)
+		{
+			score = -QuiescenceSearchStandPat(-beta, -beta+1);
+			if (score < beta)
+				fullnullmovesearch = false;
+		}
+		if(fullnullmovesearch)*/
 		score = -AlphaBeta(max(0, depth - R), -beta, -beta + 1, &line, false, false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
 		pos.unmakeMove(m);
@@ -415,7 +425,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			see = StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece);
 		}
 
-		if (iscapture && depth <= 4 && see < 0)
+		if (iscapture && depth <= 2 && see < 0)
 		{ //prune bad captures at low depths
 			continue;
 		}
