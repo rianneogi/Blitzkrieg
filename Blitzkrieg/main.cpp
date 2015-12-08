@@ -23,11 +23,15 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 173;
+const int ENGINEVERSION = 177;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 177 - 08-12-2015 - Added IID
+// Build 176 - 08-12-2015 - Undid last change, readded singular extension, improved on singular extension condition
+// Build 175 - 08-12-2015 - Reduced futility pruning depth condition from 5 to 3
+// Build 174 - 08-12-2015 - Reduced futility pruning depth condition from 7 to 5
 // Build 173 - 08-12-2015 - Removed singular extensions
 // Build 172 - 08-12-2015 - Removed null-move extension
 // Build 171 - 08-12-2015 - Removed bad capture pruning

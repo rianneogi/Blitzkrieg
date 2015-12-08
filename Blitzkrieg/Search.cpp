@@ -197,10 +197,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 
 	//bool underCheck = pos.underCheck(pos.turn);
-	if (incheck[ply]) //check extension
-	{
-		depth++;
-	}
+	//if (incheck[ply]) //check extension
+	//{
+	//	depth++;
+	//}
 
 	if (depth == 0)
 	{
@@ -299,7 +299,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			return v;
 	}
 
-	if (depth < 7 && ply != 0 && !incheck[ply] && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
+	if (depth < 5 && ply != 0 && !incheck[ply] && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
 		prunednodes++;
 		return (leafeval - getFutilityMargin(depth));
@@ -388,7 +388,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	//}
 	//else
 	//{
-		pos.generateMoves(vec);
+	pos.generateMoves(vec);
 	//}
 	//movegentime.Stop();
 	/*vector<Move> line;
@@ -396,6 +396,12 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	/*vector<int> scores;
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
+
+	if (probe == CONS_TTUNKNOWN && depth>=2) //internal iterative deepening
+	{
+		int score = AlphaBeta(depth >> 1, alpha, beta, &line, true, dopv);
+	}	
+
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
 	int bestscore = CONS_NEGINF;
@@ -433,24 +439,27 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			continue;
 		}
-		//if (vec.size() == 1) //singular extension, only 1 legal move, so extend
-		//{
-		//	depth++;
-		//}
+		if (vec.size() == 1 || (foundlegal==false && i==vec.size()-1)) //singular extension, only 1 legal move, so extend
+		{
+			depth++;
+		}
 		foundlegal = true;
 		ply++;
 		score = 0;
 
+		int reductiondepth = 1;
+
 		if (pos.underCheck(pos.turn))
 		{
 			incheck[ply] = true;
+			reductiondepth--;
 		}
 		else
 		{
 			incheck[ply] = false;
 		}
 
-		int reductiondepth = 1;
+		
 
 		//if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
 		//{

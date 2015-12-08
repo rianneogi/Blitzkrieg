@@ -113,6 +113,7 @@ void Interface::UCI()
 					v.reserve(128);
 					e1.pos.generateMoves(v);
 					Move m = String2Move(s);
+					int flag = 0;
 					for(int j = 0;j<v.size();j++)
 					{
 						if(v.at(j).getFrom() == m.getFrom() && v.at(j).getTo() ==  m.getTo() && 
@@ -128,11 +129,16 @@ void Interface::UCI()
 						)
 						{
 							e1.makeMove(v.at(j));
+							flag = 1;
 							//cout << v.at(j).toString() << endl;
 						}
 					}
 					//cout << s << endl;
 					//cout << m.getFrom() << " " << m.getTo() << endl;
+					if (flag == 0)
+					{
+						cout << "info string ERROR: Legal move not found: " << m.toString() << ", move count: " << e1.pos.movelist.size() << endl;
+					}
 					i++;
 					s = getStringToken(str,' ',i);
 				}
