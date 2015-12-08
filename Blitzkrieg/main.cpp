@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 171;
+const int ENGINEVERSION = 173;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 173 - 08-12-2015 - Removed singular extensions
+// Build 172 - 08-12-2015 - Removed null-move extension
 // Build 171 - 08-12-2015 - Removed bad capture pruning
 // Build 170 - 08-12-2015 - Decreased depth margin of bad capture pruning to 1
 // Build 169 - 08-12-2015 - Decreased depth margin of bad capture pruning to 2

@@ -356,10 +356,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//cout << "Null move cutoff " << beta << endl;
 			return score;
 		}
-		if (score < CONS_MATED + 1000) //score is so bad, we are in danger, so increase depth
-		{
-			depth++;
-		}
+		//if (score < CONS_MATED + 1000) //score is so bad, we are in danger, so increase depth
+		//{
+		//	depth++;
+		//}
 	}
 
 	//futility pruning
@@ -406,7 +406,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//dummyline.clear();
 		//m = vec.at(i);
 		//int tablekey2 = pos.TTKey;
-		//SortPhase = oldsortphase;
 		m = getHighestScoringMove(vec, i);
 
 		if (SortPhase == SORTPHASE_NONE)
@@ -434,10 +433,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			continue;
 		}
-		if (vec.size() == 1) //singular extension, only 1 legal move, so extend
-		{
-			depth++;
-		}
+		//if (vec.size() == 1) //singular extension, only 1 legal move, so extend
+		//{
+		//	depth++;
+		//}
 		foundlegal = true;
 		ply++;
 		score = 0;
