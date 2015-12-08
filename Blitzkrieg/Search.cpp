@@ -398,10 +398,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 
-	if (probe == CONS_TTUNKNOWN && dopv && depth>=2) //internal iterative deepening
-	{
-		int score = AlphaBeta(depth >> 1, alpha, beta, &line, false, dopv);
-	}	
+	//if (probe == CONS_TTUNKNOWN && dopv && depth>=2) //internal iterative deepening
+	//{
+	//	int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
+	//}	
 
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
