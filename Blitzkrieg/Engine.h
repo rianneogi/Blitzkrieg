@@ -11,6 +11,8 @@
 #include "Position.h"
 #include "Clock.h"
 
+#define STATS
+
 extern int PieceMaterial[7];
 extern int PieceSq[13][64];
 extern int PieceSqEG[13][64];

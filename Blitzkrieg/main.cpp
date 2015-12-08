@@ -23,12 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 177;
+const int ENGINEVERSION = 179;
 
 // Best Build so far: 143
 
 ///BUILDS
-// Build 177 - 08-12-2015 - Added IID
+// Build 179 - 08-12-2015 - Undid last change, readded IID, IID now only happens in PV node and no null moves allowed in IID
+// Build 178 - 08-12-2015 - Undid last change, now does not set hash move as a killer
+// Build 177 - 08-12-2015 - Added IID, with depth = depth/2
 // Build 176 - 08-12-2015 - Undid last change, readded singular extension, improved on singular extension condition
 // Build 175 - 08-12-2015 - Reduced futility pruning depth condition from 5 to 3
 // Build 174 - 08-12-2015 - Reduced futility pruning depth condition from 7 to 5

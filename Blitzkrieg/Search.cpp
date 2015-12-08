@@ -230,12 +230,13 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 
 	int probe = Table.Probe(pos.TTKey, depth, alpha, beta);
+	Move ttbestmove = createNullMove(pos.epsquare);
 	if (probe != CONS_TTUNKNOWN)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
 		if (ply != 0)
 		{
-			Move ttbestmove = Table.getBestMove(pos.TTKey);
+			ttbestmove = Table.getBestMove(pos.TTKey);
 			if (!ttbestmove.isNullMove())
 			{
 				variation->push_back(ttbestmove);
@@ -397,9 +398,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 
-	if (probe == CONS_TTUNKNOWN && depth>=2) //internal iterative deepening
+	if (probe == CONS_TTUNKNOWN && dopv && depth>=2) //internal iterative deepening
 	{
-		int score = AlphaBeta(depth >> 1, alpha, beta, &line, true, dopv);
+		int score = AlphaBeta(depth >> 1, alpha, beta, &line, false, dopv);
 	}	
 
 	vector<Move> quietmoves;
@@ -548,10 +549,11 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 		if(score>=beta)
 		{
-			Table.Save(pos.TTKey,depth,score,TT_BETA,m);
 			if(noMaterialGain(m))
 			{
+				//if(ttbestmove!=m) //dont store hash move as a killer
 				setKiller(m, depth, score);
+
 				int bonus = depth*depth;
 				HistoryScores[movingpiece][m.getTo()] += bonus;
 				if (HistoryScores[movingpiece][m.getTo()] > 200000) //prevent overflow of history values
@@ -569,10 +571,13 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 					HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] -= bonus;
 				}
 			}
+			Table.Save(pos.TTKey, depth, score, TT_BETA, m);
+#ifdef STATS
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
 			if (i == 0)
 				firstbetacutoffcount++;
+#endif
 			return score; //fail soft beta cutoff
 		}
 		else if(score>bestscore)
@@ -589,11 +594,13 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				if (noMaterialGain(m))
 					HistoryScores[movingpiece][m.getTo()] += depth;
 
+#ifdef STATS
 				if (firstalpha == -1)
 				{
 					firstalpha = i;
 				}
 				finalalpha = i;
+#endif
 
 			}
 		}
@@ -660,9 +667,11 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			PvPly = ply;
 		}*/
 		//HistoryScores[alphamove.getFrom()][alphamove.getTo()] += depth+finalalpha;
+#ifdef STATS
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);
 		alphafirst_sum += (firstalpha + 1);
+#endif
 		
 		//pos.makeMove(alphamove);
 		//int le = LeafEval<false>()-PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()];
