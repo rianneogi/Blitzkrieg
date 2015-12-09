@@ -569,7 +569,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				}
 				for (int i = 0;i < quietmoves.size();i++)
 				{
-					HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] -= bonus;
+					if(HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] <= bonus)
+						HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] = 0;
+					else
+						HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] -= bonus;
 				}
 			}
 			

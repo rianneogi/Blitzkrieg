@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 184;
+const int ENGINEVERSION = 185;
 
-// Best Build so far: 143
+// Best Build so far: 173
 
 ///BUILDS
+// Build 185 - 09-12-2015 - History Scores now cant go below 0
 // Build 184 - 09-12-2015 - Now saves move in TT before updating Killer and History (should have the same ELO as last build)
 // Build 183 - 09-12-2015 - Fixed a bug in killer moves
 // Build 182 - 08-12-2015 - Improved killer moves update
