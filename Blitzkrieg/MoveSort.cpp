@@ -183,12 +183,12 @@ void Engine::setKiller(Move m, int depth, int score)
 		//KillerScores[0][ply] = score;
 		//cout << "Killer set: " << m.toString() << endl;
 	}
-	else if (m != KillerMoves[1][ply])
-	{
-		//KillerMoves[2][ply] = KillerMoves[1][ply];
-		KillerMoves[1][ply] = m;
-		//KillerScores[1][ply] = score;
-	}
+	//else if (m != KillerMoves[1][ply])
+	//{
+	//	//KillerMoves[2][ply] = KillerMoves[1][ply];
+	//	KillerMoves[1][ply] = m;
+	//	//KillerScores[1][ply] = score;
+	//}
 }
 
 //void Engine::movesort(vector<Move>& moves,int depth)

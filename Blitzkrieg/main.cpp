@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 181;
+const int ENGINEVERSION = 182;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 182 - 08-12-2015 - Improved killer moves update
 // Build 181 - 08-12-2015 - Removed IID
 // Build 180 - 08-12-2015 - Changed IID depth to depth-2
 // Build 179 - 08-12-2015 - Undid last change, readded IID, IID now only happens in PV node and no null moves allowed in IID
