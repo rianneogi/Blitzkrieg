@@ -27,7 +27,7 @@ void Interface::UCI()
 	cout << "uciok" << endl;
 	cout << "info string " << ENGINENAME << " " << ENGINEVERSION << endl;
 	string str = "";
-	char cp[1000];
+	char cp[5000];
 	while(true)
 	{
 		str = "";
@@ -36,6 +36,8 @@ void Interface::UCI()
 		{
 			str += cp[i];
 		}
+		//cin >> str;
+		//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		string s = getStringToken(str,' ',1);
 		if(s=="isready")
 		{
@@ -107,6 +109,7 @@ void Interface::UCI()
 			{
 				int i = tokennumber+1;
 				s = getStringToken(str,' ',i);
+
 				while(s!="")
 				{
 					vector<Move> v;
@@ -761,7 +764,7 @@ string getStringToken(string str, char delimiter, int token)
 	string s = "";
 	for(int i = 0;i<str.size();i++)
 	{
-		if(str.at(i)==delimiter)
+		if(str.at(i)==delimiter && i!=0 && str.at(i-1)!=delimiter)
 		{
 			x++;
 		}
