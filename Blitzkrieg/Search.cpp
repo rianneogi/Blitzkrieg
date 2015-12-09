@@ -236,44 +236,19 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//cout << probe << " found " << pos.TTKey << endl;
 		if (ply != 0)
 		{
+			tthitcount++;
+			return probe;
+		}
+		else
+		{
 			ttbestmove = Table.getBestMove(pos.TTKey);
 			if (!ttbestmove.isNullMove())
 			{
 				variation->push_back(ttbestmove);
-				//PrincipalVariation[ply] = ttbestmove;
-				//PvSize = ply;
-				//PvPly = ply;
-				/*vector<Move> vec;
-				vec.reserve(128);
-				pos.generateMoves(vec);
-				int flag = 0;
-				for (int i = 0;i < vec.size();i++)
-				{
-					if (vec.at(i) == ttbestmove)
-					{
-						flag = 1;
-						break;
-					}
-				}
-				if (flag == 0)
-				{
-					cout << "info string ERROR: ILL EAGLE " << ttbestmove.toString() << endl;
-				}*/
-				tthitcount++;
-				return probe;
-			}
-			else if (ply != 0)
-			{
-				//PvSize = ply - 1;
-				//PvPly = ply;
 				tthitcount++;
 				return probe;
 			}
 		}
-		/*else if(ply!=0)
-		{
-			return probe;
-		}*/
 	}
 
 	int leafeval = 0;

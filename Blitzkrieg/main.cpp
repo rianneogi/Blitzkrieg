@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 187;
+const int ENGINEVERSION = 188;
 
-// Best Build so far: 173
+// Best Build so far: 187
 
 ///BUILDS
+// Build 188 - 09-12-2015 - Reworked Hash table probing in search
 // Build 187 - 09-12-2015 - Undid Build 184
 // Build 186 - 09-12-2015 - Fixed a bug that caused the engine to crash on move 196
 // Build 185 - 09-12-2015 - History Scores now cant go below 0
