@@ -549,7 +549,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 		if(score>=beta)
 		{
-			Table.Save(pos.TTKey, depth, score, TT_BETA, m);
 			if(noMaterialGain(m))
 			{
 				//if(ttbestmove!=m) //dont store hash move as a killer
@@ -575,7 +574,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 						HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] -= bonus;
 				}
 			}
-			
+			Table.Save(pos.TTKey, depth, score, TT_BETA, m);
+
 #ifdef STATS
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
