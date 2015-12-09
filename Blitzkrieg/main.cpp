@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 182;
+const int ENGINEVERSION = 183;
 
 // Best Build so far: 143
 
 ///BUILDS
+// Build 183 - 09-12-2015 - Fixed a bug in killer moves
 // Build 182 - 08-12-2015 - Improved killer moves update
 // Build 181 - 08-12-2015 - Removed IID
 // Build 180 - 08-12-2015 - Changed IID depth to depth-2

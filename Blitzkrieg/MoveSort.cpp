@@ -102,11 +102,11 @@ long long Engine::getMoveScore(const Move& m)
 			score += 2000000;
 			return score;
 		}
-		else if (from == KillerMoves[2][ply].getFrom() && to == KillerMoves[2][ply].getTo())
+		/*else if (from == KillerMoves[2][ply].getFrom() && to == KillerMoves[2][ply].getTo())
 		{
 			score += 1500000;
 			return score;
-		}
+		}*/
 		else
 		{
 			SortPhase = SORTPHASE_HISTORY;
