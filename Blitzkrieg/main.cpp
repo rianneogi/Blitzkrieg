@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 191;
+const int ENGINEVERSION = 192;
 
 // Best Build so far: 187
 
 ///BUILDS
+// Build 192 - 10-12-2015 - Change reduction depth to min(depth-4,(depth+i)/2)
 // Build 191 - 10-12-2015 - Changed reduction depth to min(depth-4,4)
 // Build 190 - 09-12-2015 - Changed reduction depth to min(depth-3,3)
 // Build 189 - 09-12-2015 - Changed reduction depth to depth>5?3:2

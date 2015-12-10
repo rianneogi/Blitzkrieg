@@ -49,7 +49,7 @@ void Interface::UCI()
 		}
 		else if(s=="go")
 		{
-			int time = 1000;
+			int time = 0;
 			for (int i = 2;;i++)
 			{
 				s = getStringToken(str, ' ', i);
@@ -66,8 +66,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 0)
 					{
-						time = atoi(getStringToken(str, ' ', i + 1).c_str());
-						time /= 30;
+						time += atoi(getStringToken(str, ' ', i + 1).c_str())/30;
 					}
 					i++;
 				}
@@ -75,8 +74,23 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 1)
 					{
-						time = atoi(getStringToken(str, ' ', i + 1).c_str());
-						time /= 30;
+						time += atoi(getStringToken(str, ' ', i + 1).c_str())/30;
+					}
+					i++;
+				}
+				if (s == "winc")
+				{
+					if (e1.pos.turn == 0)
+					{
+						time += atoi(getStringToken(str, ' ', i + 1).c_str());
+					}
+					i++;
+				}
+				if (s == "binc")
+				{
+					if (e1.pos.turn == 1)
+					{
+						time += atoi(getStringToken(str, ' ', i + 1).c_str());
 					}
 					i++;
 				}
@@ -84,6 +98,9 @@ void Interface::UCI()
 					break;
 			}
 			
+			if (time == 0)
+				time = 1000;
+
 			Move m = e1.IterativeDeepening(time, true);
 			cout << "bestmove " << m.toString() << endl;
 			//e1.pos.forceMove(m);
