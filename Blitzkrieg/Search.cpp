@@ -453,6 +453,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !incheck[ply]
 			&& !incheck[ply-1]
+			&& m!=Threats[ply]
 			) //latemove reduction
 		{
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
@@ -462,10 +463,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			{
 				reductiondepth++;
 			}
-			if (m == Threats[ply])
+			/*if (m == Threats[ply])
 			{
 				reductiondepth = max(reductiondepth - 1, 0);
-			}
+			}*/
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
@@ -500,7 +501,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				//cout << "pv research" << endl;
 			}
 		}
-		else //latemove reduction
+		else
 		{
 			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, &line, true, dopv);
 			//cout << "latemove" << endl;

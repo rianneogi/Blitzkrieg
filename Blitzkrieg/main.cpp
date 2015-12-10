@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 201;
+const int ENGINEVERSION = 202;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 202 - 10-12-2015 - No LMR on a Threat move
 // Build 201 - 10-12-2015 - Undid last change, Lesser reductions on a move that gives a threat
 // Build 200 - 10-12-2015 - Now does not store hash move as a killer
 // Build 199 - 10-12-2015 - Time control now only adds 3/4th of the increment so that engine can come back from time trouble
