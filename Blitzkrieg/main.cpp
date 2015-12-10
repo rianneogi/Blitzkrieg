@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 196;
+const int ENGINEVERSION = 198;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 198 - 10-12-2015 - Readded history reduction in non-pv nodes
+// Build 197 - 10-12-2015 - Time control now factors in increment
 // Build 196 - 10-12-2015 - Undid mobility change in Build 193
 // Build 195 - 10-12-2015 - Fixed an issue with time control
 // Build 194 - 10-12-2015 - Undid Build 192, time control now no longer factors increment

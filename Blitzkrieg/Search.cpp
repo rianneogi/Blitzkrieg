@@ -458,10 +458,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
 				//reductiondepth += depth > 4 ? 2 : 1;
 			reductiondepth += min(depth-4,4);
-			/*if (HistoryScores[movingpiece][moveto] < 0) //history reduction
+			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
-			}*/
+			}
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
@@ -543,9 +543,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				}
 				for (int i = 0;i < quietmoves.size();i++)
 				{
-					if(HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] <= bonus)
+					/*if(HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] <= bonus)
 						HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] = 0;
-					else
+					else*/
 						HistoryScores[quietmoves.at(i).getMovingPiece()][quietmoves.at(i).getTo()] -= bonus;
 				}
 			}
