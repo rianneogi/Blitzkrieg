@@ -4,7 +4,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 {
 	//quisctime.Start();
 	nodes++;
-	if(nodes%1024==0)
+	if(nodes%CheckupNodeCount == 0)
 	{
 		checkup();
 		//nodes = 0;
