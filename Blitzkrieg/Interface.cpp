@@ -82,7 +82,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 0)
 					{
-						time += atoi(getStringToken(str, ' ', i + 1).c_str());
+						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
 					}
 					i++;
 				}
@@ -90,7 +90,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 1)
 					{
-						time += atoi(getStringToken(str, ' ', i + 1).c_str());
+						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
 					}
 					i++;
 				}
