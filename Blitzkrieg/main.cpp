@@ -23,12 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 203;
+const int ENGINEVERSION = 204;
 
 // Best Build so far: 191
 
 ///BUILDS
-// Build 203 - 10-12-2015 - Changed reduction depth to min(depth-4,5);
+// Build 204 - 10-12-2015 - Changed reduction depth to min(depth-4,6)
+// Build 203 - 10-12-2015 - Changed reduction depth to min(depth-4,5)
 // Build 202 - 10-12-2015 - No LMR on a Threat move
 // Build 201 - 10-12-2015 - Undid last change, Lesser reductions on a move that gives a threat
 // Build 200 - 10-12-2015 - Now does not store hash move as a killer
