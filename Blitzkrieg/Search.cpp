@@ -462,6 +462,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			{
 				reductiondepth++;
 			}
+			if (m == Threats[ply])
+			{
+				reductiondepth = max(reductiondepth - 1, 0);
+			}
 			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
@@ -526,7 +530,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			if(noMaterialGain(m))
 			{
-				//if(ttbestmove!=m) //dont store hash move as a killer
+				//if(Table.getBestMove(pos.TTKey)!=m) //dont store hash move as a killer
 				setKiller(m, depth, score);
 
 				int bonus = depth*depth;
