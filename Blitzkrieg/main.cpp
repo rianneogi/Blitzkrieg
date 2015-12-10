@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 194;
+const int ENGINEVERSION = 195;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 195 - 10-12-2015 - Fixed an issue with time control
 // Build 194 - 10-12-2015 - Undid Build 192, time control now no longer factors increment
 // Build 193 - 10-12-2015 - Reworked Mobility values, time control now factors in increment also
 // Build 192 - 10-12-2015 - Change reduction depth to min(depth-4,(depth+i)/2)
