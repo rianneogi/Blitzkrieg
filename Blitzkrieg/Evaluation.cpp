@@ -459,7 +459,27 @@ template<bool Trace> int Engine::LeafEval()
 
 		if (!isEG)
 		{
-			if (getRank(getColorMirror(i, k)) < 2)
+			KingSafety[i] += PawnShield1Bonus*popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
+			if (Trace)
+			{
+				cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+			}
+			KingSafety[i] += PawnShield2Bonus*popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
+			if (Trace)
+			{
+				cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+			}
+			if (getPawnMoves(i,k) & pos.Pieces[i][PIECE_BISHOP])
+			{
+				KingSafety[i] += BishopShieldBonus;
+				if (Trace)
+				{
+					cout << "Bonus for Bishop in front of king for " << PlayerStrings[i] << ": " << BishopShieldBonus << endl;
+				}
+			}
+		}
+
+			/*if (getRank(getColorMirror(i, k)) < 2)
 			{
 				if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == getPiece2Square(PIECE_PAWN, i))
 				{
@@ -510,7 +530,7 @@ template<bool Trace> int Engine::LeafEval()
 					}
 				}
 			}
-		}
+		}*/
 
 		if ((getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there arent friendly pawns in the same file
 		{

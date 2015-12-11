@@ -604,11 +604,17 @@ void datainit()
 			}
 		}
 	}
+
+	int ColorFactor[2] = { 1,-1 };
+
 	for(int col = 0;col<2;col++) //king shields
 	{
 		for(int i = 0;i<64;i++)
 		{
-			KingShield1[col][i] = KingMoves[i]&Pos2Bit[i];
+			KingShield1[col][i] = KingMoves[i] & (PawnAttacks[col][i] | PawnMoves[col][i]);
+			if ((i + 16 * ColorFactor[col]) >= 0 && (i + 16 * ColorFactor[col]) <= 63)
+				KingShield2[col][i] = KingMoves[i+8*ColorFactor[col]] & RankBits[i+16*ColorFactor[col]];
+			/*KingShield1[col][i] = KingMoves[i]&Pos2Bit[i];
 			KingShield2[col][i] = KingMoves[i]&Pos2Bit[i];
 			if(col==COLOR_WHITE)
 			{
@@ -667,14 +673,14 @@ void datainit()
 						KingShield2[col][i] |= Pos2Bit[i-15];
 					}
 				}
-			}
+			}*/
 		}
 	}
 	for(int col=0;col<2;col++)
 	{
 		for(int i = 0;i<64;i++)
 		{
-			KingField[col][i] = KingShield1[col][i]|KingShield2[col][i]|KingShield1[Opponent[col]][i];
+			KingField[col][i] = KingMoves[i]|KingShield2[col][i]|KingShield1[Opponent[col]][i];
 		}
 	}
 	for(int i = 0;i<64;i++)
