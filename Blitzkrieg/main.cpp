@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 216;
+const int ENGINEVERSION = 217;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 217 - 12-12-2015 - Doubled Mobility bonus for Knight
 // Build 216 - 11-12-2015 - Doubled Mobility bonus for Bishop and Rook
 // Build 215 - 11-12-2015 - Undid last change, reworked Pawn Shield evaluation algorithm
 // Build 214 - 11-12-2015 - Added score bonus to king moves when under check

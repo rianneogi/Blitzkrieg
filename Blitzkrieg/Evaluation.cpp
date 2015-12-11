@@ -1305,7 +1305,7 @@ void evalinit()
 	{
 		RookMobility[i] *= 2;
 		BishopMobility[i] *= 2;
-		/*if (i < 9)
-			KnightMobility[i] *= 2;*/
+		if (i < 9)
+			KnightMobility[i] *= 2;
 	}
 }
