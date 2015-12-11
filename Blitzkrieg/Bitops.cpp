@@ -10,7 +10,7 @@ stringstream InStream("");
 string debugstring;
 
 int OUTPUT = OUTPUT_CONSOLE;
-bool DEBUG = false;
+//bool DEBUG = false;
 
 Bitset Pos2Bit[64];
 

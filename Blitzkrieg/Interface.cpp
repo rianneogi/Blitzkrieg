@@ -59,7 +59,7 @@ void Interface::UCI()
 				}
 				if (s == "movetime")
 				{
-					time = +atoi(getStringToken(str, ' ', i+1).c_str());
+					time += atoi(getStringToken(str, ' ', i+1).c_str());
 					i++;
 				}
 				if (s == "wtime")
@@ -82,7 +82,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 0)
 					{
-						time += (2*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
+						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
 					}
 					i++;
 				}
@@ -90,7 +90,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 1)
 					{
-						time += (2*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
+						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
 					}
 					i++;
 				}
@@ -168,10 +168,10 @@ void Interface::UCI()
 		{
 			e1.pos.display(0);
 		}
-		else if(s=="debug")
+		/*else if(s=="debug")
 		{
 			DEBUG = !DEBUG;
-		}
+		}*/
 		else if (s == "trace")
 		{
 			cout << e1.LeafEval<true>() << endl;
@@ -451,10 +451,10 @@ void Interface::start()
 		{
 			e1 = Engine(COLOR_WHITE,board.pos);
 		}
-		else if(s=="debug")
+		/*else if(s=="debug")
 		{
 			DEBUG = !DEBUG;
-		}
+		}*/
 		else if(s=="uci")
 		{
 			UCI();

@@ -11,7 +11,8 @@
 #include "Position.h"
 #include "Clock.h"
 
-#define STATS
+#define BLITZKRIEG_STATS
+#define BLITZKRIEG_DEBUG
 
 extern int PieceMaterial[7];
 extern int PieceSq[13][64];

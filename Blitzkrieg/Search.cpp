@@ -190,11 +190,13 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 
 int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, bool cannull, bool dopv)
 {
+#ifdef BLITZKRIEG_DEBUG
 	int tablekey = pos.PawnKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
 	}
+#endif
 
 	//bool underCheck = pos.underCheck(pos.turn);
 	//if (incheck[ply]) //check extension
@@ -204,12 +206,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 	if (depth == 0)
 	{
-		int ttqs = pos.TTKey;
 		int value = QuiescenceSearchStandPat(alpha, beta); //go to quiescence
-		if (ttqs != pos.TTKey)
-		{
-			cout << "info string ERROR: TT key quiescence fail" << endl;
-		}
 		if (value > alpha && value < beta)
 			PvSize = ply - 1;
 		//Table.Save(pos.TTKey,0,value,TT_EXACT,CONS_NULLMOVE);
@@ -305,7 +302,11 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
 		ply++;
+
+#ifdef BLITZKRIEG_DEBUG
 		int ttkeynull = pos.TTKey;
+#endif
+
 		pos.forceMove(m);
 
 		/*bool fullnullmovesearch = true;
@@ -322,11 +323,15 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		pos.unmakeMove(m);
 		if (line.empty()!=true)
 			Threats[ply] = line.at(line.size() - 1);
+
+#ifdef BLITZKRIEG_DEBUG
 		if (ttkeynull != pos.TTKey)
 		{
 			cout << "info string ERROR: Null TT fail" << endl;
 			_getch();
 		}
+#endif
+
 		if (score >= beta)
 		{
 			//cout << "Null move cutoff " << beta << endl;
@@ -390,8 +395,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//int tablekey2 = pos.TTKey;
 		m = getHighestScoringMove(vec, i);
 
+#ifdef BLITZKRIEG_DEBUG
 		if (SortPhase == SORTPHASE_NONE)
 			cout << "info string Sort Phase error" << endl;
+#endif
 
 		int capturedpiece = m.getCapturedPiece();
 		int special = m.getSpecial();
@@ -442,6 +449,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	reductiondepth++;
 		//}
 
+
+		//latemove reduction
 		if (!alpharaised
 			//&& i >= 4
 			&& depth >= 4
@@ -453,11 +462,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !incheck[ply]
 			&& !incheck[ply-1]
+			&& (movingpiece!=PIECE_PAWN || getRank(getColorMirror(pos.turn, moveto))<6) //dont reduce pawn moves past 6th rank
 			//&& m!=Threats[ply]
-			) //latemove reduction
+			)
 		{
-			//if (movingpiece != PIECE_PAWN || getRank(getColorMirror(pos.turn,moveto))<6) //dont reduce pawn moves past 6th rank
-				//reductiondepth += depth > 4 ? 2 : 1;
 			reductiondepth += min(depth-4,5);
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
@@ -467,7 +475,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			{
 				reductiondepth = max(reductiondepth - 1, 0);
 			}
-			//if (reductiondepth >= depth-3) reductiondepth = max(1,depth - 3);
 		}
 
 		//if (isCapture(m) && !dopv && see > 400 && depth>=5) //prune really good captures
@@ -556,7 +563,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			}
 			Table.Save(pos.TTKey, depth, score, TT_BETA, m);
 
-#ifdef STATS
+#ifdef BLITZKRIEG_STATS
 			betacutoff_counter++;
 			betacutoff_sum += i+1;
 			if (i == 0)
@@ -578,7 +585,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				if (noMaterialGain(m))
 					HistoryScores[movingpiece][m.getTo()] += depth;
 
-#ifdef STATS
+#ifdef BLITZKRIEG_STATS
 				if (firstalpha == -1)
 				{
 					firstalpha = i;
@@ -651,7 +658,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			PvPly = ply;
 		}*/
 		//HistoryScores[alphamove.getFrom()][alphamove.getTo()] += depth+finalalpha;
-#ifdef STATS
+#ifdef BLITZKRIEG_STATS
 		alpha_counter++;
 		alphalast_sum += (finalalpha + 1);
 		alphafirst_sum += (firstalpha + 1);
@@ -697,10 +704,12 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	{
 		cout << "TT NO MATCH" << endl;
 	}*/
+#ifdef BLITZKRIEG_DEBUG
 	if (pos.PawnKey != tablekey)
 	{
 		cout << "info string ERROR: Pawn TT key doesnt match" << endl;
 	}
+#endif
 	return bestscore;
 }
 

@@ -21,7 +21,7 @@ enum COLORS {COLOR_WHITE,COLOR_BLACK,COLOR_NONE};
 enum OUTPUTTYPE {OUTPUT_CONSOLE,OUTPUT_XBOARD,OUTPUT_UCI};
 
 extern int OUTPUT;
-extern bool DEBUG;
+//extern bool DEBUG;
 
 extern stringstream OutStream;
 extern stringstream InStream;

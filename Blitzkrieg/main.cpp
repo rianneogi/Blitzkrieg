@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 206;
+const int ENGINEVERSION = 207;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 207 - 11-12-2015 - Undid last change, Does not reduce pawn moves past 6th rank
 // Build 206 - 11-12-2015 - Now only half the increment time is added to move time
 // Build 205 - 11-12-2015 - Undid last change, Undid Build 202
 // Build 204 - 10-12-2015 - Changed reduction depth to min(depth-4,6)
