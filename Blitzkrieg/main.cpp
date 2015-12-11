@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 213;
+const int ENGINEVERSION = 214;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 214 - 11-12-2015 - Added score bonus to king moves when under check
 // Build 213 - 11-12-2015 - Undid Build 209, changed protected passed pawn definition
 // Build 212 - 11-12-2015 - Undid Build 210
 // Build 211 - 11-12-2015 - Undid Pawn piecesq change in Build 209

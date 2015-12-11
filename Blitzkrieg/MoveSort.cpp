@@ -46,6 +46,21 @@ long long Engine::getMoveScore(const Move& m)
 		//tthitcount++;
 		return score;
 	}
+	/*if (!pos.makeMove(m))
+		return -10000;
+	bool incheck = pos.underCheck(pos.turn);
+	pos.unmakeMove(m);
+	if (incheck)
+	{
+		score += 3500000;
+		return score;
+	}*/
+	/*if (incheck[ply] && movingpiece == PIECE_KING)
+	{
+		SortPhase = SORTPHASE_GOODCAP;
+		score += 3200000;
+		return score;
+	}*/
 	if (m.getSpecial() == PIECE_QUEEN) //queen promotion
 	{
 		SortPhase = SORTPHASE_GOODCAP;
