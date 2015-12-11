@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 207;
+const int ENGINEVERSION = 208;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 208 - 11-12-2015 - Added checkup() in Iterative Deepening
 // Build 207 - 11-12-2015 - Undid last change, Does not reduce pawn moves past 6th rank
 // Build 206 - 11-12-2015 - Now only half the increment time is added to move time
 // Build 205 - 11-12-2015 - Undid last change, Undid Build 202
@@ -461,74 +462,13 @@ void initialize()
 int main(int argc, char* args[])
 {
 	srand(time(0));
-	//loadFromLua("Personalities\\Wierd.lua");
 
 	initialize();
 	//generateMagics();
 
 	Interface i = Interface();
-	//printBitset(RookMagicTable[0].mask);
-	//cout << endl;
-	//printBitset((RookMagicTable[0].mask* RookMagicTable[0].magic) >> RookMagicTable[0].shift);
-	//cout << endl;
-	//printBitset((0x1111111111111111ULL&RookMagicTable[0].mask));
-	//cout << endl;
-	//printBitset(((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[0].magic) >> RookMagicTable[0].shift);
-	//cout << endl;
-	//printBitset(RookAttacks[0][((0x1111111111111111ULL&RookMagicTable[0].mask) * RookMagicTable[0].magic) >> RookMagicTable[0].shift]);
-	//for (int i = 63;i >= 0;i--)
-	//{
-	//	/*if ((((0x1111111111111111ULL&RookMagicTable[i].mask) * RookMagicTable[i].magic) >> RookMagicTable[i].shift) >= 4096)
-	//	{
-	//		cout << "ERROR" << endl;
-	//	}*/
-	//	printBitset(BishopAttacks[i][(int)(((0x1111111111111111ULL&BishopMagicTable[i].mask) * BishopMagicTable[i].magic) >> BishopMagicTable[i].shift)]);
-	//	cout << endl;
-	//}
-	/*for (int i = 0;i < 64;i++)
-	{
-		printBitset(RankBits[i]);
-		cout << endl;
-	}*/
 	
-	/*for (int i = 0;i < 64;i++)
-	{
-		if (i % 8 == 0)
-			cout << endl;
-		Bitset b = getKnightMoves(i);
-		int val = 0;
-		while (b)
-		{
-			unsigned long k = 0;
-			_BitScanForward64(&k, b);
-			b ^= getPos2Bit(k);
-			val += SquareValues[k];
-		}
-		cout << val << " ";
-	}*/
-
-
-	/*for (int i = 63;i >= 0;i--)
-	{
-		printBitset(RookAttacks[i][0]);
-		cout << endl;
-	}*/
-	//cout << j&(getPos2Bit(BBits[i]) - 1) << endl;
-	/*for (int i = 0;i < 64;i++)
-	{
-		printBitset(BishopAttacks[i][4]);
-		cout << endl;
-	}*/
-	
-	//testpositions("wac", 0, 0, 1000, i.e1);
-
-	//cout << find_magic(0, 0, 1);
-
-	/*printBitset(0x1111111111111111); cout << endl;
-	printBitset(0x480014006803021ULL); cout << endl;*/
-	//printBitset(0x1111111111111111 * 0x80008040002010ULL);
-
-
+	//testpositions("passedpawnsuite", 0, 1, 10000, i.e1);
     
 	try{
     i.start();

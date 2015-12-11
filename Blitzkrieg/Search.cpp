@@ -127,6 +127,7 @@ Move Engine::IterativeDeepening(int movetime, bool print)
 			ply = 0;
 			//PvSize = -1;
 			val = AlphaBeta(i, alpha, beta, &line, true, true);
+			checkup();
 			//cout << "asp. " << alpha << " " << beta << endl;
 			/*for (int i = 0;i < 2;i++)
 			{
