@@ -39,16 +39,16 @@ int KnightMobility[9] = { -12, -8,  0,  4,  8, 10, 12, 14, 16 };
 int QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
  
 // adjustments to piece values depending on number of pawns
-int KnightPawnAdj[9] = { -10,-8,-6, -4, -2,  0,  2,  4, 6 };
-int KnightOppPawnAdj[9] = { -10,-8,-6, -4, -2,  0,  2,  4, 6 };
+int KnightPawnAdj[9] = { -20,-16,-12, -8, -4,  0,  4,  8, 12 };
+int KnightOppPawnAdj[9] = { -20,-16,-12,-8,-4,0,4,8,12 };
 int BishopPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
 int BishopOppPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
-int RookPawnAdj[9] =   {5,4, 3, 2, 1, 0,-1,-2,-3};
-int RookOppPawnAdj[9] = { -4,-2, 0, 2, 4,6,8,10,12 };
+int RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
+int RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
 
 //adjustments to bishop values depending on number of pawns on same color square as bishop
-int BishopPawnSameColor[9] = {10,8,6,4,2,0,-2,-4,-6};
-int BishopOppPawnSameColor[9] = { -6,-4,-2,0,2,4,6,8,10 };
+int BishopPawnSameColor[9] = { 15,12,9,6,3,0,-3,-6,-9 };
+int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
 
 //King Safety
 int PawnShield1Bonus = 20;
@@ -652,46 +652,29 @@ template<bool Trace> int Engine::LeafEval()
 					cout << "Penalty for doubled pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << DoubledPawnPenalty[getFile(getColorMirror(i, k))] << endl;
 			}
 
-			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
-			{
-				PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)];
-				if (Trace)
-					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] << endl;
-
-				if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
-				{
-					PawnStructure[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
-					if (Trace)
-						cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << IsolatedPawnPenalty[getFile(getColorMirror(i, k))] << endl;
-
-					if (isEG)
-					{
-						PawnStructure[i] += (unsigned)PassedPawnBonus[getColorMirror(i, k)] / 2; //extra bonus in endgame
-						if (Trace)
-							cout << "Extra endgame Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] / 2 << endl;
-					}
-				}
-				else
-				{
-					if (isEG)
-					{
-						PawnStructure[i] += PassedPawnBonus[getColorMirror(i, k)]; //protected passed pawn
-						if (Trace)
-							cout << "Extra endgame Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] << endl;
-					}
-					else
-					{
-						PawnStructure[i] += (unsigned)PassedPawnBonus[getColorMirror(i, k)] / 2;
-						if (Trace)
-							cout << "Extra Bonus for protected Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PassedPawnBonus[getColorMirror(i, k)] / 2 << endl;
-					}
-				}
-			}
-			else if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
+			if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
 				PawnStructure[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
 				if (Trace)
 					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << IsolatedPawnPenalty[getFile(getColorMirror(i, k))] << endl;
+			}
+
+			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
+			{
+				unsigned int passerbonus = PassedPawnBonus[getColorMirror(i, k)];
+				PawnStructure[i] += passerbonus;
+
+				if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN]) //protected passer
+				{
+					passerbonus += passerbonus / 2;
+				}
+				if (isEG) //endgame bonus
+				{
+					passerbonus *= 2;
+				}
+
+				if (Trace)
+					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << passerbonus << endl;
 			}
 			//if (pos.OccupiedSq&getPos2Bit(getColorMirror(i,getPlus8(getColorMirror(i, k))))) //checks if pawn is blocked
 			//{
