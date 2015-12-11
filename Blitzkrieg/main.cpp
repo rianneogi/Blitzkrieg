@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 205;
+const int ENGINEVERSION = 206;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 206 - 11-12-2015 - Now only half the increment time is added to move time
 // Build 205 - 11-12-2015 - Undid last change, Undid Build 202
 // Build 204 - 10-12-2015 - Changed reduction depth to min(depth-4,6)
 // Build 203 - 10-12-2015 - Changed reduction depth to min(depth-4,5)
