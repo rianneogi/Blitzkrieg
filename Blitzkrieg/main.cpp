@@ -12,7 +12,7 @@ using namespace std;
 ///TODO
 
 ///BUGS
-// Rare crash at move 196
+// FIXED - Rare crash at move 196
 // FIXED - Search doesn't consider enpassant moves even though they are generated my movegen
 // FIXED - Engine crashes when near mate
 // FIXED - Bug where after calculating upto depth 6 then calculating upto depth 5 after e2e4 e7e5 leads to messed up engine position
@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 204;
+const int ENGINEVERSION = 205;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 205 - 11-12-2015 - Undid last change, Undid Build 202
 // Build 204 - 10-12-2015 - Changed reduction depth to min(depth-4,6)
 // Build 203 - 10-12-2015 - Changed reduction depth to min(depth-4,5)
 // Build 202 - 10-12-2015 - No LMR on a Threat move
