@@ -78,7 +78,7 @@ void Interface::UCI()
 					}
 					i++;
 				}
-				if (s == "winc")
+				/*if (s == "winc")
 				{
 					if (e1.pos.turn == 0)
 					{
@@ -93,7 +93,7 @@ void Interface::UCI()
 						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
 					}
 					i++;
-				}
+				}*/
 				if (s == "")
 					break;
 			}

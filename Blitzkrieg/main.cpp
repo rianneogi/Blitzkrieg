@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 209;
+const int ENGINEVERSION = 210;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 210 - 11-12-2015 - No longer factors in increment in time control
 // Build 209 - 11-12-2015 - Undid Build 207, Reworked Pawn Piecesq and reduced Pawn adj. for pieces a bit
 // Build 208 - 11-12-2015 - Added checkup() in Iterative Deepening
 // Build 207 - 11-12-2015 - Undid last change, Does not reduce pawn moves past 6th rank
