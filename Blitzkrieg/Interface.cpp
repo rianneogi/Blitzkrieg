@@ -59,7 +59,7 @@ void Interface::UCI()
 				}
 				if (s == "movetime")
 				{
-					time += atoi(getStringToken(str, ' ', i+1).c_str());
+					time = atoi(getStringToken(str, ' ', i+1).c_str());
 					i++;
 				}
 				if (s == "wtime")

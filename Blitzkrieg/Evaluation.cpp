@@ -39,16 +39,16 @@ int KnightMobility[9] = { -12, -8,  0,  4,  8, 10, 12, 14, 16 };
 int QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
  
 // adjustments to piece values depending on number of pawns
-int KnightPawnAdj[9] = {-20,-16,-12, -8, -4,  0,  4,  8, 12};
-int KnightOppPawnAdj[9] = { -20,-16,-12,-8,-4,0,4,8,12 };
+int KnightPawnAdj[9] = { -10,-8,-6, -4, -2,  0,  2,  4, 6 };
+int KnightOppPawnAdj[9] = { -10,-8,-6, -4, -2,  0,  2,  4, 6 };
 int BishopPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
 int BishopOppPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
-int RookPawnAdj[9] =   {15,12, 9, 6, 3, 0,-3,-6,-9};
-int RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
+int RookPawnAdj[9] =   {5,4, 3, 2, 1, 0,-1,-2,-3};
+int RookOppPawnAdj[9] = { -4,-2, 0, 2, 4,6,8,10,12 };
 
 //adjustments to bishop values depending on number of pawns on same color square as bishop
-int BishopPawnSameColor[9] = {15,12,9,6,3,0,-3,-6,-9};
-int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
+int BishopPawnSameColor[9] = {10,8,6,4,2,0,-2,-4,-6};
+int BishopOppPawnSameColor[9] = { -6,-4,-2,0,2,4,6,8,10 };
 
 //King Safety
 int PawnShield1Bonus = 20;
@@ -122,17 +122,17 @@ int SquareValues[64] = { 1, 1, 1, 1, 1, 1, 1, 1,
 						 2, 2, 2, 2, 2, 2, 2, 2,
 						 2, 2, 2, 2, 2, 2, 2, 2 };
 
-int PieceSqValues[6][64] = 
+int PieceSqValues[6][64] =
 {
 	//{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, //empty
 	{  0,  0,  0,  0,  0,  0,  0,  0, //pawn
-	 -12, -4, -4,  0,  0, -4, -4,-12,
-	 -12, -4,  8,  8,  8,  8, -4,-12,
-	  -8,  8, 24, 32, 32, 24,  8, -8,
-	  -8,  8,  8, 16, 16,  8,  8, -8,
-	  -8,  0,  0,  0,  0,  0,  0, -8,
-	  -8,  0,  0,  0,  0,  0,  0, -8,
-	  -8,  0,  0,  0,  0,  0,  0, -8},
+	 -12, -8, -4,  0,  0, -4, -8,-12,
+	 -12, -4,  8,  8,  8,  8, -8,-12,
+	 -12, -8, 24, 32, 32, 24, -8,-12,
+	 -12, -8,  8, 16, 16,  8, -8,-12,
+	  -8, -4,  0,  0,  0,  0, -4, -8,
+	  -4,  0,  0,  0,  0,  0,  0, -4,
+	   0,  0,  0,  0,  0,  0,  0,  0},
 
 	{  2,  4,  6,  6,  6,  6,  4,  2, //knight, non-negative
 	   4,  6, 10, 12, 12, 10,  6,  4,
