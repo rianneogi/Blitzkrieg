@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 215;
+const int ENGINEVERSION = 216;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 216 - 11-12-2015 - Doubled Mobility bonus for Bishop and Rook
 // Build 215 - 11-12-2015 - Undid last change, reworked Pawn Shield evaluation algorithm
 // Build 214 - 11-12-2015 - Added score bonus to king moves when under check
 // Build 213 - 11-12-2015 - Undid Build 209, changed protected passed pawn definition
@@ -475,7 +476,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("passedpawnsuite", 0, 1, 10000, i.e1);
+	//testpositions("bk", 0, 0, 1000, i.e1);
     
 	try{
     i.start();

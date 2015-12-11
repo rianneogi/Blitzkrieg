@@ -1301,4 +1301,11 @@ void evalinit()
 				cout << endl;*/
 		}
 	}
+	for (int i = 0;i < 16;i++)
+	{
+		RookMobility[i] *= 2;
+		BishopMobility[i] *= 2;
+		/*if (i < 9)
+			KnightMobility[i] *= 2;*/
+	}
 }

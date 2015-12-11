@@ -680,7 +680,7 @@ void datainit()
 	{
 		for(int i = 0;i<64;i++)
 		{
-			KingField[col][i] = KingMoves[i]|KingShield2[col][i]|KingShield1[Opponent[col]][i];
+			KingField[col][i] = KingMoves[i] | KingShield2[col][i];
 		}
 	}
 	for(int i = 0;i<64;i++)
