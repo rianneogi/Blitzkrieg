@@ -1310,10 +1310,10 @@ void evalinit()
 	}
 	for (int i = 0;i < 64;i++)
 	{
-		PassedPawnBonus[i] *= 1.5;
+		PassedPawnBonus[i] *= 1.4;
 	}
-	for (int i = 0;i < 100;i++)
+	/*for (int i = 0;i < 100;i++)
 	{
 		SafetyTable[i] *= 1.5;
-	}
+	}*/
 }

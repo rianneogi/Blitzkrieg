@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 221;
+const int ENGINEVERSION = 222;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 222 - 12-12-2015 - Undid last change, Decreased Passed Pawn bonus a bit
 // Build 221 - 12-12-2015 - Undid last change, Increase King Safety Table values
 // Build 220 - 12-12-2015 - Increased Passed Pawn bonus
 // Build 219 - 12-12-2015 - No longer factors increment in time control
