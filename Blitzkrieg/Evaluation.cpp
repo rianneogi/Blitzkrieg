@@ -1305,7 +1305,11 @@ void evalinit()
 	{
 		RookMobility[i] *= 2;
 		BishopMobility[i] *= 2;
-		if (i < 9)
-			KnightMobility[i] *= 2;
+		/*if (i < 9)
+			KnightMobility[i] *= 2;*/
+	}
+	for (int i = 0;i < 64;i++)
+	{
+		PassedPawnBonus[i] *= 1.5;
 	}
 }

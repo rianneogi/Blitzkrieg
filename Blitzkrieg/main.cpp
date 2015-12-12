@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 217;
+const int ENGINEVERSION = 219;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 219 - 12-12-2015 - No longer factors increment in time control
+// Build 218 - 12-12-2015 - Undid last change, Increased Passed Pawn Bonus
 // Build 217 - 12-12-2015 - Doubled Mobility bonus for Knight
 // Build 216 - 11-12-2015 - Doubled Mobility bonus for Bishop and Rook
 // Build 215 - 11-12-2015 - Undid last change, reworked Pawn Shield evaluation algorithm
