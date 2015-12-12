@@ -593,7 +593,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				}
 				finalalpha = i;
 #endif
-
 			}
 		}
 

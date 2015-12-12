@@ -1310,6 +1310,6 @@ void evalinit()
 	}
 	for (int i = 0;i < 64;i++)
 	{
-		PassedPawnBonus[i] *= 1.5;
+		PassedPawnBonus[i] *= 2;
 	}
 }
