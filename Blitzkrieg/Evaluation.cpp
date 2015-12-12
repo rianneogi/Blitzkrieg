@@ -684,6 +684,10 @@ template<bool Trace> int Engine::LeafEval()
 				unsigned int passerbonus = PassedPawnBonus[getColorMirror(i, k)];
 				PawnStructure[i] += passerbonus;
 
+				if (getAboveBits(i, k)&pos.OccupiedSq) //blocked by a piece
+				{
+					passerbonus /= 2;
+				}
 				if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN]) //protected passer
 				{
 					passerbonus += passerbonus / 2;
@@ -1310,8 +1314,12 @@ void evalinit()
 	}
 	for (int i = 0;i < 64;i++)
 	{
-		PassedPawnBonus[i] *= 1.4;
+		PassedPawnBonus[i] *= 1.5;
 	}
+	/*for (int i = 0;i < 8;i++)
+	{
+		PawnPressureBonus[i] *= 1.5;
+	}*/
 	/*for (int i = 0;i < 100;i++)
 	{
 		SafetyTable[i] *= 1.5;
