@@ -23,15 +23,16 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 224;
+const int ENGINEVERSION = 225;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 225 - 12-12-2015 - Undid last change, gave a bonus to passers that aren't blocked by pieces
 // Build 224 - 12-12-2015 - Undid last change, decreased value of passers that are blocked by pieces
-// Build 223 - 12-12-2015 - Undid last change, Increase Pawn Pressure bonus
+// Build 223 - 12-12-2015 - Undid last change, Increased Pawn Pressure bonus
 // Build 222 - 12-12-2015 - Undid last change, Decreased Passed Pawn bonus a bit
-// Build 221 - 12-12-2015 - Undid last change, Increase King Safety Table values
+// Build 221 - 12-12-2015 - Undid last change, Increased King Safety Table values
 // Build 220 - 12-12-2015 - Increased Passed Pawn bonus more
 // Build 219 - 12-12-2015 - No longer factors increment in time control
 // Build 218 - 12-12-2015 - Undid last change, Increased Passed Pawn Bonus
