@@ -8,9 +8,9 @@ jmp_buf env;
 //int ForwardPruningMargin[4] = { 0,1000,1000,1500};
 //int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
 
-int MAXTIME = 1000;
+unsigned long long MAXTIME = 1000;
 int MAXDEPTH = 100;
-const int CheckupNodeCount = 2048;
+const unsigned long long CheckupNodeCount = 2048;
 
 inline int getRazorMargin(int depth)
 {
@@ -22,7 +22,7 @@ inline int getFutilityMargin(int depth)
 	return (200 * depth);
 }
 
-Move Engine::IterativeDeepening(int movetime, bool print)
+Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 {
 	int status = pos.getGameStatus();
 	if(status!=STATUS_NOTOVER)
@@ -763,7 +763,7 @@ void Engine::prepareSearch()
 void Engine::checkup()
 {
 	timer.Stop();
-	int seconds = timer.ElapsedMilliseconds();
+	unsigned long long seconds = timer.ElapsedMilliseconds();
 	if(seconds >= MAXTIME && MAXTIME!=-1)
 	{
 		//cout << "milliseconds: " << seconds << endl;

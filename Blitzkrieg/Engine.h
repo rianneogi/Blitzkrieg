@@ -24,9 +24,9 @@ enum EvalConstants{CONS_INF = 20000,CONS_NEGINF = -20000, CONS_DRAW = 0, CONS_MA
 enum SortPhases{SORTPHASE_NONE,SORTPHASE_PV,SORTPHASE_HASH,SORTPHASE_GOODCAP,SORTPHASE_KILLER,SORTPHASE_HISTORY,SORTPHASE_BADCAP};
 
 extern int EndgameMaterial;
-extern int MAXTIME;
+extern unsigned long long MAXTIME;
 extern int MAXDEPTH;
-extern const int CheckupNodeCount;
+extern const unsigned long long CheckupNodeCount;
 
 class Engine
 {
@@ -79,7 +79,7 @@ class Engine
 	void unmakeMove(Move const& m);
 	
 	//Search.cpp
-	Move IterativeDeepening(int movetime, bool print);
+	Move IterativeDeepening(unsigned long long movetime, bool print);
 	int AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv);
 	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
 	long long getMoveScore(const Move& m);

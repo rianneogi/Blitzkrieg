@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 227;
+const int ENGINEVERSION = 228;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 228 - 13-12-2015 - Fixed a bug with time control
 // Build 227 - 13-12-2015 - Undid last change, changed CheckupNodeCount to 2048
 // Build 226 - 13-12-2015 - Undid last change, Added Pawn Duo bonus
 // Build 225 - 12-12-2015 - Undid last change, gave a bonus to passers that aren't blocked by pieces

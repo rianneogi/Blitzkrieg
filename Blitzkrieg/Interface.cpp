@@ -66,7 +66,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 0)
 					{
-						time += atoi(getStringToken(str, ' ', i + 1).c_str())/30;
+						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/30);
 					}
 					i++;
 				}
@@ -74,7 +74,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 1)
 					{
-						time += atoi(getStringToken(str, ' ', i + 1).c_str())/30;
+						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/30);
 					}
 					i++;
 				}
@@ -621,7 +621,7 @@ void Interface::help()
     cout << "help : Displays list of commands" << endl;
     cout << "exit : Quits the program" << endl;
     cout << "info : Prints debugging information" << endl;
-	cout << "debug : Goes into debug mode" << endl;
+	//cout << "debug : Goes into debug mode" << endl;
 }
 
 void Interface::think()

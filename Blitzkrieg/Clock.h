@@ -16,7 +16,7 @@ public:
 	void Start();
 	void Stop();
 	void Reset();
-	double ElapsedMilliseconds();
+	unsigned long long ElapsedMilliseconds();
 	double ElapsedSeconds();
 
 };

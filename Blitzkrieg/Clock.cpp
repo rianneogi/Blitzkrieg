@@ -16,8 +16,8 @@ void Clock::Start()
 
 void Clock::Stop()
 {
-	time += std::chrono::duration_cast<std::chrono::duration<unsigned long long,std::milli>>(std::chrono::high_resolution_clock::now() - begin).count();
-    begin = std::chrono::high_resolution_clock::now();
+	time = std::chrono::duration_cast<std::chrono::duration<unsigned long long,std::milli>>(std::chrono::high_resolution_clock::now() - begin).count();
+    //begin = std::chrono::high_resolution_clock::now();
 }
 
 void Clock::Reset()
@@ -25,7 +25,7 @@ void Clock::Reset()
 	time = 0;
 }
 
-double Clock::ElapsedMilliseconds()
+unsigned long long Clock::ElapsedMilliseconds()
 {
     return time;
 }
