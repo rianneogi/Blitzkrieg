@@ -396,7 +396,7 @@ template<bool Trace> int Engine::LeafEval()
 		}
 	}
 
-	if (!isEG)
+	/*if (!isEG)
 	{
 		if (pos.Squares[27] == SQUARE_WHITEPAWN && pos.Squares[28] == SQUARE_WHITEPAWN)
 		{
@@ -422,7 +422,7 @@ template<bool Trace> int Engine::LeafEval()
 			if (Trace)
 				cout << "Bonus for C4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
 		}
-	}
+	}*/
 
 	unsigned long k = 0;
 	/*for (int i = 0;i < 2;i++)

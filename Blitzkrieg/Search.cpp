@@ -10,7 +10,7 @@ jmp_buf env;
 
 int MAXTIME = 1000;
 int MAXDEPTH = 100;
-const int CheckupNodeCount = 16384;
+const int CheckupNodeCount = 2048;
 
 inline int getRazorMargin(int depth)
 {
