@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 230;
+const int ENGINEVERSION = 231;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 231 - 13-12-2015 - Increased time taken per move even more
 // Build 230 - 13-12-2015 - Increased time taken per move more
 // Build 229 - 13-12-2015 - Increased time taken per move
 // Build 228 - 13-12-2015 - Fixed a bug with time control
