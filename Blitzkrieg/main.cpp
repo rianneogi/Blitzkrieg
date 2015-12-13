@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 225;
+const int ENGINEVERSION = 226;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 226 - 13-12-2015 - Undid last change, Added Pawn Duo bonus
 // Build 225 - 12-12-2015 - Undid last change, gave a bonus to passers that aren't blocked by pieces
 // Build 224 - 12-12-2015 - Undid last change, decreased value of passers that are blocked by pieces
 // Build 223 - 12-12-2015 - Undid last change, Increased Pawn Pressure bonus
