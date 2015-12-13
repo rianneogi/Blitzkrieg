@@ -66,7 +66,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 0)
 					{
-						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/10);
+						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/15);
 					}
 					i++;
 				}
@@ -74,7 +74,7 @@ void Interface::UCI()
 				{
 					if (e1.pos.turn == 1)
 					{
-						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/10);
+						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/15);
 					}
 					i++;
 				}
