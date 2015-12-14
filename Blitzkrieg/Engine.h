@@ -96,6 +96,7 @@ class Engine
 	//Evaluation.cpp
 	template<bool Trace> int LeafEval();
 	template<int Color> int getBoardMaterial();
+	bool isDraw();
 
 	void prepareSearch();
 	void initialize();

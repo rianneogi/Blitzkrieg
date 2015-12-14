@@ -1139,6 +1139,34 @@ template<bool Trace> int Engine::LeafEval()
 	return neteval;
 }
 
+bool Engine::isDraw()
+{
+	Bitset ColorPieces[2];
+	long long ColorPiecesCount[2];
+	for (int i = 0;i < 2;i++)
+	{
+		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
+			pos.Pieces[i][PIECE_BISHOP] | pos.Pieces[i][PIECE_ROOK] |
+			pos.Pieces[i][PIECE_QUEEN] | pos.Pieces[i][PIECE_KING];
+		ColorPiecesCount[i] = popcnt(ColorPieces[i]);
+	}
+	if (ColorPiecesCount[COLOR_BLACK] == 1 && ColorPiecesCount[COLOR_WHITE] == 2
+		&& (popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT]) == 1 || popcnt(pos.Pieces[COLOR_WHITE][PIECE_BISHOP]) == 1))
+	{
+		return true;
+	}
+	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 2
+		&& (popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT]) == 1 || popcnt(pos.Pieces[COLOR_BLACK][PIECE_BISHOP]) == 1))
+	{
+		return true;
+	}
+	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 1)
+	{
+		return true;
+	}
+	return false;
+}
+
 template <int Color> int Engine::getBoardMaterial()
 {
 	int eval = 0;

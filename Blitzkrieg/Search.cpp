@@ -205,6 +205,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	//	depth++;
 	//}
 
+	if (isDraw()) return 0;
+
 	if (depth == 0)
 	{
 		int value = QuiescenceSearchStandPat(alpha, beta); //go to quiescence

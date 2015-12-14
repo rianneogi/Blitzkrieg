@@ -23,12 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 234;
+const int ENGINEVERSION = 235;
 
 // Best Build so far: 191
 
 ///BUILDS
-// Build 234 - 14-12-2015 - Changed timer functions
+// Build 235 - 14-12-2015 - Added draw detection in main search
+// Build 234 - 14-12-2015 - Undid last change, Changed timer functions
 // Build 233 - 14-12-2015 - Changed futility margin to 150*depth
 // Build 232 - 14-12-2015 - Undid last change, changed futility margin to 250*depth
 // Build 231 - 13-12-2015 - Increased time taken per move even more
