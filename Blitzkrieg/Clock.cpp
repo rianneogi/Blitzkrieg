@@ -11,13 +11,13 @@ Clock::~Clock()
 
 void Clock::Start()
 {
-    begin = std::chrono::high_resolution_clock::now();
+    begin = system_time_to_msec();
 }
 
 void Clock::Stop()
 {
-	time = std::chrono::duration_cast<std::chrono::duration<unsigned long long,std::milli>>(std::chrono::high_resolution_clock::now() - begin).count();
-    //begin = std::chrono::high_resolution_clock::now();
+	time += system_time_to_msec()-begin;
+    begin = system_time_to_msec();
 }
 
 void Clock::Reset()

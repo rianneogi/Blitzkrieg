@@ -19,7 +19,7 @@ inline int getRazorMargin(int depth)
 
 inline int getFutilityMargin(int depth)
 {
-	return (150 * depth);
+	return (200 * depth);
 }
 
 Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
@@ -763,11 +763,10 @@ void Engine::prepareSearch()
 void Engine::checkup()
 {
 	timer.Stop();
-	unsigned long long seconds = timer.ElapsedMilliseconds();
-	if(seconds >= MAXTIME && MAXTIME!=-1)
+	if(timer.time >= MAXTIME && MAXTIME!=-1)
 	{
 		//cout << "milliseconds: " << seconds << endl;
-		longjmp(env,seconds);
+		longjmp(env, timer.time);
 	}
 	//cout << (seconds-MAXTIME) << endl;
 }
