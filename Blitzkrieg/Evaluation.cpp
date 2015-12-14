@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#define S(x,y) Score(x,y)
+
 string PlayerStrings[2] = { "White","Black" };
 
 int ColorFactor[2] = {1,-1};
@@ -17,6 +19,10 @@ int EndgameMaterial = 3800;
 
 int LazyEval1 = 400;
 
+//Pieces
+//Score BishopPairBonus = S(45,55);
+//Score KnightPairBonus = S(-5,-10);
+//Score RookPairBonus = S(10,40);
 int BishopPairBonus = 45;
 int KnightPairBonus = -5;
 int RookPairBonus = 10;
@@ -25,8 +31,6 @@ int RookPairBonus = 10;
 //int CenterBorderSquareBonus = 2;
 //int EnemyTerritorySquareBonus = 3;
 
-//int KnightOutpostBonus = 25;
-//int BishopOutpostBonus = 10;
 int KnightOutpostBonus[8] = { 0,0,5,10,15,25,15,10 }; //non-negative values always(code will bug otherwise)
 int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 6, 4}; //non-negative values always(code will bug otherwise)
 
@@ -49,6 +53,12 @@ int RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
 //adjustments to bishop values depending on number of pawns on same color square as bishop
 int BishopPawnSameColor[9] = { 15,12,9,6,3,0,-3,-6,-9 };
 int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
+
+//bonus based on tension between minor pieces
+//Score KnightAttacksBishopBonus = S(15, 25);
+//Score BishopAttacksKnightBonus = S(5, 10);
+int KnightAttacksBishopBonus = 15;
+int BishopAttacksKnightBonus = 5;
 
 //King Safety
 int PawnShield1Bonus = 20;
@@ -333,6 +343,9 @@ template<bool Trace> int Engine::LeafEval()
 
 	int neteval = 0;
 	int Material[2] = { getBoardMaterial<COLOR_WHITE>(),getBoardMaterial<COLOR_BLACK>() };
+	/*Score KingSafety[2] = { S(0,0),S(0,0) };
+	Score PawnStructure[2] = { S(0,0),S(0,0) };
+	Score PieceActivity[2] = { S(0,0),S(0,0) };*/
 	int KingSafety[2] = { 0,0 };
 	int PawnStructure[2] = { 0,0 };
 	int PieceActivity[2] = { 0,0 };
@@ -439,12 +452,12 @@ template<bool Trace> int Engine::LeafEval()
 
 		if (!isEG)
 		{
-			KingSafety[i] += PawnShield1Bonus*popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
+			KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
 			if (Trace)
 			{
 				cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
 			}
-			KingSafety[i] += PawnShield2Bonus*popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
+			KingSafety[i] += PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
 			if (Trace)
 			{
 				cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
@@ -662,8 +675,7 @@ template<bool Trace> int Engine::LeafEval()
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
 				unsigned int passerbonus = PassedPawnBonus[getColorMirror(i, k)];
-				PawnStructure[i] += passerbonus;
-
+				PawnStructure[i] += (int)passerbonus;
 				//if (!(getAboveBits(i, k)&pos.OccupiedSq)) //blocked by a piece
 				//{
 				//	passerbonus += passerbonus / 2;
@@ -676,6 +688,8 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					passerbonus *= 2;
 				}
+
+				
 
 				if (Trace)
 					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << passerbonus << endl;
@@ -871,28 +885,22 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
-				if (Trace)
-					cout << "Bonus for Knight outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << outpostbonus << endl;
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
 				{
 					outpostbonus *= 2; //double bonus if there are no opponent minor pieces
-					if (Trace)
-						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << outpostbonus << endl;
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += ((unsigned)(outpostbonus)) >> 1; //extra bonus if defended by a pawn
-					if (Trace)
-						cout << "	Extra bonus because its defended by a pawn: " << outpostbonus/2 << endl;
+					outpostbonus += outpostbonus/2; //extra bonus if defended by a pawn
 				}
 				if (isEG)
 				{
 					outpostbonus /= 2; //half bonus in endgames
-					if (Trace)
-						cout << "	Its an endgame so this outpost bonus is halved" << endl;
 				}
-				PieceActivity[i] += outpostbonus;
+				PieceActivity[i] += (int)outpostbonus;
+				if (Trace)
+					cout << "Outpost bonus for Knight on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << outpostbonus << endl;
 			}
 
 			//knight attacks near opposing king
@@ -905,6 +913,13 @@ template<bool Trace> int Engine::LeafEval()
 			PieceActivity[i] += KnightMobility[popcnt(m)];
 			if (Trace)
 				cout << "Knight on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << KnightMobility[popcnt(m)] << endl;
+
+			if (m&pos.Pieces[getOpponent(i)][PIECE_BISHOP])
+			{
+				PieceActivity[i] += KnightAttacksBishopBonus;
+				if (Trace)
+					cout << "Bonus for knight on " << Int2Sq(k) << " attacking a bishop: " << KnightAttacksBishopBonus << endl;
+ 			}
 
 			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
 			if (Trace)
@@ -948,28 +963,22 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
-				if (Trace)
-					cout << "Bonus for Bishop outpost on " << Int2Sq(k) << " for " << PlayerStrings[i] << ":" << outpostbonus;
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
 				{
 					outpostbonus *= 2; //double bonus if there are no opponent minor pieces
-					if (Trace)
-						cout << "	Extra bonus because there are no opponent minor pieces that can capture it: " << outpostbonus << endl;
 				}
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
-					outpostbonus += ((unsigned)(outpostbonus))>>1; //extra bonus if defended by a pawn
-					if (Trace)
-						cout << "	Extra bonus because its defended by a pawn: " << outpostbonus / 2 << endl;
+					outpostbonus += outpostbonus/2; //extra bonus if defended by a pawn
 				}
 				if (isEG)
 				{
 					outpostbonus /= 2;
-					if (Trace)
-						cout << "	Its an endgame so this outpost bonus is halved" << endl;
 				}
-				PieceActivity[i] += outpostbonus;
+				PieceActivity[i] += (int)outpostbonus;
+				if (Trace)
+					cout << "Outpost bonus for Bishop on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << outpostbonus << endl;
 			}
 
 			//bishop attacks near opposing king
@@ -993,6 +1002,13 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				cout << "Bishop on " << Int2Sq(k) << " Adj for our pawns on the same color for " << PlayerStrings[i] << ": " << BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]] << endl;
 				cout << "Bishop on " << Int2Sq(k) << " Adj for opponent pawns on the same color for " << PlayerStrings[i] << ": " << BishopOppPawnSameColor[PawnCountColor[getOpponent(i)][SquareColor[k]]] << endl;
+			}
+
+			if (m&pos.Pieces[getOpponent(i)][PIECE_KNIGHT])
+			{
+				PieceActivity[i] += BishopAttacksKnightBonus;
+				if (Trace)
+					cout << "Bonus for bishop on " << Int2Sq(k) << " attacking a knight: " << BishopAttacksKnightBonus << endl;
 			}
 
 			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
@@ -1038,7 +1054,7 @@ template<bool Trace> int Engine::LeafEval()
 			if (Trace)
 				cout << "Queen on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << QueenMobility[popcnt(m)] << endl;
 
-			PieceActivity[i] += (unsigned)(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])])>>1; //half bonus for queens
+			PieceActivity[i] += (int)((unsigned)(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])])>>1); //half bonus for queens
 			if (Trace)
 			{
 				cout << "Pawn pressure bonus for queen on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]/2 << endl;

@@ -11,7 +11,7 @@ public:
 	std::chrono::high_resolution_clock::time_point begin;
     //std::chrono::high_resolution_clock::time_point end;
 
-	unsigned long long time;
+	uint64_t time;
 	//std::chrono::time_point<std::chrono::high_resolution_clock> t;
 
 	Clock();
@@ -19,11 +19,11 @@ public:
 	void Start();
 	void Stop();
 	void Reset();
-	unsigned long long ElapsedMilliseconds();
+	uint64_t ElapsedMilliseconds();
 	double ElapsedSeconds();
 };
 
-inline int64_t system_time_to_msec() {
+inline uint64_t system_time_to_msec() {
 	_timeb t;
 	_ftime(&t);
 	return t.time * 1000LL + t.millitm;

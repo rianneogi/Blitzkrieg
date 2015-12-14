@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 239;
+const int ENGINEVERSION = 240;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 240 - 15-12-2015 - Added tension bonus for minor pieces
 // Build 239 - 14-12-2015 - Removed draw detection in leaf eval, made an optimization in isDraw()
 // Build 238 - 14-12-2015 - Added draw detection in quiescence
 // Build 237 - 14-12-2015 - Changed futility margin to 150*depth (Build 233)

@@ -1,7 +1,6 @@
 #ifndef ENGINE_H_INCLUDED
 #define ENGINE_H_INCLUDED
 
-#include "Position.h"
 #include "Clock.h"
 #include "Score.h"
 

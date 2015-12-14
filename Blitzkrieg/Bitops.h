@@ -13,6 +13,13 @@ using namespace std;
 
 typedef unsigned long long Bitset;
 
+//typedef unsigned long long uint64;
+//typedef long long int64;
+//typedef unsigned long uint32;
+//typedef long int32;
+//typedef unsigned int uint16;
+//typedef int int16;
+
 enum PIECES {PIECE_PAWN,PIECE_KNIGHT,PIECE_BISHOP,PIECE_ROOK,PIECE_QUEEN,PIECE_KING,PIECE_NONE};
 enum SQUARES{SQUARE_EMPTY,SQUARE_WHITEPAWN,SQUARE_WHITEKNIGHT,SQUARE_WHITEBISHOP,SQUARE_WHITEROOK,
 SQUARE_WHITEQUEEN,SQUARE_WHITEKING,SQUARE_BLACKPAWN,SQUARE_BLACKKNIGHT,
