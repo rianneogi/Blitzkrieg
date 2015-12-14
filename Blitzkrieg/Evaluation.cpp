@@ -675,7 +675,7 @@ template<bool Trace> int Engine::LeafEval()
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
 				unsigned int passerbonus = PassedPawnBonus[getColorMirror(i, k)];
-				PawnStructure[i] += (int)passerbonus;
+				
 				//if (!(getAboveBits(i, k)&pos.OccupiedSq)) //blocked by a piece
 				//{
 				//	passerbonus += passerbonus / 2;
@@ -689,7 +689,7 @@ template<bool Trace> int Engine::LeafEval()
 					passerbonus *= 2;
 				}
 
-				
+				PawnStructure[i] += (int)passerbonus;
 
 				if (Trace)
 					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << passerbonus << endl;
