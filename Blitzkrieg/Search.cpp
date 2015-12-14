@@ -19,7 +19,7 @@ inline int getRazorMargin(int depth)
 
 inline int getFutilityMargin(int depth)
 {
-	return (200 * depth);
+	return (150 * depth);
 }
 
 Move Engine::IterativeDeepening(unsigned long long movetime, bool print)

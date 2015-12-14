@@ -3,10 +3,12 @@
 #include <chrono>
 #include <sys/timeb.h>
 
+#pragma warning(disable: 4996) // Function _ftime() may be unsafe
+
 class Clock
 {
 public:
-	unsigned long long begin;
+	std::chrono::high_resolution_clock::time_point begin;
     //std::chrono::high_resolution_clock::time_point end;
 
 	unsigned long long time;
@@ -23,7 +25,7 @@ public:
 
 inline int64_t system_time_to_msec() {
 	_timeb t;
-	_ftime64_s(&t);
+	_ftime(&t);
 	return t.time * 1000LL + t.millitm;
 }
 
