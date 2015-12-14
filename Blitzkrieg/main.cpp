@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 241;
+const int ENGINEVERSION = 242;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 242 - 15-12-2015 - Reduced tension bonus
 // Build 241 - 15-12-2015 - Fixed a bug with passer evaluation
 // Build 240 - 15-12-2015 - Added tension bonus for minor pieces
 // Build 239 - 14-12-2015 - Removed draw detection in leaf eval, made an optimization in isDraw()

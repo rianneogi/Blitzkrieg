@@ -57,8 +57,8 @@ int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
 //bonus based on tension between minor pieces
 //Score KnightAttacksBishopBonus = S(15, 25);
 //Score BishopAttacksKnightBonus = S(5, 10);
-int KnightAttacksBishopBonus = 15;
-int BishopAttacksKnightBonus = 5;
+int KnightAttacksBishopBonus = 6;
+int BishopAttacksKnightBonus = 2;
 
 //King Safety
 int PawnShield1Bonus = 20;
