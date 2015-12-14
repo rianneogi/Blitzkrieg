@@ -1,15 +1,9 @@
 #ifndef ENGINE_H_INCLUDED
 #define ENGINE_H_INCLUDED
 
-//extern "C"
-//{
-//	#include "lua.h"
-//	#include "lualib.h"
-//	#include "lauxlib.h"
-//}
-
 #include "Position.h"
 #include "Clock.h"
+#include "Score.h"
 
 #define BLITZKRIEG_STATS
 #define BLITZKRIEG_DEBUG

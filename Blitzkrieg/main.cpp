@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 237;
+const int ENGINEVERSION = 239;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 239 - 14-12-2015 - Removed draw detection in leaf eval, made an optimization in isDraw()
+// Build 238 - 14-12-2015 - Added draw detection in quiescence
 // Build 237 - 14-12-2015 - Changed futility margin to 150*depth (Build 233)
 // Build 236 - 14-12-2015 - Undid Build 234
 // Build 235 - 14-12-2015 - Added draw detection in main search

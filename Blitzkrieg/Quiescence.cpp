@@ -3,6 +3,9 @@
 int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 {
 	//quisctime.Start();
+
+	if (isDraw()) return 0;
+
 	nodes++;
 	if(nodes%CheckupNodeCount == 0)
 	{

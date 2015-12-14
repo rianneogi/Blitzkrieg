@@ -306,12 +306,6 @@ template<bool Trace> int Engine::LeafEval()
 		ColorPiecesCount[i] = popcnt(ColorPieces[i]);
 	}
 
-	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 1)
-	{
-		if (Trace)
-			cout << "draw, King vs King" << endl;
-		return 0; //draw
-	}
 	if (ColorPiecesCount[COLOR_WHITE] == 2 && ColorPiecesCount[COLOR_BLACK] == 2) //2 piece endgame
 	{
 		if (popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN]) == 0 && popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN]) == 0) //no pawns
@@ -335,20 +329,6 @@ template<bool Trace> int Engine::LeafEval()
 		if (Trace)
 			cout << "draw, 2 knights cant force checkmate" << endl;
 		return 0; //2 knights cant force checkmate
-	}
-	if (ColorPiecesCount[COLOR_BLACK] == 1 && ColorPiecesCount[COLOR_WHITE] == 2
-		&& (popcnt(pos.Pieces[COLOR_WHITE][PIECE_KNIGHT]) == 1 || popcnt(pos.Pieces[COLOR_WHITE][PIECE_BISHOP]) == 1))
-	{
-		if (Trace)
-			cout << "draw, king and minor piece vs king" << endl;
-		return 0;
-	}
-	if (ColorPiecesCount[COLOR_WHITE] == 1 && ColorPiecesCount[COLOR_BLACK] == 2
-		&& (popcnt(pos.Pieces[COLOR_BLACK][PIECE_KNIGHT]) == 1 || popcnt(pos.Pieces[COLOR_BLACK][PIECE_BISHOP]) == 1))
-	{
-		if (Trace)
-			cout << "draw, king and minor piece vs king" << endl;
-		return 0;
 	}
 
 	int neteval = 0;
@@ -1143,6 +1123,12 @@ bool Engine::isDraw()
 {
 	Bitset ColorPieces[2];
 	long long ColorPiecesCount[2];
+
+	if (popcnt(pos.OccupiedSq) > 3)
+	{
+		return false;
+	}
+
 	for (int i = 0;i < 2;i++)
 	{
 		ColorPieces[i] = pos.Pieces[i][PIECE_PAWN] | pos.Pieces[i][PIECE_KNIGHT] |
