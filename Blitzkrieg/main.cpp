@@ -23,12 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 246;
+const int ENGINEVERSION = 248;
 
 // Best Build so far: 191
 
 ///BUILDS
-// Build 246 - 15-12-2015 - Undid last change, Removed depth>=3 condition in pv search
+// Build 248 - 15-12-2015 - Undid last change, Mobility no longer consideres xray attacks
+// Build 247 - 15-12-2015 - Readded depth>=3 condition in pv
+// Build 246 - 15-12-2015 - Undid last change, Removed depth>=3 condition in pv search, piece mobility now considers x-ray attacks as well
 // Build 245 - 15-12-2015 - Now decreases reduction if move evades a captures
 // Build 244 - 15-12-2015 - Fixed a bug with blocked passer evaluation and removed endgame passer bonus
 // Build 243 - 15-12-2015 - Decreased value of passers that are blocked by pieces

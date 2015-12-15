@@ -831,7 +831,7 @@ template<bool Trace> int Engine::LeafEval()
 			//Rook Attacks
 			/*Bitset m = getRookRankMoves(k,(pos.OccupiedSq>>(getRankOffset(k)))&0xff);
 			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);*/
-			Bitset m = getRookAttacks(k, pos.OccupiedSq^pos.Pieces[i][PIECE_ROOK]^pos.Pieces[i][PIECE_QUEEN]);
+			Bitset m = getRookAttacks(k, pos.OccupiedSq);
 			if (m&b)
 			{
 				PieceActivity[i] += RookConnectedBonus;
@@ -984,7 +984,7 @@ template<bool Trace> int Engine::LeafEval()
 			//bishop attacks near opposing king
 			/*Bitset m = getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
 			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);*/
-			Bitset m = getBishopAttacks(k, pos.OccupiedSq^pos.Pieces[i][PIECE_QUEEN]);
+			Bitset m = getBishopAttacks(k, pos.OccupiedSq);
 
 			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
@@ -1042,7 +1042,7 @@ template<bool Trace> int Engine::LeafEval()
 			m |= getRookFileMoves(k,(pos.OccupiedSq90>>(getFileOffset(k)))&0xff);
 			m |= getBishopA1H8Moves(k,(pos.OccupiedSq135>>getDiag(getturn135(k)))&0xff);
 			m |= getBishopA8H1Moves(k,(pos.OccupiedSq45>>getDiag(getturn45(k)))&0xff);*/
-			Bitset m = getQueenAttacks(k, pos.OccupiedSq^pos.Pieces[i][PIECE_ROOK]^pos.Pieces[i][PIECE_BISHOP]);
+			Bitset m = getQueenAttacks(k, pos.OccupiedSq);
 
 			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
