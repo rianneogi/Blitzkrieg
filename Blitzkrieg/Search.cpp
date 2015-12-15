@@ -411,9 +411,16 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 		int iscapture = isCapture(m);
 		int see = 0;
+		int evade_see = 0;
+		//Move smallestattckr = CONS_NULLMOVE;
+		Move smallestattckr = pos.getSmallestAttacker(getOpponent(pos.turn), movefrom);
 		if (iscapture)
 		{
 			see = StaticExchangeEvaluation(moveto, movefrom, movingpiece, capturedpiece);
+		}
+		if (!smallestattckr.isNullMove())
+		{
+			evade_see = StaticExchangeEvaluation(movefrom, smallestattckr.getTo(), smallestattckr.getMovingPiece(), movingpiece);
 		}
 
 		//if (iscapture && depth <= 1 && see < 0)
@@ -474,7 +481,11 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			{
 				reductiondepth++;
 			}
-			if (m == Threats[ply])
+			if (m == Threats[ply]) //decrease reduction if move is a threat
+			{
+				reductiondepth = max(reductiondepth - 1, 0);
+			}
+			if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
 			{
 				reductiondepth = max(reductiondepth - 1, 0);
 			}
