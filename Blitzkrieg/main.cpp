@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 245;
+const int ENGINEVERSION = 246;
 
 // Best Build so far: 191
 
 ///BUILDS
+// Build 246 - 15-12-2015 - Undid last change, Removed depth>=3 condition in pv search
 // Build 245 - 15-12-2015 - Now decreases reduction if move evades a captures
 // Build 244 - 15-12-2015 - Fixed a bug with blocked passer evaluation and removed endgame passer bonus
 // Build 243 - 15-12-2015 - Decreased value of passers that are blocked by pieces

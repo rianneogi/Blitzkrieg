@@ -410,9 +410,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		int movefrom = m.getFrom();
 
 		int iscapture = isCapture(m);
-		int see = 0;
+		/*int see = 0;
 		int evade_see = 0;
-		//Move smallestattckr = CONS_NULLMOVE;
 		Move smallestattckr = pos.getSmallestAttacker(getOpponent(pos.turn), movefrom);
 		if (iscapture)
 		{
@@ -421,7 +420,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		if (!smallestattckr.isNullMove())
 		{
 			evade_see = StaticExchangeEvaluation(movefrom, smallestattckr.getTo(), smallestattckr.getMovingPiece(), movingpiece);
-		}
+		}*/
 
 		//if (iscapture && depth <= 1 && see < 0)
 		//{ //prune bad captures at low depths
@@ -485,10 +484,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			{
 				reductiondepth = max(reductiondepth - 1, 0);
 			}
-			if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
-			{
-				reductiondepth = max(reductiondepth - 1, 0);
-			}
+			//if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
+			//{
+			//	reductiondepth = max(reductiondepth - 1, 0);
+			//}
 		}
 
 		//if (isCapture(m) && !dopv && see > 400 && depth>=5) //prune really good captures
@@ -511,7 +510,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	}*/
 		//}
 		
-		if(dopv && alpharaised && depth>=3) //principal variation search
+		if(dopv && alpharaised) //principal variation search
 		{
 			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, true, false);
 			if(score>alpha && score < beta) //check for failure
