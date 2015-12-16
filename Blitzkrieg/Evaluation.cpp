@@ -6,10 +6,6 @@ string PlayerStrings[2] = { "White","Black" };
 
 int ColorFactor[2] = {1,-1};
 
-const float PieceActivityFactor = 1;
-const float PawnStructureFactor = 0.7;
-const float KingSafetyFactor = 1;
-
 int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
 int MaterialValues[13] = {0,100,325,335,500,975,-CONS_MATED,-100,-325,-335,-500,-975,CONS_MATED};
 int TotalMaterial = (8*PieceMaterial[0] + 2*PieceMaterial[1] + 2*PieceMaterial[2] + 2*PieceMaterial[3] + PieceMaterial[4]);
@@ -19,62 +15,72 @@ int EndgameMaterial = 3800;
 
 int LazyEval1 = 400;
 
-//Pieces
-//Score BishopPairBonus = S(45,55);
-//Score KnightPairBonus = S(-5,-10);
-//Score RookPairBonus = S(10,40);
-int BishopPairBonus = 45;
-int KnightPairBonus = -5;
-int RookPairBonus = 10;
-
 //int CenterSquareBonus = 4;
 //int CenterBorderSquareBonus = 2;
 //int EnemyTerritorySquareBonus = 3;
 
-int KnightOutpostBonus[8] = { 0,0,5,10,15,25,15,10 }; //non-negative values always(code will bug otherwise)
-int BishopOutpostBonus[8] = {0, 0, 2, 4, 6, 10, 6, 4}; //non-negative values always(code will bug otherwise)
+Scale KingSafetyFactor(1, 0);
+Scale PawnStructureFactor(0.35, 0.7);
+Scale PassedPawnFactor(0.5, 1);
+Scale MobilityFactor(1, 1);
+Scale OutpostFactor(1, 0.5);
 
-int QueenOutEarlyPenalty = 4; //penalty for queens not on back rank for every minor on back rank
+Scale BishopFactor(1, 1);
+Scale KnightFactor(1, 1);
+Scale RookFactor(1, 1);
+Scale QueenFactor(1, 1);
 
-// mobility bonus based on how many squares the pieces attack
-int BishopMobility[16] = { -12, -4,  0,  2,  4,  4,  6,  6,  8,  8, 10, 10, 12, 14, 16 };
-int RookMobility[16] = { -8,-4, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8 };
-int KnightMobility[9] = { -12, -8,  0,  4,  8, 10, 12, 14, 16 };
-int QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
- 
-// adjustments to piece values depending on number of pawns
-int KnightPawnAdj[9] = { -20,-16,-12, -8, -4,  0,  4,  8, 12 };
-int KnightOppPawnAdj[9] = { -20,-16,-12,-8,-4,0,4,8,12 };
-int BishopPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
-int BishopOppPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
-int RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
-int RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
+//Mobility
+Score BishopMobility[16] = { -24, -8,  0,  4,  8,  8,  12,  12,  16,  16, 20, 20, 24, 28, 32 };
+Score RookMobility[16] = { -16,-8, 0, 4, 4, 4, 8, 8, 8, 12, 12, 12, 16, 16, 16 };
+Score KnightMobility[9] = { -12, -8,  0,  4,  8, 10, 12, 14, 16 };
+Score QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 };
 
-//adjustments to bishop values depending on number of pawns on same color square as bishop
-int BishopPawnSameColor[9] = { 15,12,9,6,3,0,-3,-6,-9 };
-int BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
+//Outposts
+Score KnightOutpostBonus[8] = { 0,0,5,10,15,25,15,10 }; //non-negative values always(code will bug otherwise)
+Score BishopOutpostBonus[8] = { 0, 0, 2, 4, 6, 10, 6, 4 }; //non-negative values always(code will bug otherwise)
 
-//bonus based on tension between minor pieces
-//Score KnightAttacksBishopBonus = S(15, 25);
-//Score BishopAttacksKnightBonus = S(5, 10);
-int KnightAttacksBishopBonus = 6;
-int BishopAttacksKnightBonus = 2;
+//Knights
+Score KnightPairBonus = S(-5, -10);
+Score KnightPawnAdj[9] = { -20,-16,-12, -8, -4,  0,  4,  8, 12 };
+Score KnightOppPawnAdj[9] = { -20,-16,-12,-8,-4,0,4,8,12 };
+
+//Bishops
+Score BishopPairBonus = S(45, 55);
+Score BishopPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
+Score BishopOppPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
+Score BishopPawnSameColor[9] = { 15,12,9,6,3,0,-3,-6,-9 };
+Score BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
+
+//Rooks
+Score RookPairBonus = S(10, 40);
+Score RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
+Score RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
+Score RookHalfOpenBonus[8] = { 5,5,8,10,10,8,5,5 };
+Score RookOpenBonus[8] = { 10,10,15,20,20,15,10,10 };
+Score RookConnectedBonus = S(5, 15);
+
+//Queen
+Score QueenOutEarlyPenalty = S(4,0); //penalty for queens not on back rank for every minor on back rank
+
+//extra bonus based on tension between minor pieces
+Score KnightAttacksBishopBonus = S(6, 12);
+Score BishopAttacksKnightBonus = S(2, 6);
 
 //King Safety
-int PawnShield1Bonus = 20;
-int PawnShield2Bonus = 10;
-int BishopShieldBonus = 15;
-int KingOnHalfOpenFilePenalty = 15; //penalty for king being on half open files
-int KingOnOpenFilePenalty = 25; //penalty for king being on open files
-int KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half open files
-int KingAdjOpenFilePenalty = 15; //penalty for king being adjacent to open files
-int KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiopen file with a rook on it
-int KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
-int AttackWeights[6] = {1,2,2,3,4,0};
-int KingBetweenRooksPenalty = 10;
-//int NoPawnShieldPenalty = 15;
+Score PawnShield1Bonus = 20;
+Score PawnShield2Bonus = 10;
+Score BishopShieldBonus = 15;
+Score KingOnHalfOpenFilePenalty = 15; //penalty for king being on half open files
+Score KingOnOpenFilePenalty = 25; //penalty for king being on open files
+Score KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half open files
+Score KingAdjOpenFilePenalty = 15; //penalty for king being adjacent to open files
+Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiopen file with a rook on it
+Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
+Score KingBetweenRooksPenalty = 10;
 
-int SafetyTable[100] = {
+const int AttackWeights[6] = {1,2,2,3,4,0};
+Score SafetyTable[100] = {
     0,  0,   1,   2,   3,   5,   7,   9,  12,  15,
   18,  22,  26,  30,  35,  39,  44,  50,  56,  62,
   68,  75,  82,  85,  89,  97, 105, 113, 122, 131,
@@ -88,23 +94,14 @@ int SafetyTable[100] = {
 };
 
 //Pawn Structure
-int PawnPressureBonus[8] = { 0,3,7,12,18,25,33,42 };
-//int ProtectedPawnPressureBonus[8] = { 0,1,2,3,5,7,9,11 };
-int NoPawnsPenalty = 32;
-int PawnsE4D4Bonus = 15;
-int PawnsC4D4Bonus = 10;
-int DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
-int IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
-int BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
-int PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0, //non-negative values always(code will bug otherwise)
-						     5, 10, 10, 10, 10, 10, 10,  5,
-						    10, 20, 20, 20, 20, 20, 20, 10,
-                            20, 40, 40, 40, 40, 40, 40, 20,
-                            30, 60, 60, 60, 60, 60, 60, 30,
-							40, 80, 80, 80, 80, 80, 80, 40,
-						    90,120,120,120,120,120,120, 90,
-						   200,200,200,200,200,200,200,200};
-int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
+Score PawnsE4D4Bonus = S(15, 0);
+Score PawnsC4D4Bonus = S(10, 0);
+Score NoPawnsPenalty = S(32,32);
+Score PawnPressureBonus[9] = { 0,3,7,12,18,25,33,42,52 };
+Score DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
+Score IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
+Score BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
+Score BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 	                             1,  1, 10, 16, 16, 10,  1,  1,
 								 0,  0,  0,  4,  4,  0,  0,  0,
 								 0,  0,  0,  0,  0,  0,  0,  0,
@@ -113,12 +110,17 @@ int BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 								20, 20, 20, 20, 20, 20, 20, 20,
 								 0,  0,  0,  0,  0,  0,  0,  0};
 
-//Rooks
-int RookHalfOpenBonus[8] = {5,5,8,10,10,8,5,5};
-int RookOpenBonus[8] = {10,10,15,20,20,15,10,10};
-int RookConnectedBonus = 5;
-int RookBehindPassedPawnBonus = 20;
-int OppRookBehindPassedPawnPenalty = 15;
+//Passed Pawns
+Score PassedPawnBonus[64] = {  0,  0,  0,  0,  0,  0,  0,  0, //non-negative values always(code will bug otherwise)
+						     5, 10, 10, 10, 10, 10, 10,  5,
+						    10, 20, 20, 20, 20, 20, 20, 10,
+                            20, 40, 40, 40, 40, 40, 40, 20,
+                            30, 60, 60, 60, 60, 60, 60, 30,
+							40, 80, 80, 80, 80, 80, 80, 40,
+						    90,120,120,120,120,120,120, 90,
+						   200,200,200,200,200,200,200,200};
+Score RookBehindPassedPawnBonus = S(10, 20);
+Score OppRookBehindPassedPawnPenalty = S(5, 15);
 
 int PieceSq[13][64];
 int PieceSqEG[13][64];
@@ -341,14 +343,11 @@ template<bool Trace> int Engine::LeafEval()
 		return 0; //2 knights cant force checkmate
 	}
 
-	int neteval = 0;
+	Score TotalEval = S(0,0);
 	int Material[2] = { getBoardMaterial<COLOR_WHITE>(),getBoardMaterial<COLOR_BLACK>() };
-	/*Score KingSafety[2] = { S(0,0),S(0,0) };
+	Score KingSafety[2] = { S(0,0),S(0,0) };
 	Score PawnStructure[2] = { S(0,0),S(0,0) };
-	Score PieceActivity[2] = { S(0,0),S(0,0) };*/
-	int KingSafety[2] = { 0,0 };
-	int PawnStructure[2] = { 0,0 };
-	int PieceActivity[2] = { 0,0 };
+	Score PieceActivity[2] = { S(0,0),S(0,0) };
 
 	int currentMaterial = Material[COLOR_WHITE] + Material[COLOR_BLACK];
 
@@ -370,20 +369,12 @@ template<bool Trace> int Engine::LeafEval()
 	}
 
 	//Piece Sq eval
-	if (isEG)
+	for (int i = 0;i < 64;i++)
 	{
-		for (int i = 0;i < 64;i++)
+		if (pos.Squares[i] != SQUARE_EMPTY)
 		{
-			neteval += PieceSqEG[pos.Squares[i]][i];
-			if (Trace && pos.Squares[i] != SQUARE_EMPTY)
-				cout << PieceSqEG[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
-		}
-	}
-	else
-	{
-		for (int i = 0;i < 64;i++)
-		{
-			neteval += PieceSq[pos.Squares[i]][i];
+			TotalEval.mg += PieceSq[pos.Squares[i]][i];
+			TotalEval.eg += PieceSqEG[pos.Squares[i]][i];
 			if (Trace && pos.Squares[i] != SQUARE_EMPTY)
 				cout << PieceSq[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
 		}
@@ -455,12 +446,12 @@ template<bool Trace> int Engine::LeafEval()
 			KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
 			if (Trace)
 			{
-				cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+				cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
 			}
 			KingSafety[i] += PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
 			if (Trace)
 			{
-				cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+				cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
 			}
 			if (getPawnMoves(i,k) & pos.Pieces[i][PIECE_BISHOP])
 			{
@@ -1102,16 +1093,16 @@ template<bool Trace> int Engine::LeafEval()
 		}
 	}
 
-	for (int i = 0;i < 2;i++)
+	/*for (int i = 0;i < 2;i++)
 	{
 		PieceActivity[i] = PieceActivity[i] * PieceActivityFactor;
 		KingSafety[i] = (KingSafety[i] * KingSafetyFactor * Material[getOpponent(i)]) / TotalMaterial;
 		PawnStructure[i] = ((PawnStructure[i] * PawnStructureFactor)/2) + (((PawnStructure[i]*PawnStructureFactor) * (TotalMaterial- Material[getOpponent(i)])) / (TotalMaterial*2));
-	}
+	}*/
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	//	pawnprobe = ((pawnprobe * PawnStructureFactor) / 2) + (((pawnprobe * PawnStructureFactor) * (TotalMaterial - currentMaterial)) / (TotalMaterial * 2));
 
-	if (Trace)
+	/*if (Trace)
 	{
 		cout << "After scaling:" << endl;
 		for (int i = 0;i < 2;i++)
@@ -1121,18 +1112,20 @@ template<bool Trace> int Engine::LeafEval()
 			cout << PlayerStrings[i] << " Piece Activity: " << PieceActivity[i] << endl;
 			cout << endl;
 		}
-	}
+	}*/
 
-	neteval += Material[COLOR_WHITE] + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];
-	neteval -= Material[COLOR_BLACK] + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK];
+	TotalEval += Material[COLOR_WHITE] + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];
+	TotalEval -= Material[COLOR_BLACK] + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK];
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	//	neteval += pawnprobe;
 
+	int finaleval = TotalEval.eg + (TotalEval.mg - TotalEval.eg)*((float)(currentMaterial) / TotalMaterialBothSides);
+
 	if(pos.turn==COLOR_BLACK)
-		return -neteval;
+		return -finaleval;
 
 	//evaltime.Stop();
-	return neteval;
+	return finaleval;
 }
 
 bool Engine::isDraw()
@@ -1195,70 +1188,99 @@ template <int Color> int Engine::getBoardMaterial()
 	return eval;
 }
 
-int Engine::StaticExchangeEvaluation(int to, int from,int movpiece,int capt)
+void scaleConstants()
 {
-	capt = getSquare2Piece(capt);
-	/*if (PieceMaterial[capt] >= PieceMaterial[movpiece])
-	{
-		return PieceMaterial[capt] - PieceMaterial[movpiece];
-	}*/
-	int gain[100],d=0;
-    Bitset occ = pos.OccupiedSq;
-    /*Bitset occ90 = pos.OccupiedSq90;
-	Bitset occ45 = pos.OccupiedSq45;
-    Bitset occ135 = pos.OccupiedSq135;*/
-	Bitset pieces[2][6];
-	for(int i = 0;i<2;i++)
-	{
-		for(int j = 0;j<6;j++)
-		{
-			pieces[i][j] = pos.Pieces[i][j];
-		}
-	}
-	int turn = pos.turn;
-	gain[d] = PieceMaterial[capt];
-	//cout << "gain " << d << " is " << gain[0] << endl;
-	Move m = CONS_NULLMOVE;
-	do
-	{
-		//cout << m.toString() << movpiece << endl;
-		d++; // next depth and side
-        gain[d] = PieceMaterial[movpiece] - gain[d-1]; // speculative store, if defended
-		if (max (-gain[d-1], gain[d]) < 0) break; // pruning does not influence the result
-		//cout << "gain " << d << " is " << gain[d] << endl;
+	//King Safety
+	PawnShield1Bonus *= KingSafetyFactor;
+	PawnShield2Bonus *= KingSafetyFactor;
+	BishopShieldBonus *= KingSafetyFactor;
+	KingOnHalfOpenFilePenalty *= KingSafetyFactor;
+	KingOnOpenFilePenalty *= KingSafetyFactor;
+	KingAdjHalfOpenFilePenalty *= KingSafetyFactor;
+	KingAdjOpenFilePenalty *= KingSafetyFactor;
+	KingOnRookFilePenalty *= KingSafetyFactor;
+	KingAdjRookFilePenalty *= KingSafetyFactor;
+	KingBetweenRooksPenalty *= KingSafetyFactor;
 
-        pos.OccupiedSq ^= getPos2Bit(from); // reset bit in temporary occupancy (for x-Rays)
-		/*pos.OccupiedSq90 ^= getPos2Bit(getturn90(from));
-		pos.OccupiedSq45 ^= getPos2Bit(getturn45(from));
-		pos.OccupiedSq135 ^= getPos2Bit(getturn135(from));*/
-		pos.Pieces[turn][movpiece] ^= getPos2Bit(from);
-		turn = getOpponent(turn);
-
-		m = pos.getSmallestAttacker(turn,to);
-		from = m.getFrom();
-		capt = movpiece;
-		movpiece = m.getMovingPiece();
-	}while(m.isNullMove()==false);
-
-    pos.OccupiedSq = occ;
-    /*pos.OccupiedSq90 = occ90;
-	pos.OccupiedSq45 = occ45;
-    pos.OccupiedSq135 = occ135;*/
-	for(int i = 0;i<2;i++)
+	for (int i = 0;i < 100;i++)
 	{
-		for(int j = 0;j<6;j++)
-		{
-			pos.Pieces[i][j] = pieces[i][j];
-		}
+		SafetyTable[i] *= KingSafetyFactor;
 	}
-	//cout << "gain " << d << " is " << gain[d] << endl;
-	while(--d)
+
+	//Pawns
+	for (int i = 0;i < 9;i++)
 	{
-        gain[d-1]= -max(-gain[d-1], gain[d]);
-	    //d--;
-		//cout << "gain " << d << " is " << gain[d] << endl;
+		PawnPressureBonus[i] *= PawnStructureFactor;
 	}
-	return gain[0];
+
+	for (int i = 0;i < 8;i++)
+	{
+		DoubledPawnPenalty[i] *= PawnStructureFactor;
+		IsolatedPawnPenalty[i] *= PawnStructureFactor;
+		BackwardPawnPenalty[i] *= PawnStructureFactor;
+	}
+	
+	for (int i = 0;i < 64;i++)
+	{
+		BlockedPawnPenalty[i] *= PawnStructureFactor;
+		//Passer
+		PassedPawnBonus[i] *= PassedPawnFactor;
+	}
+
+	RookBehindPassedPawnBonus *= PassedPawnFactor;
+	OppRookBehindPassedPawnPenalty *= PassedPawnFactor;
+
+	//Rooks
+	for (int i = 0;i < 8;i++)
+	{
+		RookHalfOpenBonus[i] *= RookFactor;
+		RookOpenBonus[i] *= RookFactor;
+	}
+	RookConnectedBonus *= RookFactor;
+	RookPairBonus *= RookFactor;
+	for (int i = 0;i < 9;i++)
+	{
+		RookPawnAdj[i] *= RookFactor;
+		RookOppPawnAdj[i] *= RookFactor;
+	}
+	
+	//Knights
+	KnightPairBonus *= KnightFactor;
+	for (int i = 0;i < 9;i++)
+	{
+		KnightPawnAdj[i] *= KnightFactor;
+		KnightOppPawnAdj[i] *= KnightFactor;
+	}
+
+	//Bishop
+	BishopPairBonus *= BishopFactor;
+	for (int i = 0;i < 9;i++)
+	{
+		BishopPawnSameColor[i] *= BishopFactor;
+		BishopOppPawnSameColor[i] *= BishopFactor;
+	}
+
+	//Mobility
+	for (int i = 0;i < 9;i++)
+	{
+		KnightMobility[i] *= MobilityFactor*KnightFactor;
+	}
+	for (int i = 0;i < 16;i++)
+	{
+		BishopMobility[i] *= MobilityFactor*BishopFactor;
+		RookMobility[i] *= MobilityFactor*RookFactor;
+	}
+	for (int i = 0;i < 32;i++)
+	{
+		QueenMobility[i] *= MobilityFactor*QueenFactor;
+	}
+
+	//Outposts
+	for (int i = 0;i < 8;i++)
+	{
+		KnightOutpostBonus[i] *= OutpostFactor*KnightFactor;
+		BishopOutpostBonus[i] *= OutpostFactor*BishopFactor;
+	}
 }
 
 void evalinit()
@@ -1288,9 +1310,12 @@ void evalinit()
 			PieceSqValues[PIECE_BISHOP][i] += BishopDiagBonus;
 		}
 		PieceSqValues[PIECE_ROOK][i] = RookFileValues[file];
-		if(i/8==6)
-			PieceSqValues[PIECE_ROOK][i] += Rook7thRankBonus;
 		PieceSqValuesEG[PIECE_ROOK][i] = 0;
+		if (i / 8 == 6)
+		{
+			PieceSqValues[PIECE_ROOK][i] += Rook7thRankBonus;
+			PieceSqValuesEG[PIECE_ROOK][i] += Rook7thRankBonus;
+		}
 		PieceSqValues[PIECE_QUEEN][i] -= 10;
 		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];
 		PieceSqValues[PIECE_KING][i] = KingRankValues[rank] + KingFileValues[file];
@@ -1335,23 +1360,5 @@ void evalinit()
 				cout << endl;*/
 		}
 	}
-	for (int i = 0;i < 16;i++)
-	{
-		RookMobility[i] *= 2;
-		BishopMobility[i] *= 2;
-		/*if (i < 9)
-			KnightMobility[i] *= 2;*/
-	}
-	for (int i = 0;i < 64;i++)
-	{
-		PassedPawnBonus[i] *= 1.5;
-	}
-	/*for (int i = 0;i < 8;i++)
-	{
-		PawnPressureBonus[i] *= 1.5;
-	}*/
-	/*for (int i = 0;i < 100;i++)
-	{
-		SafetyTable[i] *= 1.5;
-	}*/
+	scaleConstants();
 }

@@ -2,6 +2,21 @@
 
 #include "Position.h"
 
+struct Scale
+{
+	float mg;
+	float eg;
+
+	Scale();
+	Scale(int x);
+	Scale(int m, int e);
+
+	Scale operator+(Scale const& s) const;
+	Scale operator-(Scale const& s) const;
+	Scale operator*(Scale const& s) const;
+	Scale operator/(Scale const& s) const;
+};
+
 struct Score
 {
 	int mg;
@@ -16,10 +31,20 @@ struct Score
 	Score operator*(Score const& s) const;
 	Score operator/(Score const& s) const;
 
+	Score operator+(Scale const& s) const;
+	Score operator-(Scale const& s) const;
+	Score operator*(Scale const& s) const;
+	Score operator/(Scale const& s) const;
+
 	Score operator+=(Score const& s);
 	Score operator-=(Score const& s);
 	Score operator*=(Score const& s);
 	Score operator/=(Score const& s);
+
+	Score operator+=(Scale const& s);
+	Score operator-=(Scale const& s);
+	Score operator*=(Scale const& s);
+	Score operator/=(Scale const& s);
 
 	Score operator+(int s) const;
 	Score operator-(int s) const;

@@ -510,7 +510,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	}*/
 		//}
 		
-		if(dopv && alpharaised) //principal variation search
+		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
 			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, true, false);
 			if(score>alpha && score < beta) //check for failure

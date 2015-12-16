@@ -206,6 +206,72 @@ void Engine::setKiller(Move m, int depth, int score)
 	//}
 }
 
+int Engine::StaticExchangeEvaluation(int to, int from, int movpiece, int capt)
+{
+	capt = getSquare2Piece(capt);
+	/*if (PieceMaterial[capt] >= PieceMaterial[movpiece])
+	{
+	return PieceMaterial[capt] - PieceMaterial[movpiece];
+	}*/
+	int gain[100], d = 0;
+	Bitset occ = pos.OccupiedSq;
+	/*Bitset occ90 = pos.OccupiedSq90;
+	Bitset occ45 = pos.OccupiedSq45;
+	Bitset occ135 = pos.OccupiedSq135;*/
+	Bitset pieces[2][6];
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<6;j++)
+		{
+			pieces[i][j] = pos.Pieces[i][j];
+		}
+	}
+	int turn = pos.turn;
+	gain[d] = PieceMaterial[capt];
+	//cout << "gain " << d << " is " << gain[0] << endl;
+	Move m = CONS_NULLMOVE;
+	do
+	{
+		//cout << m.toString() << movpiece << endl;
+		d++; // next depth and side
+		gain[d] = PieceMaterial[movpiece] - gain[d - 1]; // speculative store, if defended
+		if (max(-gain[d - 1], gain[d]) < 0) break; // pruning does not influence the result
+												   //cout << "gain " << d << " is " << gain[d] << endl;
+
+		pos.OccupiedSq ^= getPos2Bit(from); // reset bit in temporary occupancy (for x-Rays)
+											/*pos.OccupiedSq90 ^= getPos2Bit(getturn90(from));
+											pos.OccupiedSq45 ^= getPos2Bit(getturn45(from));
+											pos.OccupiedSq135 ^= getPos2Bit(getturn135(from));*/
+		pos.Pieces[turn][movpiece] ^= getPos2Bit(from);
+		turn = getOpponent(turn);
+
+		m = pos.getSmallestAttacker(turn, to);
+		from = m.getFrom();
+		capt = movpiece;
+		movpiece = m.getMovingPiece();
+	} while (m.isNullMove() == false);
+
+	pos.OccupiedSq = occ;
+	/*pos.OccupiedSq90 = occ90;
+	pos.OccupiedSq45 = occ45;
+	pos.OccupiedSq135 = occ135;*/
+	for (int i = 0;i<2;i++)
+	{
+		for (int j = 0;j<6;j++)
+		{
+			pos.Pieces[i][j] = pieces[i][j];
+		}
+	}
+	//cout << "gain " << d << " is " << gain[d] << endl;
+	while (--d)
+	{
+		gain[d - 1] = -max(-gain[d - 1], gain[d]);
+		//d--;
+		//cout << "gain " << d << " is " << gain[d] << endl;
+	}
+	return gain[0];
+}
+
 //void Engine::movesort(vector<Move>& moves,int depth)
 //{
 //	vector<double> score;
