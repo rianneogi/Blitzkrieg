@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 255;
+const int ENGINEVERSION = 256;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 256 - 18-12-2015 - Increase Mobility Factor in the middlegame
 // Build 255 - 17-12-2015 - Undid last change, Increase middlegame pawn structure factor
 // Build 254 - 17-12-2015 - Undid last change, Increased pawn structure factor
 // Build 253 - 17-12-2015 - Increased passed pawn factor in endgame

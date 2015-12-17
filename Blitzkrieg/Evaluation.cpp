@@ -22,7 +22,7 @@ int LazyEval1 = 400;
 Scale KingSafetyFactor(1, 0);
 Scale PawnStructureFactor(0.5, 0.7);
 Scale PassedPawnFactor(1, 1.5);
-Scale MobilityFactor(1, 1);
+Scale MobilityFactor(1.25, 1);
 Scale OutpostFactor(1, 0.5);
 
 Scale BishopFactor(1, 1);
