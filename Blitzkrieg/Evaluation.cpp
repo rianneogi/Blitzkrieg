@@ -360,13 +360,13 @@ template<bool Trace> int Engine::LeafEval()
 
 	//Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	//int pieceCount = popcnt(Pieces);
-	bool isEG = false;
+	/*bool isEG = false;
 	if (currentMaterial <= EndgameMaterial)
 	{
 		isEG = true;
 		if (Trace)
 			cout << "We are in the endgame" << endl;
-	}
+	}*/
 
 	//Piece Sq eval
 	for (int i = 0;i < 64;i++)
@@ -441,80 +441,24 @@ template<bool Trace> int Engine::LeafEval()
 		_BitScanForward64(&k, b);
 		KingField[i] = getKingField(i, k);
 
-		if (!isEG)
+		KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
+		if (Trace)
 		{
-			KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
+			cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+		}
+		KingSafety[i] += PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
+		if (Trace)
+		{
+			cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+		}
+		if (getPawnMoves(i, k) & pos.Pieces[i][PIECE_BISHOP])
+		{
+			KingSafety[i] += BishopShieldBonus;
 			if (Trace)
 			{
-				cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
-			}
-			KingSafety[i] += PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
-			if (Trace)
-			{
-				cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
-			}
-			if (getPawnMoves(i,k) & pos.Pieces[i][PIECE_BISHOP])
-			{
-				KingSafety[i] += BishopShieldBonus;
-				if (Trace)
-				{
-					cout << "Bonus for Bishop in front of king for " << PlayerStrings[i] << ": " << BishopShieldBonus << endl;
-				}
+				cout << "Bonus for Bishop in front of king for " << PlayerStrings[i] << ": " << BishopShieldBonus << endl;
 			}
 		}
-
-			/*if (getRank(getColorMirror(i, k)) < 2)
-			{
-				if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == getPiece2Square(PIECE_PAWN, i))
-				{
-					KingSafety[i] += PawnShield1Bonus;
-					if (Trace)
-						cout << "Bonus for Pawn in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus << endl;
-				}
-				else if (pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == getPiece2Square(PIECE_BISHOP, i))
-				{
-					KingSafety[i] += BishopShieldBonus;
-					if (Trace)
-						cout << "Bonus for Bishop in front of king for " << PlayerStrings[i] << ": " << BishopShieldBonus << endl;
-				}
-				if (pos.Squares[getColorMirror(i, getPlus8(getPlus8(getColorMirror(i, k))))] == getPiece2Square(PIECE_PAWN, i))
-				{
-					KingSafety[i] += PawnShield2Bonus;
-					if (Trace)
-						cout << "Bonus for Pawn 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus << endl;
-				}
-				if (getFile(k) != 7)
-				{
-					if (pos.Squares[k + 7 * ColorFactor[i]] == getPiece2Square(PIECE_PAWN, i))
-					{
-						KingSafety[i] += PawnShield1Bonus;
-						if (Trace)
-							cout << "Bonus for Pawn in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus << endl;
-					}
-					if (pos.Squares[k + 15 * ColorFactor[i]] == getPiece2Square(PIECE_PAWN, i))
-					{
-						KingSafety[i] += PawnShield2Bonus;
-						if (Trace)
-							cout << "Bonus for Pawn 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus << endl;
-					}
-				}
-				if (getFile(k) != 0)
-				{
-					if (pos.Squares[k + 9 * ColorFactor[i]] == getPiece2Square(PIECE_PAWN, i))
-					{
-						KingSafety[i] += PawnShield1Bonus;
-						if (Trace)
-							cout << "Bonus for Pawn in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus << endl;
-					}
-					if (pos.Squares[k + 17 * ColorFactor[i]] == getPiece2Square(PIECE_PAWN, i))
-					{
-						KingSafety[i] += PawnShield2Bonus;
-						if (Trace)
-							cout << "Bonus for Pawn 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus << endl;
-					}
-				}
-			}
-		}*/
 
 		if ((getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there arent friendly pawns in the same file
 		{
@@ -596,22 +540,6 @@ template<bool Trace> int Engine::LeafEval()
 		}
 	}
 
-	//Lazy eval
-	/*int lazy;
-	if(pos.turn==COLOR_WHITE)
-	{
-		lazy = sideeval[COLOR_WHITE]-sideeval[COLOR_BLACK];
-	}
-	else
-	{
-		lazy = sideeval[COLOR_BLACK] - sideeval[COLOR_WHITE];
-	}
-	if((lazy + LazyEval1 < alpha) || (lazy - LazyEval1 > beta))
-	{
-		return lazy;
-	}*/
-
-	//Positional evaluation
 	//Pawn Evaluation
 	if (Trace)
 		cout << endl << "Pawn Structure:" << endl;
@@ -675,10 +603,6 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					passerbonus += passerbonus / 2;
 				}
-				//if (isEG) //endgame bonus
-				//{
-				//	passerbonus += passerbonus / 2;
-				//}
 
 				PawnStructure[i] += (int)passerbonus;
 
@@ -885,10 +809,6 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					outpostbonus += outpostbonus/2; //extra bonus if defended by a pawn
 				}
-				if (isEG)
-				{
-					outpostbonus /= 2; //half bonus in endgames
-				}
 				PieceActivity[i] += (int)outpostbonus;
 				if (Trace)
 					cout << "Outpost bonus for Knight on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << outpostbonus << endl;
@@ -962,10 +882,6 @@ template<bool Trace> int Engine::LeafEval()
 				if (pos.Pieces[i][PIECE_PAWN] & PawnAttacks[getOpponent(i)][k] != 0)
 				{
 					outpostbonus += outpostbonus/2; //extra bonus if defended by a pawn
-				}
-				if (isEG)
-				{
-					outpostbonus /= 2;
 				}
 				PieceActivity[i] += (int)outpostbonus;
 				if (Trace)
@@ -1057,14 +973,11 @@ template<bool Trace> int Engine::LeafEval()
 			if (Trace && popcnt(KingField[getOpponent(i)] & m) != 0)
 				cout << "King attack units penalty for queen on " << Int2Sq(k) << " for " << PlayerStrings[getOpponent(i)] << ": " << popcnt(KingField[getOpponent(i)] & m)*AttackWeights[PIECE_QUEEN] << endl;
 
-			if(!isEG)
+			if (getRank(getColorMirror(i, k))>1)
 			{
-				if(getRank(getColorMirror(i,k))>1)
-				{
-					PieceActivity[i] -= QueenOutEarlyPenalty*MinorsOnBackRank[i];
-					if (Trace)
-						cout << "Queen out early penalty for " << PlayerStrings[i] << ": " << QueenOutEarlyPenalty*MinorsOnBackRank[i] << endl;
-				}
+				PieceActivity[i] -= QueenOutEarlyPenalty*MinorsOnBackRank[i];
+				if (Trace)
+					cout << "Queen out early penalty for " << PlayerStrings[i] << ": " << QueenOutEarlyPenalty*MinorsOnBackRank[i] << endl;
 			}
 		}
 	}

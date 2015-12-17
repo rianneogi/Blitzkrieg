@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 250;
+const int ENGINEVERSION = 251;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 251 - 17-12-2015 - Fixed some issues with Evaluation
 // Build 250 - 17-12-2015 - Reworked evaluation into the Score system
 // Build 249 - 15-12-2015 - Readded depth>=3 condition in pv, Piecesq eval now scales linearly into endgame values
 // Build 248 - 15-12-2015 - Undid last change, Mobility no longer consideres xray attacks
