@@ -22,13 +22,13 @@ int LazyEval1 = 400;
 Scale KingSafetyFactor(1, 0);
 Scale PawnStructureFactor(0.5, 0.7);
 Scale PassedPawnFactor(1, 1.5);
-Scale MobilityFactor(0.75, 1.25);
+Scale MobilityFactor(1, 1);
 Scale OutpostFactor(1, 0.5);
 
 Scale BishopFactor(1, 1);
 Scale KnightFactor(1, 1);
 Scale RookFactor(1, 1);
-Scale QueenFactor(1, 1);
+Scale QueenFactor(1, 1.5);
 
 //Mobility
 Score BishopMobility[16] = { -24, -8,  0,  4,  8,  8,  12,  12,  16,  16, 20, 20, 24, 28, 32 };
