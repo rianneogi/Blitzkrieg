@@ -23,11 +23,15 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 251;
+const int ENGINEVERSION = 255;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 255 - 17-12-2015 - Undid last change, Increase middlegame pawn structure factor
+// Build 254 - 17-12-2015 - Undid last change, Increased pawn structure factor
+// Build 253 - 17-12-2015 - Increased passed pawn factor in endgame
+// Build 252 - 17-12-2015 - Increased passed pawn factor
 // Build 251 - 17-12-2015 - Fixed some issues with Evaluation
 // Build 250 - 17-12-2015 - Reworked evaluation into the Score system
 // Build 249 - 15-12-2015 - Readded depth>=3 condition in pv, Piecesq eval now scales linearly into endgame values
