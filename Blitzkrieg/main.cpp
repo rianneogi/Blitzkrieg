@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 269;
+const int ENGINEVERSION = 270;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 270 - 19-12-2015 - Undid last change, reduced bishop pair bonus
 // Build 269 - 19-12-2015 - Decreased Rook Pair bonus in endgame
 // Build 268 - 18-12-2015 - Undid last change, chaged outpost bonus to be indexed by square instead of rank
 // Build 267 - 18-12-2015 - Undid last change, reduced outpost factor in endgame
