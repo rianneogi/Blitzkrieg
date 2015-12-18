@@ -61,7 +61,7 @@ Score KnightPawnAdj[9] = { -20,-16,-12, -8, -4,  0,  4,  8, 12 };
 Score KnightOppPawnAdj[9] = { -20,-16,-12,-8,-4,0,4,8,12 };
 
 //Bishops
-Score BishopPairBonus = S(25, 50);
+Score BishopPairBonus = S(45, 55);
 Score BishopPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
 Score BishopOppPawnAdj[9] = { 0,0,0,0,0,0,0,0,0 };
 Score BishopPawnSameColor[9] = { 15,12,9,6,3,0,-3,-6,-9 };
@@ -90,9 +90,9 @@ Score KingOnHalfOpenFilePenalty = 15; //penalty for king being on half open file
 Score KingOnOpenFilePenalty = 25; //penalty for king being on open files
 Score KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half open files
 Score KingAdjOpenFilePenalty = 15; //penalty for king being adjacent to open files
-Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiopen file with a rook on it
-Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
-Score KingBetweenRooksPenalty = 10;
+Score KingOnRookFilePenalty = 20; //penalty for king being on an opponent semiopen file with a rook on it
+Score KingAdjRookFilePenalty = 10; //penalty for king being adjacent an opponent semiopen file with a rook on it
+Score KingBetweenRooksPenalty = 10; //not implemented
 
 const int AttackWeights[6] = {1,2,2,3,4,0};
 Score SafetyTable[100] = {
