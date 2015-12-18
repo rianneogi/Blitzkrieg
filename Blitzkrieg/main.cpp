@@ -23,11 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 265;
+const int ENGINEVERSION = 268;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 268 - 18-12-2015 - Undid last change, chaged outpost bonus to be indexed by square instead of rank
+// Build 267 - 18-12-2015 - Undid last change, reduced outpost factor in endgame
+// Build 266 - 18-12-2015 - Undid last change, decreased RookFactor in middlegame and increased in lategame
 // Build 265 - 18-12-2015 - Removed movecount pruning, LMR no longer checks if alpha was raised
 // Build 264 - 18-12-2015 - Decreased margin for movecount pruning more
 // Build 263 - 18-12-2015 - Undid Build 261, decreased margin for movecount pruning
@@ -525,7 +528,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("bk", 0, 0, 1000, i.e1);
+	//testpositions("openfilesanddiagonals", 0, 0, 1000, i.e1);
     
 	try{
     i.start();

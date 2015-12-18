@@ -37,8 +37,23 @@ Score KnightMobility[9] = { -12, -8,  0,  4,  8, 10, 12, 14, 16 };
 Score QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 };
 
 //Outposts
-Score KnightOutpostBonus[8] = { 0,0,5,10,15,25,15,10 }; //non-negative values always(code will bug otherwise)
-Score BishopOutpostBonus[8] = { 0, 0, 2, 4, 6, 10, 6, 4 }; //non-negative values always(code will bug otherwise)
+Score KnightOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
+								 0, 0, 0, 0, 0, 0, 0, 0,
+								 0, 0, 0, 5, 5, 0, 0, 0,
+								 0, 0, 5,10,10, 5, 0, 0,
+								 0, 5,10,15,15,10, 5, 0,
+								 5,10,15,25,25,15,10, 5,
+								 0, 0, 0, 0, 0, 0, 0, 0,
+								 0, 0, 0, 0, 0, 0, 0, 0}; //non-negative values always(code will bug otherwise)
+
+Score BishopOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
+								 0, 0, 0, 0, 0, 0, 0, 0, 
+								 0, 0, 0, 4, 4, 0, 0, 0, 
+								 0, 0, 4, 6, 6, 4, 0, 0, 
+								 0, 4, 6, 8, 8, 6, 4, 0, 
+								 4, 6, 8,10,10, 8, 6, 4, 
+								 0, 0, 0, 0, 0, 0, 0, 0, 
+								 0, 0, 0, 0, 0, 0, 0, 0}; //non-negative values always(code will bug otherwise)
 
 //Knights
 Score KnightPairBonus = S(-5, -10);
@@ -798,7 +813,7 @@ template<bool Trace> int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				unsigned int outpostbonus = KnightOutpostBonus[getRank(getColorMirror(i, k))];
+				unsigned int outpostbonus = KnightOutpostBonus[getColorMirror(i, k)];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
@@ -872,7 +887,7 @@ template<bool Trace> int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				unsigned int outpostbonus = BishopOutpostBonus[getRank(getColorMirror(i, k))];
+				unsigned int outpostbonus = BishopOutpostBonus[getColorMirror(i, k)];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
@@ -1189,7 +1204,7 @@ void scaleConstants()
 	}
 
 	//Outposts
-	for (int i = 0;i < 8;i++)
+	for (int i = 0;i < 64;i++)
 	{
 		KnightOutpostBonus[i] *= OutpostFactor*KnightFactor;
 		BishopOutpostBonus[i] *= OutpostFactor*BishopFactor;
