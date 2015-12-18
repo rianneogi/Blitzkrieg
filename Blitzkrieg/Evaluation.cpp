@@ -68,7 +68,7 @@ Score BishopPawnSameColor[9] = { 15,12,9,6,3,0,-3,-6,-9 };
 Score BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
 
 //Rooks
-Score RookPairBonus = S(10, 40);
+Score RookPairBonus = S(10, 20);
 Score RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
 Score RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
 Score RookHalfOpenBonus[8] = { 5,5,8,10,10,8,5,5 };

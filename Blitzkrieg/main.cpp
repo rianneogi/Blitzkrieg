@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 268;
+const int ENGINEVERSION = 269;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 269 - 19-12-2015 - Decreased Rook Pair bonus in endgame
 // Build 268 - 18-12-2015 - Undid last change, chaged outpost bonus to be indexed by square instead of rank
 // Build 267 - 18-12-2015 - Undid last change, reduced outpost factor in endgame
 // Build 266 - 18-12-2015 - Undid last change, decreased RookFactor in middlegame and increased in lategame
@@ -528,7 +529,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("openfilesanddiagonals", 0, 0, 1000, i.e1);
+	//testpositions("passedpawnsuite", 0, 0, 1000, i.e1);
     
 	try{
     i.start();
