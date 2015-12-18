@@ -427,19 +427,19 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	continue;
 		//}
 
-		if (depth < 8
-			&& !alpharaised
-			&& noMaterialGain(m)
-			//&& !incheck[ply]
-			&& !incheck[ply - 1]
-			&& movingpiece!=PIECE_PAWN
-			)
-		{
-			if (i >= 2+depth*depth)
-			{
-				continue;
-			}
-		}
+		//if (depth < 8
+		//	&& !alpharaised
+		//	&& noMaterialGain(m)
+		//	//&& !incheck[ply]
+		//	&& !incheck[ply - 1]
+		//	&& movingpiece!=PIECE_PAWN
+		//	)
+		//{
+		//	if (i >= 2+depth*depth)
+		//	{
+		//		continue;
+		//	}
+		//}
 
 		if (!pos.makeMove(m))
 		{
@@ -474,9 +474,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 
 		//latemove reduction
-		if (!alpharaised
+		if (//!alpharaised
 			//&& i >= 4
-			&& depth >= 4
+			depth >= 4
 			//&& special!=PIECE_QUEEN
 			//&& (see < 0 || !iscapture)
 			&& SortPhase >= SORTPHASE_HISTORY

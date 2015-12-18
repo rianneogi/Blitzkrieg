@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 264;
+const int ENGINEVERSION = 265;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 265 - 18-12-2015 - Removed movecount pruning, LMR no longer checks if alpha was raised
 // Build 264 - 18-12-2015 - Decreased margin for movecount pruning more
 // Build 263 - 18-12-2015 - Undid Build 261, decreased margin for movecount pruning
 // Build 262 - 18-12-2015 - Added movecount based pruning
