@@ -435,7 +435,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			&& movingpiece!=PIECE_PAWN
 			)
 		{
-			if (i >= depth)
+			if (i >= depth*depth)
 			{
 				continue;
 			}

@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 262;
+const int ENGINEVERSION = 263;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 263 - 18-12-2015 - Undid Build 261, decreased margin for movecount pruning
 // Build 262 - 18-12-2015 - Added movecount based pruning
 // Build 261 - 18-12-2015 - Undid last change, Increase queen factor in endgame and reduced in middlegame
 // Build 260 - 18-12-2015 - Undid last change, Increased queen factor in endgame
