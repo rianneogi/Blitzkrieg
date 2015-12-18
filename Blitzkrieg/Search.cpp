@@ -427,6 +427,20 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	continue;
 		//}
 
+		if (depth < 8
+			&& !alpharaised
+			&& noMaterialGain(m)
+			//&& !incheck[ply]
+			&& !incheck[ply - 1]
+			&& movingpiece!=PIECE_PAWN
+			)
+		{
+			if (i >= depth)
+			{
+				continue;
+			}
+		}
+
 		if (!pos.makeMove(m))
 		{
 			continue;
