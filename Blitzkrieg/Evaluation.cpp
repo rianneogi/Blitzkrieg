@@ -90,8 +90,8 @@ Score KingOnHalfOpenFilePenalty = 15; //penalty for king being on half open file
 Score KingOnOpenFilePenalty = 25; //penalty for king being on open files
 Score KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half open files
 Score KingAdjOpenFilePenalty = 15; //penalty for king being adjacent to open files
-Score KingOnRookFilePenalty = 20; //penalty for king being on an opponent semiopen file with a rook on it
-Score KingAdjRookFilePenalty = 10; //penalty for king being adjacent an opponent semiopen file with a rook on it
+Score KingOnRookFilePenalty = 15; //penalty for king being on an opponent semiopen file with a rook on it
+Score KingAdjRookFilePenalty = 8; //penalty for king being adjacent an opponent semiopen file with a rook on it
 Score KingBetweenRooksPenalty = 10; //not implemented
 
 const int AttackWeights[6] = {1,2,2,3,4,0};

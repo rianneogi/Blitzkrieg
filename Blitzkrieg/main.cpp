@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 271;
+const int ENGINEVERSION = 272;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 272 - 20-12-2015 - Reduced King on Rook File penalties a bit
 // Build 271 - 19-12-2015 - Undid last change, doubled king on rook file penalties
 // Build 270 - 19-12-2015 - Undid last change, reduced bishop pair bonus
 // Build 269 - 19-12-2015 - Decreased Rook Pair bonus in endgame
