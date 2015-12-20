@@ -73,7 +73,7 @@ Score RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
 Score RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
 Score RookHalfOpenBonus[8] = { 5,5,8,10,10,8,5,5 };
 Score RookOpenBonus[8] = { 10,10,15,20,20,15,10,10 };
-Score RookConnectedBonus = S(5, 15);
+Score RookConnectedBonus = S(5, 25);
 
 //Queen
 Score QueenOutEarlyPenalty = S(4,0); //penalty for queens not on back rank for every minor on back rank
@@ -90,8 +90,8 @@ Score KingOnHalfOpenFilePenalty = 15; //penalty for king being on half open file
 Score KingOnOpenFilePenalty = 25; //penalty for king being on open files
 Score KingAdjHalfOpenFilePenalty = 10; //penalty for king being adjacent to half open files
 Score KingAdjOpenFilePenalty = 15; //penalty for king being adjacent to open files
-Score KingOnRookFilePenalty = 15; //penalty for king being on an opponent semiopen file with a rook on it
-Score KingAdjRookFilePenalty = 8; //penalty for king being adjacent an opponent semiopen file with a rook on it
+Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiopen file with a rook on it
+Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
 Score KingBetweenRooksPenalty = 10; //not implemented
 
 const int AttackWeights[6] = {1,2,2,3,4,0};
