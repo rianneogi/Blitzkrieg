@@ -57,6 +57,8 @@ extern int Diagonal[64];
 extern int RankOffset[64];
 extern int FileOffset[64];
 
+extern int SquareDistance[64][64];
+
 extern int Opponent[2];
 extern int Square2Piece[13];
 extern int Square2Color[13];
@@ -202,6 +204,10 @@ inline int getflipA1H8(int n)
     return flipA1H8[n];
 }
 
+inline int getSquareDistance(int a, int b)
+{
+	return SquareDistance[a][b];
+}
 
 inline int getFile(unsigned long n)
 {

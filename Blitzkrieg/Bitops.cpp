@@ -178,6 +178,7 @@ int SquareColor[64] = { 0, 1, 0, 1, 0, 1, 0, 1,
 			           1, 0, 1, 0, 1, 0, 1, 0,
                        0, 1, 0, 1, 0, 1, 0, 1,
 					   1, 0, 1, 0, 1, 0, 1, 0};
+int SquareDistance[64][64];
 
 string Int2Sq(int n)
 {
@@ -373,6 +374,13 @@ void datainit()
                 KnightMoves[i] = (b<<17) | (b<<15) | (b<<10) | (b<<6) | (b>>6) | (b>>10) | (b>>15) | (b>>17);
         }
     }
+	for (int i = 0;i < 64;i++)
+	{
+		for (int j = 0;j < 64;j++)
+		{
+			SquareDistance[i][j] = max(abs(getRank(i) - getRank(j)), abs(getFile(i) - getFile(j)));
+		}
+	}
     //Sliding Moves init
     for(int i = 0;i<8;i++)
     {

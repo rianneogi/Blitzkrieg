@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 277;
+const int ENGINEVERSION = 278;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 278 - 21-12-2015 - Undid last change, Undid Build 276, added bonus/penalty to passed pawns depending on proximity of kings
 // Build 277 - 21-12-2015 - Set queen middlegame values to 0
 // Build 276 - 20-12-2015 - Increased Queen middlegame piecesq a bit
 // Build 275 - 20-12-2015 - Undid last change, changed Queen middlegame piecesq

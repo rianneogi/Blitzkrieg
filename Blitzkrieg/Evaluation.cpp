@@ -441,6 +441,7 @@ template<bool Trace> int Engine::LeafEval()
 	}*/
 
 	Bitset b = 0x0;
+	int KingSquare[2];
 	Bitset KingField[2];
 	int KingAttackUnits[2] = { 0,0 };
 	int MinorsOnBackRank[2] = { 0,0 };
@@ -454,6 +455,7 @@ template<bool Trace> int Engine::LeafEval()
 		b = pos.Pieces[i][PIECE_KING];
 		//unsigned long k = 0;
 		_BitScanForward64(&k, b);
+		KingSquare[i] = k;
 		KingField[i] = getKingField(i, k);
 
 		KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
@@ -620,6 +622,8 @@ template<bool Trace> int Engine::LeafEval()
 				}
 
 				PawnStructure[i] += (int)passerbonus;
+				PawnStructure[i].eg -= 4 * getSquareDistance(KingSquare[i], k);
+				PawnStructure[i].eg += 10 * getSquareDistance(KingSquare[i], k);
 
 				if (Trace)
 					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << passerbonus << endl;
@@ -1244,7 +1248,7 @@ void evalinit()
 			PieceSqValues[PIECE_ROOK][i] += Rook7thRankBonus;
 			PieceSqValuesEG[PIECE_ROOK][i] += Rook7thRankBonus;
 		}
-		PieceSqValues[PIECE_QUEEN][i] = 0;
+		PieceSqValues[PIECE_QUEEN][i] = (QueenCentralizationValues[rank] + QueenCentralizationValues[file])/4;
 		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];
 		PieceSqValues[PIECE_KING][i] = KingRankValues[rank] + KingFileValues[file];
 		PieceSqValuesEG[PIECE_KING][i] = KingCentralizationValues[rank] + KingCentralizationValues[file];
