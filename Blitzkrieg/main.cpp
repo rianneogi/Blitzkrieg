@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 274;
+const int ENGINEVERSION = 275;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 275 - 20-12-2015 - Undid last change, changed Queen middlegame piecesq
 // Build 274 - 20-12-2015 - Undid last change, increased rooks connected bonus in endgame
 // Build 273 - 20-12-2015 - Undid last change, undid Build 271, reduced tension bonus in endgame
 // Build 272 - 20-12-2015 - Reduced King on Rook File penalties a bit

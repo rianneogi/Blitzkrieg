@@ -73,7 +73,7 @@ Score RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
 Score RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
 Score RookHalfOpenBonus[8] = { 5,5,8,10,10,8,5,5 };
 Score RookOpenBonus[8] = { 10,10,15,20,20,15,10,10 };
-Score RookConnectedBonus = S(5, 25);
+Score RookConnectedBonus = S(5, 15);
 
 //Queen
 Score QueenOutEarlyPenalty = S(4,0); //penalty for queens not on back rank for every minor on back rank
@@ -1244,7 +1244,7 @@ void evalinit()
 			PieceSqValues[PIECE_ROOK][i] += Rook7thRankBonus;
 			PieceSqValuesEG[PIECE_ROOK][i] += Rook7thRankBonus;
 		}
-		PieceSqValues[PIECE_QUEEN][i] -= 10;
+		PieceSqValues[PIECE_QUEEN][i] = (QueenCentralizationValues[rank] + QueenCentralizationValues[file])/4;
 		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];
 		PieceSqValues[PIECE_KING][i] = KingRankValues[rank] + KingFileValues[file];
 		PieceSqValuesEG[PIECE_KING][i] = KingCentralizationValues[rank] + KingCentralizationValues[file];
