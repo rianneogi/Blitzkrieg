@@ -1244,7 +1244,7 @@ void evalinit()
 			PieceSqValues[PIECE_ROOK][i] += Rook7thRankBonus;
 			PieceSqValuesEG[PIECE_ROOK][i] += Rook7thRankBonus;
 		}
-		PieceSqValues[PIECE_QUEEN][i] = (QueenCentralizationValues[rank] + QueenCentralizationValues[file])/4;
+		PieceSqValues[PIECE_QUEEN][i] = 0;
 		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];
 		PieceSqValues[PIECE_KING][i] = KingRankValues[rank] + KingFileValues[file];
 		PieceSqValuesEG[PIECE_KING][i] = KingCentralizationValues[rank] + KingCentralizationValues[file];
