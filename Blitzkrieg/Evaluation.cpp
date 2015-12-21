@@ -28,7 +28,7 @@ const Scale OutpostFactor(1, 0.5);
 const Scale BishopFactor(1, 1);
 const Scale KnightFactor(1, 1);
 const Scale RookFactor(1, 1);
-const Scale QueenFactor(0.75, 1.25);
+const Scale QueenFactor(1, 1);
 
 //Mobility
 Score BishopMobility[16] = { -24, -8,  0,  4,  8,  8,  12,  12,  16,  16, 20, 20, 24, 28, 32 };
@@ -268,50 +268,6 @@ int PieceSqValuesEG[6][64] =
 	 -30,  0,  0,  0,  0,  0,  0,-30,
 	 -40,-30,-20,-10,-10,-20,-30,-40}
 };
-
-//int luaGetInteger(lua_State* L,std::string name)
-//{
-//	lua_getglobal(L,name.c_str());
-//	int val = lua_tointeger(L,-1);
-//	lua_pop(L,1);
-//	return val;
-//}
-//
-//int loadFromLua(std::string path)
-//{
-//	lua_State* L = luaL_newstate();
-//	luaL_openlibs(L);
-//	if (luaL_loadfile(L, path.c_str()) || lua_pcall(L, 0, 0, 0)) 
-//	{
-//        std::cout<<"Error: failed to load " << path <<std::endl;
-//		std::cout << lua_tostring(L,-1) << "\n";
-//		return NULL;
-//    }
-//
-//	lua_getglobal(L,"PieceMaterial");
-//	for(int i = 0;i<6;i++)
-//	{
-//		lua_pushinteger(L,i+1);
-//		lua_gettable(L,1);
-//		PieceMaterial[i] = lua_tointeger(L,-1);
-//		MaterialValues[i+1] = PieceMaterial[i];
-//		MaterialValues[i+7] = PieceMaterial[i];
-//		lua_pop(L,1);
-//	}
-//	lua_pop(L,1);
-//
-//	EndgameMaterial = luaGetInteger(L,"EndgameMaterial");
-//	BishopPairBonus = luaGetInteger(L,"BishopPairBonus");
-//	KnightPairBonus = luaGetInteger(L,"KnightPairBonus");
-//	RookPairBonus = luaGetInteger(L,"RookPairBonus");
-//	BishopOutpostBonus = luaGetInteger(L,"BishopOutpostBonus");
-//	KnightOutpostBonus = luaGetInteger(L,"KnightOutpostBonus");
-//	QueenOutEarlyPenalty = luaGetInteger(L,"QueenOutEarlyPenalty");
-//	RookConnectedBonus = luaGetInteger(L,"RookConnectedBonus");
-//	NoPawnsPenalty = luaGetInteger(L,"NoPawnsPenalty");
-//
-//	lua_close(L);
-//}
 
 int scaleScore(Score s, int mat)
 {

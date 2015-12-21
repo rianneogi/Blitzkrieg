@@ -55,8 +55,7 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 
 	vector<Move> line;
 	line.reserve(128);
-	PrincipalVariation = vector<Move>();
-	PrincipalVariation.reserve(128);
+	
 	int score = AlphaBeta(1,CONS_NEGINF,CONS_INF,&line,false,false);
 	//int score = think(1,CONS_NEGINF,CONS_INF,&line);
 	//PrincipalVariation = line;
@@ -65,6 +64,9 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 	int takeback = 0;
 	int initialmovenumber = pos.movelist.size();
 	Move bestmove = CONS_NULLMOVE;
+
+	PrincipalVariation = vector<Move>();
+	PrincipalVariation.reserve(128);
 	/*for (int i = 0;i < 128;i++)
 	{
 		PrincipalVariation[i] = CONS_NULLMOVE;
@@ -160,18 +162,20 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 		if (print)
 		{
 			cout << "info score cp " << score << " depth " << i << " seldepth " << SelectiveDepth << " nodes " << nodes << " nps " << getNPS(nodes, timer.ElapsedMilliseconds()) << " time " << timer.ElapsedMilliseconds() << " pv ";
-			/*for(int j = 0;j<=PvSize;j++)
-			{
-				cout << PrincipalVariation[j].toString() << " ";
-			}*/
 			for (int j = line.size() - 1;j >= 0;j--)
 			{
 				cout << line.at(j).toString() << " ";
 			}
 			cout << endl;
+			/*for (int j = 0;j < 128;j++)
+			{
+				if (PrincipalVariation[j].isNullMove())
+					break;
+				cout << PrincipalVariation[j].toString() << " ";
+			}*/
 		}
-		PrincipalVariation = line;
-		bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
+		//PrincipalVariation = line;
+		bestmove = line.at(line.size()-1);
 	}
 	if (print)
 	{
@@ -381,10 +385,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 
-	//if (probe == CONS_TTUNKNOWN && dopv && depth>=2) //internal iterative deepening
-	//{
-	//	int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
-	//}	
+	if (probe == CONS_TTUNKNOWN && dopv && depth>=2) //internal iterative deepening
+	{
+		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
+	}	
 
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
@@ -607,6 +611,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				alpha = score;
 				alpharaised = true;
 				alphamove = m;
+
 				*variation = line;
 
 				if (noMaterialGain(m))
@@ -672,7 +677,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	if(!alphamove.isNullMove())
 	{
 		variation->push_back(alphamove);
-		//PrincipalVariation[ply] = alphamove;
+		//if(dopv)
+		//	PrincipalVariation[ply] = alphamove;
 		/*if (depth == 1)
 		{
 			PvSize = ply;
@@ -689,41 +695,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		alphalast_sum += (finalalpha + 1);
 		alphafirst_sum += (firstalpha + 1);
 #endif
-		
-		//pos.makeMove(alphamove);
-		//int le = LeafEval<false>()-PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()];
-		//pos.unmakeMove(alphamove);
-
-		//if (alpha > le+10)
-		//{
-		//	if (pos.turn == COLOR_WHITE)
-		//	{
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]++;
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]--;
-		//	}
-		//	else
-		//	{
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]--;
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]++;
-		//	}
-		//	//HistoryScores[alphamove.getFrom()][alphamove.getTo()]++;
-		//	
-		//}
-		//if (alpha < le - 10)
-		//{
-		//	if (pos.turn == COLOR_WHITE)
-		//	{
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]--;
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]++;
-		//	}
-		//	else
-		//	{
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getTo()]++;
-		//		PieceSq[getPiece2Square(alphamove.getMovingPiece(), pos.turn)][alphamove.getFrom()]--;
-		//	}
-		//	/*if(HistoryScores[alphamove.getFrom()][alphamove.getTo()]!=0)
-		//		HistoryScores[alphamove.getFrom()][alphamove.getTo()]--;*/
-		//}
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
 	/*if (Table.Probe(pos.TTKey, depth, alpha, beta) != alpha)
