@@ -23,11 +23,15 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 278;
+const int ENGINEVERSION = 282;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 282 - 21-12-2015 - King Proximity bonus/penalty now depends on rank of the passer
+// Build 281 - 21-12-2015 - Reduced king proximity bonus/penalty for passers more
+// Build 280 - 21-12-2015 - Reduced king proximity bonus/penalty for passers
+// Build 279 - 21-12-2015 - Fixed a bug in passed pawn king proximity bonus
 // Build 278 - 21-12-2015 - Undid last change, Undid Build 276, added bonus/penalty to passed pawns depending on proximity of kings
 // Build 277 - 21-12-2015 - Set queen middlegame values to 0
 // Build 276 - 20-12-2015 - Increased Queen middlegame piecesq a bit
