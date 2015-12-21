@@ -449,10 +449,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			continue;
 		}
-		//if (vec.size() == 1 || (foundlegal==false && i==vec.size()-1)) //singular extension, only 1 legal move, so extend
-		//{
-		//	depth++;
-		//}
+		if (vec.size() == 1 || (foundlegal==false && i==vec.size()-1)) //singular extension, only 1 legal move, so extend
+		{
+			depth++;
+		}
 		foundlegal = true;
 		ply++;
 		score = 0;

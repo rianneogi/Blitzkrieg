@@ -23,12 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 289;
+const int ENGINEVERSION = 290;
 
 // Best Build so far: 233
 
 ///BUILDS
-// Build 289 - 22-12-2015 - Undid last cnange, added IID with depth-2
+// Build 290 - 22-12-2015 - Added singular extensions
+// Build 289 - 22-12-2015 - Undid last change, added IID with depth-2
 // Build 288 - 22-12-2015 - Increased Queen factor in endgame and reduced in middlegame
 // Build 287 - 21-12-2015 - Added king proximity bonus/penalty to passers
 // Build 286 - 21-12-2015 - Reduced passed pawn factor
