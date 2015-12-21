@@ -8,8 +8,8 @@ struct Scale
 	float eg;
 
 	Scale();
-	Scale(int x);
-	Scale(int m, int e);
+	Scale(float x);
+	Scale(float m, float e);
 
 	Scale operator+(Scale const& s) const;
 	Scale operator-(Scale const& s) const;

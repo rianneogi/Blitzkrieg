@@ -19,16 +19,16 @@ int LazyEval1 = 400;
 //int CenterBorderSquareBonus = 2;
 //int EnemyTerritorySquareBonus = 3;
 
-Scale KingSafetyFactor(1, 0);
-Scale PawnStructureFactor(0.5, 0.7);
-Scale PassedPawnFactor(1, 1.5);
-Scale MobilityFactor(1, 1);
-Scale OutpostFactor(1, 0.5);
+const Scale KingSafetyFactor(1, 0);
+const Scale PawnStructureFactor(0.35, 0.7);
+const Scale PassedPawnFactor(0.5, 1);
+const Scale MobilityFactor(1, 1);
+const Scale OutpostFactor(1, 0.5);
 
-Scale BishopFactor(1, 1);
-Scale KnightFactor(1, 1);
-Scale RookFactor(1, 1);
-Scale QueenFactor(1, 1);
+const Scale BishopFactor(1, 1);
+const Scale KnightFactor(1, 1);
+const Scale RookFactor(1, 1);
+const Scale QueenFactor(1, 1);
 
 //Mobility
 Score BishopMobility[16] = { -24, -8,  0,  4,  8,  8,  12,  12,  16,  16, 20, 20, 24, 28, 32 };

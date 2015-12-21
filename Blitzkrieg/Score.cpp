@@ -2,9 +2,9 @@
 
 Scale::Scale() : mg(0), eg(0) {}
 
-Scale::Scale(int x) : mg(x), eg(x) {}
+Scale::Scale(float x) : mg(x), eg(x) {}
 
-Scale::Scale(int m, int e) : mg(m), eg(e) {}
+Scale::Scale(float m, float e) : mg(m), eg(e) {}
 
 Scale Scale::operator+(Scale const& s) const
 {
