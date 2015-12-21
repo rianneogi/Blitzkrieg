@@ -625,12 +625,12 @@ template<bool Trace> int Engine::LeafEval()
 					passerbonus += passerbonus / 2;
 				}
 
-				/*int rank = getRank(getColorMirror(i, k)) - 2;
+				//int rank = getRank(getColorMirror(i, k)) - 2;
 				int sq = (k & 0x7);
 				if (i == COLOR_WHITE)
 					sq = 63 - getFile(k);
-				passerbonus.eg -= getSquareDistance(KingSquare[i], k)*rank;
-				passerbonus.eg += 2 * getSquareDistance(KingSquare[getOpponent(i)], sq)*rank;*/
+				passerbonus -= S(0,2 * getSquareDistance(KingSquare[i], k));
+				passerbonus += S(0,5 * getSquareDistance(KingSquare[getOpponent(i)], sq));
 
 				PawnStructure[i] += passerbonus;
 
