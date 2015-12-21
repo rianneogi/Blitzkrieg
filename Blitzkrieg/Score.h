@@ -76,5 +76,6 @@ struct Score
 	Score operator*=(uint64_t s);
 	Score operator/=(uint64_t s);*/
 
-	operator int() const;
+	//operator int() const;
+	operator string() const;
 };

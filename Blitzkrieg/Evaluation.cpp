@@ -313,6 +313,11 @@ int PieceSqValuesEG[6][64] =
 //	lua_close(L);
 //}
 
+int scaleScore(Score s, int mat)
+{
+	return (s.eg + (s.mg - s.eg)*((float)(mat) / TotalMaterialBothSides));
+}
+
 template<bool Trace> int Engine::LeafEval()
 {
 	nodes++;
@@ -461,19 +466,19 @@ template<bool Trace> int Engine::LeafEval()
 		KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
 		if (Trace)
 		{
-			cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+			cout << "Bonus for pawns in front of king for " << PlayerStrings[i] << ": " << string(PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN])) << endl;
 		}
 		KingSafety[i] += PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]);
 		if (Trace)
 		{
-			cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN]) << endl;
+			cout << "Bonus for pawns 2 steps in front of king for " << PlayerStrings[i] << ": " << string(PawnShield2Bonus*(int)popcnt(KingShield2[i][k] & pos.Pieces[i][PIECE_PAWN])) << endl;
 		}
 		if (getPawnMoves(i, k) & pos.Pieces[i][PIECE_BISHOP])
 		{
 			KingSafety[i] += BishopShieldBonus;
 			if (Trace)
 			{
-				cout << "Bonus for Bishop in front of king for " << PlayerStrings[i] << ": " << BishopShieldBonus << endl;
+				cout << "Bonus for Bishop in front of king for " << PlayerStrings[i] << ": " << string(BishopShieldBonus) << endl;
 			}
 		}
 
@@ -483,14 +488,14 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				KingSafety[i] -= KingOnHalfOpenFilePenalty;
 				if (Trace)
-					cout << "Penalty for King on half open file for " << PlayerStrings[i] << ": " << KingOnHalfOpenFilePenalty << endl;
+					cout << "Penalty for King on half open file for " << PlayerStrings[i] << ": " << string(KingOnHalfOpenFilePenalty) << endl;
 				//KingAttackUnits[i] += 4; 
 			}
 			else
 			{
 				KingSafety[i] -= KingOnOpenFilePenalty;
 				if (Trace)
-					cout << "Penalty for King on open file for " << PlayerStrings[i] << ": " << KingOnOpenFilePenalty << endl;
+					cout << "Penalty for King on open file for " << PlayerStrings[i] << ": " << string(KingOnOpenFilePenalty) << endl;
 				//KingAttackUnits[i] += 8;
 			}
 		}
@@ -498,7 +503,7 @@ template<bool Trace> int Engine::LeafEval()
 		{ //checks if there are no opponent pawns on the file and there are rooks on the file
 			KingSafety[i] -= KingOnRookFilePenalty;
 			if (Trace)
-				cout << "Penalty for King on rook file for " << PlayerStrings[i] << ": " << KingOnRookFilePenalty << endl;
+				cout << "Penalty for King on rook file for " << PlayerStrings[i] << ": " << string(KingOnRookFilePenalty) << endl;
 			//KingAttackUnits[i] += 2;
 		}
 		if (getFile(k) != 0)
@@ -509,14 +514,14 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					KingSafety[i] -= KingAdjHalfOpenFilePenalty;
 					if (Trace)
-						cout << "Penalty for King adj to half open file for " << PlayerStrings[i] << ": " << KingAdjHalfOpenFilePenalty << endl;
+						cout << "Penalty for King adj to half open file for " << PlayerStrings[i] << ": " << string(KingAdjHalfOpenFilePenalty) << endl;
 					//KingAttackUnits[i] += 3;
 				}
 				else
 				{
 					KingSafety[i] -= KingAdjOpenFilePenalty;
 					if (Trace)
-						cout << "Penalty for King adj to open file for " << PlayerStrings[i] << ": " << KingAdjOpenFilePenalty << endl;
+						cout << "Penalty for King adj to open file for " << PlayerStrings[i] << ": " << string(KingAdjOpenFilePenalty) << endl;
 					//KingAttackUnits[i] += 6;
 				}
 			}
@@ -524,7 +529,7 @@ template<bool Trace> int Engine::LeafEval()
 			{ //checks if there are no opponent pawns on the file and there are rooks on the file
 				KingSafety[i] -= KingAdjRookFilePenalty;
 				if (Trace)
-					cout << "Penalty for King adj to rook file for " << PlayerStrings[i] << ": " << KingAdjRookFilePenalty << endl;
+					cout << "Penalty for King adj to rook file for " << PlayerStrings[i] << ": " << string(KingAdjRookFilePenalty) << endl;
 				//KingAttackUnits[i] += 1;
 			}
 		}
@@ -536,14 +541,14 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					KingSafety[i] -= KingAdjHalfOpenFilePenalty;
 					if (Trace)
-						cout << "Penalty for King adj to half open file for " << PlayerStrings[i] << ": " << KingAdjHalfOpenFilePenalty << endl;
+						cout << "Penalty for King adj to half open file for " << PlayerStrings[i] << ": " << string(KingAdjHalfOpenFilePenalty) << endl;
 					//KingAttackUnits[i] += 3;
 				}
 				else
 				{
 					KingSafety[i] -= KingAdjOpenFilePenalty;
 					if (Trace)
-						cout << "Penalty for King adj to open file for " << PlayerStrings[i] << ": " << KingAdjOpenFilePenalty << endl;
+						cout << "Penalty for King adj to open file for " << PlayerStrings[i] << ": " << string(KingAdjOpenFilePenalty) << endl;
 					//KingAttackUnits[i] += 6;
 				}
 			}
@@ -551,7 +556,7 @@ template<bool Trace> int Engine::LeafEval()
 			{ //checks if there are no opponent pawns on the file and there are rooks on the file
 				KingSafety[i] -= KingAdjRookFilePenalty;
 				if (Trace)
-					cout << "Penalty for King adj to rook file for " << PlayerStrings[i] << ": " << KingAdjRookFilePenalty << endl;
+					cout << "Penalty for King adj to rook file for " << PlayerStrings[i] << ": " << string(KingAdjRookFilePenalty) << endl;
 				//KingAttackUnits[i] += 1;
 			}
 		}
@@ -580,7 +585,7 @@ template<bool Trace> int Engine::LeafEval()
 		{
 			PawnStructure[i] -= NoPawnsPenalty;
 			if (Trace)
-				cout << "Penalty for having no pawns for " << PlayerStrings[i] << ": " << NoPawnsPenalty << endl;
+				cout << "Penalty for having no pawns for " << PlayerStrings[i] << ": " << string(NoPawnsPenalty) << endl;
 		}
 		while (b)
 		{
@@ -598,20 +603,19 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				PawnStructure[i] -= DoubledPawnPenalty[getFile(getColorMirror(i, k))];
 				if (Trace)
-					cout << "Penalty for doubled pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << DoubledPawnPenalty[getFile(getColorMirror(i, k))] << endl;
+					cout << "Penalty for doubled pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(DoubledPawnPenalty[getFile(getColorMirror(i, k))]) << endl;
 			}
 
 			if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
 				PawnStructure[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
 				if (Trace)
-					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << IsolatedPawnPenalty[getFile(getColorMirror(i, k))] << endl;
+					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(IsolatedPawnPenalty[getFile(getColorMirror(i, k))]) << endl;
 			}
 
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
-				unsigned int passerbonus = PassedPawnBonus[getColorMirror(i, k)];
-				int rank = getRank(getColorMirror(i, k))-2;
+				Score passerbonus = PassedPawnBonus[getColorMirror(i, k)];
 				if (getAboveBits(i, k)&pos.OccupiedSq) //blocked by a piece
 				{
 					passerbonus /= 2;
@@ -621,12 +625,17 @@ template<bool Trace> int Engine::LeafEval()
 					passerbonus += passerbonus / 2;
 				}
 
-				PawnStructure[i] += (int)passerbonus;
-				PawnStructure[i].eg -= getSquareDistance(KingSquare[i], k)*rank;
-				PawnStructure[i].eg += 2 * getSquareDistance(KingSquare[getOpponent(i)], k)*rank;
+				/*int rank = getRank(getColorMirror(i, k)) - 2;
+				int sq = (k & 0x7);
+				if (i == COLOR_WHITE)
+					sq = 63 - getFile(k);
+				passerbonus.eg -= getSquareDistance(KingSquare[i], k)*rank;
+				passerbonus.eg += 2 * getSquareDistance(KingSquare[getOpponent(i)], sq)*rank;*/
+
+				PawnStructure[i] += passerbonus;
 
 				if (Trace)
-					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << passerbonus << endl;
+					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(passerbonus) << endl;
 			}
 			//if (pos.OccupiedSq&getPos2Bit(getColorMirror(i,getPlus8(getColorMirror(i, k))))) //checks if pawn is blocked
 			//{
@@ -645,7 +654,7 @@ template<bool Trace> int Engine::LeafEval()
 					{
 						PawnStructure[i] -= BackwardPawnPenalty[getFile(k)];
 						if (Trace)
-							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BackwardPawnPenalty[getFile(k)] << endl;
+							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(BackwardPawnPenalty[getFile(k)]) << endl;
 					}
 				}
 			}
@@ -689,7 +698,7 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				PawnStructure[i] -= BlockedPawnPenalty[getColorMirror(i, k)];
 				if (Trace)
-					cout << "Penalty for blocked pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << BlockedPawnPenalty[getColorMirror(i, k)] << endl;
+					cout << "Penalty for blocked pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(BlockedPawnPenalty[getColorMirror(i, k)]) << endl;
 			}
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
 			{
@@ -697,13 +706,13 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					PieceActivity[i] += RookBehindPassedPawnBonus;
 					if (Trace)
-						cout << "Bonus for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << RookBehindPassedPawnBonus << endl;
+						cout << "Bonus for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(RookBehindPassedPawnBonus) << endl;
 				}
 				if (getAboveBits(getOpponent(i), k)&pos.Pieces[getOpponent(i)][PIECE_ROOK])
 				{
 					PieceActivity[i] -= OppRookBehindPassedPawnPenalty;
 					if (Trace)
-						cout << "Penalty for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << OppRookBehindPassedPawnPenalty << endl;
+						cout << "Penalty for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(OppRookBehindPassedPawnPenalty) << endl;
 				}
 			}
 			//pawn attacks near opposing king
@@ -730,15 +739,15 @@ template<bool Trace> int Engine::LeafEval()
 		PieceActivity[i] += RookOppPawnAdj[PawnCount[getOpponent(i)]] * rookcount;
 		if (Trace)
 		{
-			cout << "Adj for Rooks based on number of own pawns for " << PlayerStrings[i] << ": " << RookPawnAdj[PawnCount[i]] * rookcount << endl;
-			cout << "Adj for Rooks based on number of opponent pawns for " << PlayerStrings[i] << ": " << RookOppPawnAdj[PawnCount[getOpponent(i)]] * rookcount << endl;
+			cout << "Adj for Rooks based on number of own pawns for " << PlayerStrings[i] << ": " << string(RookPawnAdj[PawnCount[i]] * rookcount) << endl;
+			cout << "Adj for Rooks based on number of opponent pawns for " << PlayerStrings[i] << ": " << string(RookOppPawnAdj[PawnCount[getOpponent(i)]] * rookcount) << endl;
 		}
 			
 		if(rookcount >= 2) //Pair Bonus
 		{
 			PieceActivity[i] += RookPairBonus;
 			if (Trace)
-				cout << "Bonus for Rook Pair for " << PlayerStrings[i] << ": " << RookPairBonus << endl;
+				cout << "Bonus for Rook Pair for " << PlayerStrings[i] << ": " << string(RookPairBonus) << endl;
 		}
 		while(b)
 		{
@@ -752,13 +761,13 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					PieceActivity[i] += RookHalfOpenBonus[getFile(k)];
 					if(Trace)
-						cout << "Bonus for Rook on " << Int2Sq(k) << " on half open for " << PlayerStrings[i] << ": " << RookHalfOpenBonus[getFile(k)] << endl;
+						cout << "Bonus for Rook on " << Int2Sq(k) << " on half open for " << PlayerStrings[i] << ": " << string(RookHalfOpenBonus[getFile(k)]) << endl;
 				}
 				else
 				{
 					PieceActivity[i] += RookOpenBonus[getFile(k)];
 					if (Trace)
-						cout << "Bonus for Rook on " << Int2Sq(k) << " on open for " << PlayerStrings[i] << ": " << RookOpenBonus[getFile(k)] << endl;
+						cout << "Bonus for Rook on " << Int2Sq(k) << " on open for " << PlayerStrings[i] << ": " << string(RookOpenBonus[getFile(k)]) << endl;
 				}
 			}
 
@@ -770,7 +779,7 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				PieceActivity[i] += RookConnectedBonus;
 				if (Trace)
-					cout << "Bonus for Rooks being connected for " << PlayerStrings[i] << ": " << RookConnectedBonus << endl;
+					cout << "Bonus for Rooks being connected for " << PlayerStrings[i] << ": " << string(RookConnectedBonus) << endl;
 			}
 
 			//PieceActivity[i] += popcnt(m&CenterBits)*CenterSquareBonus;
@@ -780,12 +789,12 @@ template<bool Trace> int Engine::LeafEval()
 			m &= m^ColorPieces[i];
 			PieceActivity[i] += RookMobility[popcnt(m)];
 			if (Trace)
-				cout << "Rook on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << RookMobility[popcnt(m)] << endl;
+				cout << "Rook on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(RookMobility[popcnt(m)]) << endl;
 
 			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
 			if (Trace)
 			{
-				cout << "Pawn pressure bonus for rook on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])] << endl;
+				cout << "Pawn pressure bonus for rook on " << Int2Sq(k) << ": " << string(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]) << endl;
 			}
 			
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK];
@@ -801,14 +810,14 @@ template<bool Trace> int Engine::LeafEval()
 		PieceActivity[i] += KnightOppPawnAdj[PawnCount[getOpponent(i)]] * knightcount;
 		if (Trace)
 		{
-			cout << "Adj for Knights based on number of own pawns for " << PlayerStrings[i] << ": " << KnightPawnAdj[PawnCount[i]] * knightcount << endl;
-			cout << "Adj for Knights based on number of opponent pawns for " << PlayerStrings[i] << ": " << KnightOppPawnAdj[PawnCount[getOpponent(i)]] * knightcount << endl;
+			cout << "Adj for Knights based on number of own pawns for " << PlayerStrings[i] << ": " << string(KnightPawnAdj[PawnCount[i]] * knightcount) << endl;
+			cout << "Adj for Knights based on number of opponent pawns for " << PlayerStrings[i] << ": " << string(KnightOppPawnAdj[PawnCount[getOpponent(i)]] * knightcount) << endl;
 		}
 		if(popcnt(b) >= 2)
 		{
 			PieceActivity[i] += KnightPairBonus;
 			if (Trace)
-				cout << "Bonus for Knight Pair for " << PlayerStrings[i] << ": " << KnightPairBonus << endl;
+				cout << "Bonus for Knight Pair for " << PlayerStrings[i] << ": " << string(KnightPairBonus) << endl;
 		}
 		while(b)
 		{
@@ -817,7 +826,7 @@ template<bool Trace> int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				unsigned int outpostbonus = KnightOutpostBonus[getColorMirror(i, k)];
+				Score outpostbonus = KnightOutpostBonus[getColorMirror(i, k)];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_KNIGHT][getColorMirror(i, k)];
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP] & ColoredSquares[piececolor]) == 0)
@@ -828,9 +837,9 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					outpostbonus += outpostbonus/2; //extra bonus if defended by a pawn
 				}
-				PieceActivity[i] += (int)outpostbonus;
+				PieceActivity[i] += outpostbonus;
 				if (Trace)
-					cout << "Outpost bonus for Knight on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << outpostbonus << endl;
+					cout << "Outpost bonus for Knight on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(outpostbonus) << endl;
 			}
 
 			//knight attacks near opposing king
@@ -842,19 +851,19 @@ template<bool Trace> int Engine::LeafEval()
 			Bitset m = getKnightMoves(k)&(getKnightMoves(k)^ColorPieces[i]);
 			PieceActivity[i] += KnightMobility[popcnt(m)];
 			if (Trace)
-				cout << "Knight on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << KnightMobility[popcnt(m)] << endl;
+				cout << "Knight on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(KnightMobility[popcnt(m)]) << endl;
 
 			if (m&pos.Pieces[getOpponent(i)][PIECE_BISHOP])
 			{
 				PieceActivity[i] += KnightAttacksBishopBonus;
 				if (Trace)
-					cout << "Bonus for knight on " << Int2Sq(k) << " attacking a bishop: " << KnightAttacksBishopBonus << endl;
+					cout << "Bonus for knight on " << Int2Sq(k) << " attacking a bishop: " << string(KnightAttacksBishopBonus) << endl;
  			}
 
 			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
 			if (Trace)
 			{
-				cout << "Pawn pressure bonus for knight on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])] << endl;
+				cout << "Pawn pressure bonus for knight on " << Int2Sq(k) << ": " << string(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]) << endl;
 			}
 
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_KNIGHT];
@@ -875,14 +884,14 @@ template<bool Trace> int Engine::LeafEval()
 		PieceActivity[i] += BishopOppPawnAdj[PawnCount[getOpponent(i)]] * bishopcount;
 		if (Trace)
 		{
-			cout << "Adj for Bishops based on number of own pawns for " << PlayerStrings[i] << ": " << BishopPawnAdj[PawnCount[i]] * bishopcount << endl;
-			cout << "Adj for Bishops based on number of opponent pawns for " << PlayerStrings[i] << ": " << BishopOppPawnAdj[PawnCount[getOpponent(i)]] * bishopcount << endl;
+			cout << "Adj for Bishops based on number of own pawns for " << PlayerStrings[i] << ": " << string(BishopPawnAdj[PawnCount[i]] * bishopcount) << endl;
+			cout << "Adj for Bishops based on number of opponent pawns for " << PlayerStrings[i] << ": " << string(BishopOppPawnAdj[PawnCount[getOpponent(i)]] * bishopcount) << endl;
 		}
 		if(popcnt(b) >= 2)
 		{
 			PieceActivity[i] += BishopPairBonus;
 			if (Trace)
-				cout << "Bonus for Bishop Pair for " << PlayerStrings[i] << ": " << BishopPairBonus << endl;
+				cout << "Bonus for Bishop Pair for " << PlayerStrings[i] << ": " << string(BishopPairBonus) << endl;
 		}
 		while(b)
 		{
@@ -891,7 +900,7 @@ template<bool Trace> int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 			if((getAboveSideBits(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])==0) //checks if there are no enemy pawns on the adjacent files
 			{
-				unsigned int outpostbonus = BishopOutpostBonus[getColorMirror(i, k)];
+				Score outpostbonus = BishopOutpostBonus[getColorMirror(i, k)];
 				//unsigned int outpostbonus = PieceSqValues[PIECE_BISHOP][getColorMirror(i, k)];
 				int piececolor = SquareColor[k];
 				if (pos.Pieces[getOpponent(i)][PIECE_KNIGHT] == 0 && (pos.Pieces[getOpponent(i)][PIECE_BISHOP]&ColoredSquares[piececolor])==0)
@@ -902,9 +911,9 @@ template<bool Trace> int Engine::LeafEval()
 				{
 					outpostbonus += outpostbonus/2; //extra bonus if defended by a pawn
 				}
-				PieceActivity[i] += (int)outpostbonus;
+				PieceActivity[i] += outpostbonus;
 				if (Trace)
-					cout << "Outpost bonus for Bishop on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << outpostbonus << endl;
+					cout << "Outpost bonus for Bishop on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(outpostbonus) << endl;
 			}
 
 			//bishop attacks near opposing king
@@ -920,27 +929,27 @@ template<bool Trace> int Engine::LeafEval()
 
 			PieceActivity[i] += BishopMobility[popcnt(m)];
 			if (Trace)
-				cout << "Bishop on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << BishopMobility[popcnt(m)] << endl;
+				cout << "Bishop on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(BishopMobility[popcnt(m)]) << endl;
 
 			PieceActivity[i] += BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]]; //bishop pawn same color adjustment
 			PieceActivity[i] += BishopOppPawnSameColor[PawnCountColor[getOpponent(i)][SquareColor[k]]]; //bishop opp pawn same color adjustment
 			if (Trace)
 			{
-				cout << "Bishop on " << Int2Sq(k) << " Adj for our pawns on the same color for " << PlayerStrings[i] << ": " << BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]] << endl;
-				cout << "Bishop on " << Int2Sq(k) << " Adj for opponent pawns on the same color for " << PlayerStrings[i] << ": " << BishopOppPawnSameColor[PawnCountColor[getOpponent(i)][SquareColor[k]]] << endl;
+				cout << "Bishop on " << Int2Sq(k) << " Adj for our pawns on the same color for " << PlayerStrings[i] << ": " << string(BishopPawnSameColor[PawnCountColor[i][SquareColor[k]]]) << endl;
+				cout << "Bishop on " << Int2Sq(k) << " Adj for opponent pawns on the same color for " << PlayerStrings[i] << ": " << string(BishopOppPawnSameColor[PawnCountColor[getOpponent(i)][SquareColor[k]]]) << endl;
 			}
 
 			if (m&pos.Pieces[getOpponent(i)][PIECE_KNIGHT])
 			{
 				PieceActivity[i] += BishopAttacksKnightBonus;
 				if (Trace)
-					cout << "Bonus for bishop on " << Int2Sq(k) << " attacking a knight: " << BishopAttacksKnightBonus << endl;
+					cout << "Bonus for bishop on " << Int2Sq(k) << " attacking a knight: " << string(BishopAttacksKnightBonus) << endl;
 			}
 
 			PieceActivity[i] += PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])];
 			if (Trace)
 			{
-				cout << "Pawn pressure bonus for bishop on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])] << endl;
+				cout << "Pawn pressure bonus for bishop on " << Int2Sq(k) << ": " << string(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]) << endl;
 			}
 				
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
@@ -978,12 +987,12 @@ template<bool Trace> int Engine::LeafEval()
 
 			PieceActivity[i] += QueenMobility[popcnt(m)]; //mobility factor
 			if (Trace)
-				cout << "Queen on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << QueenMobility[popcnt(m)] << endl;
+				cout << "Queen on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(QueenMobility[popcnt(m)]) << endl;
 
-			PieceActivity[i] += (int)((unsigned)(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])])>>1); //half bonus for queens
+			PieceActivity[i] += (PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])])/2; //half bonus for queens
 			if (Trace)
 			{
-				cout << "Pawn pressure bonus for queen on " << Int2Sq(k) << ": " << PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]/2 << endl;
+				cout << "Pawn pressure bonus for queen on " << Int2Sq(k) << ": " << string(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]/2) << endl;
 			}
 
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN];
@@ -996,7 +1005,7 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				PieceActivity[i] -= QueenOutEarlyPenalty*MinorsOnBackRank[i];
 				if (Trace)
-					cout << "Queen out early penalty for " << PlayerStrings[i] << ": " << QueenOutEarlyPenalty*MinorsOnBackRank[i] << endl;
+					cout << "Queen out early penalty for " << PlayerStrings[i] << ": " << string(QueenOutEarlyPenalty*MinorsOnBackRank[i]) << endl;
 			}
 		}
 	}
@@ -1009,7 +1018,7 @@ template<bool Trace> int Engine::LeafEval()
 		if (Trace)
 		{
 			cout << "King Attack Units for " << PlayerStrings[i] << ": " << KingAttackUnits[i] << endl;
-			cout << "Safety table for " << PlayerStrings[i] << ": " << SafetyTable[min(99, KingAttackUnits[i])] << endl;
+			cout << "Safety penalty for " << PlayerStrings[i] << ": " << string(SafetyTable[min(99, KingAttackUnits[i])]) << endl;
 			cout << endl;
 		}
 	}
@@ -1018,9 +1027,9 @@ template<bool Trace> int Engine::LeafEval()
 	{
 		for (int i = 0;i < 2;i++)
 		{
-			cout << PlayerStrings[i] << " King Safety: " << KingSafety[i] << endl;
-			cout << PlayerStrings[i] << " Pawn Structure: " << PawnStructure[i] << endl;
-			cout << PlayerStrings[i] << " Piece Activity: " << PieceActivity[i] << endl;
+			cout << PlayerStrings[i] << " King Safety: " << string(KingSafety[i]) << endl;
+			cout << PlayerStrings[i] << " Pawn Structure: " << string(PawnStructure[i]) << endl;
+			cout << PlayerStrings[i] << " Piece Activity: " << string(PieceActivity[i]) << endl;
 			cout << endl;
 		}
 	}
@@ -1034,24 +1043,24 @@ template<bool Trace> int Engine::LeafEval()
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	//	pawnprobe = ((pawnprobe * PawnStructureFactor) / 2) + (((pawnprobe * PawnStructureFactor) * (TotalMaterial - currentMaterial)) / (TotalMaterial * 2));
 
-	/*if (Trace)
+	if (Trace)
 	{
 		cout << "After scaling:" << endl;
 		for (int i = 0;i < 2;i++)
 		{
-			cout << PlayerStrings[i] << " King Safety: " << KingSafety[i] << endl;
-			cout << PlayerStrings[i] << " Pawn Structure: " << PawnStructure[i] << endl;
-			cout << PlayerStrings[i] << " Piece Activity: " << PieceActivity[i] << endl;
+			cout << PlayerStrings[i] << " King Safety: " << scaleScore(KingSafety[i],currentMaterial) << endl;
+			cout << PlayerStrings[i] << " Pawn Structure: " << scaleScore(PawnStructure[i], currentMaterial) << endl;
+			cout << PlayerStrings[i] << " Piece Activity: " << scaleScore(PieceActivity[i], currentMaterial) << endl;
 			cout << endl;
 		}
-	}*/
+	}
 
-	TotalEval += Material[COLOR_WHITE] + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];
-	TotalEval -= Material[COLOR_BLACK] + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK];
+	TotalEval += Score(Material[COLOR_WHITE]) + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];
+	TotalEval -= Score(Material[COLOR_BLACK]) + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK];
 	//if(pawnprobe!=CONS_TTUNKNOWN)
 	//	neteval += pawnprobe;
 
-	int finaleval = TotalEval.eg + (TotalEval.mg - TotalEval.eg)*((float)(currentMaterial) / TotalMaterialBothSides);
+	int finaleval = scaleScore(TotalEval,currentMaterial);
 
 	if(pos.turn==COLOR_BLACK)
 		return -finaleval;

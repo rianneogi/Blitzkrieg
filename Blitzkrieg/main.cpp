@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 282;
+const int ENGINEVERSION = 283;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 283 - 21-12-2015 - Undid changes upto Build 278, fixed a bug with passed pawn and outpost scaling
 // Build 282 - 21-12-2015 - King Proximity bonus/penalty now depends on rank of the passer
 // Build 281 - 21-12-2015 - Reduced king proximity bonus/penalty for passers more
 // Build 280 - 21-12-2015 - Reduced king proximity bonus/penalty for passers

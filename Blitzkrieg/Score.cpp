@@ -284,6 +284,11 @@ Score Score::operator/=(float s)
 	return *this;
 }
 
+Score::operator string() const
+{
+	return (std::to_string(mg) + ", " + std::to_string(eg));
+}
+
 //Score Score::operator+(uint64_t s) const
 //{
 //	Score r;
@@ -343,8 +348,3 @@ Score Score::operator/=(float s)
 //	eg /= s;
 //	return *this;
 //}
-
-Score::operator int() const
-{
-	return mg;
-}
