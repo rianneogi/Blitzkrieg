@@ -403,6 +403,7 @@ template<bool Trace> int Engine::LeafEval()
 	Bitset b = 0x0;
 	int KingSquare[2];
 	Bitset KingField[2];
+	Bitset KingAdj[2];
 	int KingAttackUnits[2] = { 0,0 };
 	int MinorsOnBackRank[2] = { 0,0 };
 	int PawnCount[2] = { 0,0 }; //number of pawns per side
@@ -416,6 +417,7 @@ template<bool Trace> int Engine::LeafEval()
 		//unsigned long k = 0;
 		_BitScanForward64(&k, b);
 		KingSquare[i] = k;
+		KingAdj[i] = getKingMoves(k);
 		KingField[i] = getKingField(i, k);
 
 		KingSafety[i] += PawnShield1Bonus*(int)popcnt(KingShield1[i][k] & pos.Pieces[i][PIECE_PAWN]);
@@ -754,6 +756,7 @@ template<bool Trace> int Engine::LeafEval()
 			
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK];
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_ROOK];
+			KingAttackUnits[getOpponent(i)] += popcnt(KingAdj[getOpponent(i)] & m)*AttackWeights[PIECE_ROOK];
 			if (Trace && popcnt(KingField[getOpponent(i)] & m) != 0)
 				cout << "King attack units penalty for rook on " << Int2Sq(k) << " for " << PlayerStrings[getOpponent(i)] << ": " << popcnt(KingField[getOpponent(i)] & m)*AttackWeights[PIECE_ROOK] << endl;
 		}
@@ -822,6 +825,7 @@ template<bool Trace> int Engine::LeafEval()
 			}
 
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_KNIGHT];
+			KingAttackUnits[getOpponent(i)] += popcnt(KingAdj[getOpponent(i)] & m)*AttackWeights[PIECE_KNIGHT];
 
 			if (Trace && popcnt(KingField[getOpponent(i)] & m) != 0)
 				cout << "King attack units penalty for knight on " << Int2Sq(k) << " for " << PlayerStrings[getOpponent(i)] << ": " << popcnt(KingField[getOpponent(i)] & m)*AttackWeights[PIECE_KNIGHT] << endl;
@@ -909,6 +913,7 @@ template<bool Trace> int Engine::LeafEval()
 				
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
 			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_BISHOP];
+			KingAttackUnits[getOpponent(i)] += popcnt(KingAdj[getOpponent(i)] & m)*AttackWeights[PIECE_BISHOP];
 
 			if (Trace && popcnt(KingField[getOpponent(i)] & m) != 0)
 				cout << "King attack units penalty for bishop on " << Int2Sq(k) << " for " << PlayerStrings[getOpponent(i)] << ": " << popcnt(KingField[getOpponent(i)] & m)*AttackWeights[PIECE_BISHOP] << endl;
@@ -951,7 +956,8 @@ template<bool Trace> int Engine::LeafEval()
 			}
 
 			//eval += ColorFactor[i]*popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN];
-			KingAttackUnits[getOpponent(i)] += long(popcnt(KingField[getOpponent(i)]&m))*AttackWeights[PIECE_QUEEN];
+			KingAttackUnits[getOpponent(i)] += popcnt(KingField[getOpponent(i)]&m)*AttackWeights[PIECE_QUEEN];
+			KingAttackUnits[getOpponent(i)] += popcnt(KingAdj[getOpponent(i)] & m)*AttackWeights[PIECE_QUEEN];
 
 			if (Trace && popcnt(KingField[getOpponent(i)] & m) != 0)
 				cout << "King attack units penalty for queen on " << Int2Sq(k) << " for " << PlayerStrings[getOpponent(i)] << ": " << popcnt(KingField[getOpponent(i)] & m)*AttackWeights[PIECE_QUEEN] << endl;
