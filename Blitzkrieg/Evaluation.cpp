@@ -7,7 +7,6 @@ string PlayerStrings[2] = { "White","Black" };
 int ColorFactor[2] = {1,-1};
 
 int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
-int MaterialValues[13] = {0,100,325,335,500,975,-CONS_MATED,-100,-325,-335,-500,-975,CONS_MATED};
 int TotalMaterial = (8*PieceMaterial[0] + 2*PieceMaterial[1] + 2*PieceMaterial[2] + 2*PieceMaterial[3] + PieceMaterial[4]);
 int TotalMaterialBothSides = TotalMaterial * 2;
 
@@ -22,7 +21,7 @@ int LazyEval1 = 400;
 const Scale KingSafetyFactor(1, 0);
 const Scale PawnStructureFactor(0.35, 0.7);
 const Scale PassedPawnFactor(0.5, 1);
-const Scale MobilityFactor(1.25, 1);
+const Scale MobilityFactor(1, 1);
 const Scale OutpostFactor(1, 0.5);
 
 const Scale BishopFactor(1, 1);
@@ -94,7 +93,7 @@ Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiop
 Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
 Score KingBetweenRooksPenalty = 10; //not implemented
 
-const int AttackWeights[6] = {1,2,2,3,4,0};
+const int AttackWeights[6] = {1,6,2,5,5,0};
 Score SafetyTable[100] = {
     0,  0,   1,   2,   3,   5,   7,   9,  12,  15,
   18,  22,  26,  30,  35,  39,  44,  50,  56,  62,
