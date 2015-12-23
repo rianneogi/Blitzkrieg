@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 298;
+const int ENGINEVERSION = 299;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 299 - 24-12-2015 - Smoothened out mobility a bit
 // Build 298 - 23-12-2015 - Undid last change, increased mobility factor in endgame
 // Build 297 - 23-12-2015 - Undid last change, changed Attack Weights
 // Build 296 - 23-12-2015 - Undid last change, increased mobility factor in middlegame
