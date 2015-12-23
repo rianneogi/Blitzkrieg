@@ -22,7 +22,7 @@ int LazyEval1 = 400;
 const Scale KingSafetyFactor(1, 0);
 const Scale PawnStructureFactor(0.35, 0.7);
 const Scale PassedPawnFactor(0.5, 1);
-const Scale MobilityFactor(1, 1);
+const Scale MobilityFactor(1.25, 1);
 const Scale OutpostFactor(1, 0.5);
 
 const Scale BishopFactor(1, 1);
@@ -43,8 +43,8 @@ Score KnightOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
 								 0, 0, 5,10,10, 5, 0, 0,
 								 0, 5,10,15,15,10, 5, 0,
 								 5,10,15,25,25,15,10, 5,
-								 0, 5,10,15,15,10, 5, 0,
-								 0, 0, 5,10,10, 5, 0, 0}; //non-negative values always(code will bug otherwise)
+								 0, 0, 0, 0, 0, 0, 0, 0,
+								 0, 0, 0, 0, 0, 0, 0, 0}; //non-negative values always(code will bug otherwise)
 
 Score BishopOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
 								 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -52,8 +52,8 @@ Score BishopOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
 								 0, 0, 4, 6, 6, 4, 0, 0, 
 								 0, 4, 6, 8, 8, 6, 4, 0, 
 								 4, 6, 8,10,10, 8, 6, 4, 
-								 0, 4, 6, 8, 8, 6, 4, 0, 
-								 0, 0, 4, 6, 6, 4, 0, 0}; //non-negative values always(code will bug otherwise)
+								 0, 0, 0, 0, 0, 0, 0, 0, 
+								 0, 0, 0, 0, 0, 0, 0, 0}; //non-negative values always(code will bug otherwise)
 
 //Knights
 Score KnightPairBonus = S(-5, -10);
