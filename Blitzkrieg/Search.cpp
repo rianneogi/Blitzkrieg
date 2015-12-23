@@ -281,7 +281,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 	if (depth < 5 && ply != 0 && !incheck[ply] && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
-		prunednodes++;
+		futilitynodes++;
 		return (leafeval - getFutilityMargin(depth));
 	}
 
