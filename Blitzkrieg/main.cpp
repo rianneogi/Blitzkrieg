@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 291;
+const int ENGINEVERSION = 293;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 293 - 23-12-2015 - Undid last change, increase rook factor in endgame
+// Build 292 - 23-12-2015 - Undid last change, reduced rook factor in middlegame, increased in endgame
 // Build 291 - 22-12-2015 - Undid last change, reduced outpost bonus in endgame
 // Build 290 - 22-12-2015 - Added singular extensions
 // Build 289 - 22-12-2015 - Undid last change, added IID with depth-2
