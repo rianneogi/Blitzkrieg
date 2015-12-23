@@ -27,7 +27,7 @@ const Scale OutpostFactor(1, 0.5);
 
 const Scale BishopFactor(1, 1);
 const Scale KnightFactor(1, 1);
-const Scale RookFactor(1, 1.25);
+const Scale RookFactor(1, 1);
 const Scale QueenFactor(1, 1);
 
 //Mobility
@@ -742,7 +742,7 @@ template<bool Trace> int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
 			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 
-			m &= m^ColorPieces[i];
+			m &= m^ColorPieces[i]^pos.Pieces[i][PIECE_ROOK]^pos.Pieces[i][PIECE_QUEEN];
 			PieceActivity[i] += RookMobility[popcnt(m)];
 			if (Trace)
 				cout << "Rook on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(RookMobility[popcnt(m)]) << endl;
@@ -881,7 +881,7 @@ template<bool Trace> int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
 			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 
-			m &= m^ColorPieces[i];
+			m &= m^ColorPieces[i] ^ pos.Pieces[i][PIECE_QUEEN];
 
 			PieceActivity[i] += BishopMobility[popcnt(m)];
 			if (Trace)
@@ -939,7 +939,7 @@ template<bool Trace> int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
 			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 
-			m &= m^ColorPieces[i];
+			m &= m^ColorPieces[i] ^ pos.Pieces[i][PIECE_ROOK] ^ pos.Pieces[i][PIECE_BISHOP];
 
 			PieceActivity[i] += QueenMobility[popcnt(m)]; //mobility factor
 			if (Trace)
