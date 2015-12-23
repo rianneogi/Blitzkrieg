@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 294;
+const int ENGINEVERSION = 295;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 295 - 23-12-2015 - Undid last change, added outpost bonuses to pieces above 6th rank
 // Build 294 - 23-12-2015 - Undid last change, Evaluation now considers x-ray attacks for mobility, king safety etc.
 // Build 293 - 23-12-2015 - Undid last change, increased rook factor in endgame
 // Build 292 - 23-12-2015 - Undid last change, reduced rook factor in middlegame, increased in endgame

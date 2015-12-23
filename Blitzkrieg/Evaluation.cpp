@@ -43,8 +43,8 @@ Score KnightOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
 								 0, 0, 5,10,10, 5, 0, 0,
 								 0, 5,10,15,15,10, 5, 0,
 								 5,10,15,25,25,15,10, 5,
-								 0, 0, 0, 0, 0, 0, 0, 0,
-								 0, 0, 0, 0, 0, 0, 0, 0}; //non-negative values always(code will bug otherwise)
+								 0, 5,10,15,15,10, 5, 0,
+								 0, 0, 5,10,10, 5, 0, 0}; //non-negative values always(code will bug otherwise)
 
 Score BishopOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
 								 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -52,8 +52,8 @@ Score BishopOutpostBonus[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
 								 0, 0, 4, 6, 6, 4, 0, 0, 
 								 0, 4, 6, 8, 8, 6, 4, 0, 
 								 4, 6, 8,10,10, 8, 6, 4, 
-								 0, 0, 0, 0, 0, 0, 0, 0, 
-								 0, 0, 0, 0, 0, 0, 0, 0}; //non-negative values always(code will bug otherwise)
+								 0, 4, 6, 8, 8, 6, 4, 0, 
+								 0, 0, 4, 6, 6, 4, 0, 0}; //non-negative values always(code will bug otherwise)
 
 //Knights
 Score KnightPairBonus = S(-5, -10);
@@ -742,7 +742,7 @@ template<bool Trace> int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
 			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 
-			m &= m^ColorPieces[i]^pos.Pieces[i][PIECE_ROOK]^pos.Pieces[i][PIECE_QUEEN];
+			m &= m^ColorPieces[i];
 			PieceActivity[i] += RookMobility[popcnt(m)];
 			if (Trace)
 				cout << "Rook on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(RookMobility[popcnt(m)]) << endl;
@@ -881,7 +881,7 @@ template<bool Trace> int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
 			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 
-			m &= m^ColorPieces[i] ^ pos.Pieces[i][PIECE_QUEEN];
+			m &= m^ColorPieces[i];
 
 			PieceActivity[i] += BishopMobility[popcnt(m)];
 			if (Trace)
@@ -939,7 +939,7 @@ template<bool Trace> int Engine::LeafEval()
 			//PieceActivity[i] += popcnt(m&CenterBorderBits)*CenterBorderSquareBonus;
 			//PieceActivity[i] += popcnt(m&EnemyTerritory[i])*EnemyTerritorySquareBonus;
 
-			m &= m^ColorPieces[i] ^ pos.Pieces[i][PIECE_ROOK] ^ pos.Pieces[i][PIECE_BISHOP];
+			m &= m^ColorPieces[i];
 
 			PieceActivity[i] += QueenMobility[popcnt(m)]; //mobility factor
 			if (Trace)
