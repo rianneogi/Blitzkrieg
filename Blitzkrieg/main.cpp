@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 302;
+const int ENGINEVERSION = 303;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 303 - 24-12-2015 - Changed safety table values
 // Build 302 - 24-12-2015 - Added king safety bonus for attacks adj. to king
 // Build 301 - 24-12-2015 - Reverted Rook mobility back to Build 298
 // Build 300 - 24-12-2015 - Reduced Rook Mobility a bit
