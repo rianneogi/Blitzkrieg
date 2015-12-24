@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 305;
+const int ENGINEVERSION = 306;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 306 - 24-12-2015 - Reduced king attack units if opponent has no queen
 // Build 305 - 24-12-2015 - Fixed an issue in PV sorting
 // Build 304 - 24-12-2015 - Changed attack weights
 // Build 303 - 24-12-2015 - Changed safety table values

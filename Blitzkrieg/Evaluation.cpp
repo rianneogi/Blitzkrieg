@@ -93,7 +93,7 @@ Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiop
 Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
 Score KingBetweenRooksPenalty = 10; //not implemented
 
-const int AttackWeights[6] = {1,3,2,4,5,0};
+const unsigned int AttackWeights[6] = {1,3,2,4,5,0};
 Score SafetyTable[512];
 
 //Pawn Structure
@@ -393,7 +393,7 @@ template<bool Trace> int Engine::LeafEval()
 	int KingSquare[2];
 	Bitset KingField[2];
 	Bitset KingAdj[2];
-	int KingAttackUnits[2] = { 0,0 };
+	unsigned int KingAttackUnits[2] = { 0,0 };
 	int MinorsOnBackRank[2] = { 0,0 };
 	int PawnCount[2] = { 0,0 }; //number of pawns per side
 	int PawnCountColor[2][2] = { {0,0},{0,0} }; //number of pawns on a square of a certain color per side, PawnCountColor[side][squarecolor]
@@ -952,11 +952,13 @@ template<bool Trace> int Engine::LeafEval()
 		cout << endl << "King Attack Evaluation:" << endl;
 	for(int i = 0;i<2;i++)
 	{
-		KingSafety[i] -= SafetyTable[min(99,KingAttackUnits[i])];
+		if (pos.Pieces[getOpponent(i)][PIECE_QUEEN] == 0)
+			KingAttackUnits[i] /= 2; //reduce attack units if opponent has no queen
+		KingSafety[i] -= SafetyTable[min(511,(int)KingAttackUnits[i])];
 		if (Trace)
 		{
 			cout << "King Attack Units for " << PlayerStrings[i] << ": " << KingAttackUnits[i] << endl;
-			cout << "Safety penalty for " << PlayerStrings[i] << ": " << string(SafetyTable[min(99, KingAttackUnits[i])]) << endl;
+			cout << "Safety penalty for " << PlayerStrings[i] << ": " << string(SafetyTable[min(511, (int)KingAttackUnits[i])]) << endl;
 			cout << endl;
 		}
 	}

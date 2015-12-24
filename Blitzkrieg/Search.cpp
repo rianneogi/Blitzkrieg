@@ -95,11 +95,11 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
 		}
 		
-		if (PvSize < 0)
+		/*if (PvSize < 0)
 		{
 			cout << "info string ERROR: pv size is 0\n";
 			return CONS_NULLMOVE;
-		}
+		}*/
 		ply = 0;
 		return bestmove;
 	}
@@ -183,11 +183,11 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 		cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
 	}
 	//cout << bestmove.toString() << " " << firstguess << endl;
-	if (PvSize < 0)
+	/*if (PvSize < 0)
 	{
 		cout << "info string ERROR: principal variation size is 0\n";
 		return CONS_NULLMOVE;
-	}
+	}*/
 	//Move bestmove = PrincipalVariation[0];
 	ply = 0;
 	return bestmove;
@@ -214,8 +214,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	if (depth == 0)
 	{
 		int value = QuiescenceSearchStandPat(alpha, beta); //go to quiescence
-		if (value > alpha && value < beta)
-			PvSize = ply - 1;
+		/*if (value > alpha && value < beta)
+			PvSize = ply - 1;*/
 		//Table.Save(pos.TTKey,0,value,TT_EXACT,CONS_NULLMOVE);
 		return value;
 	}
