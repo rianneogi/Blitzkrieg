@@ -93,7 +93,7 @@ Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiop
 Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
 Score KingBetweenRooksPenalty = 10; //not implemented
 
-const int AttackWeights[6] = {1,6,2,5,5,0};
+const int AttackWeights[6] = {1,3,2,4,5,0};
 Score SafetyTable[512];
 
 //Pawn Structure

@@ -174,8 +174,8 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 				cout << PrincipalVariation[j].toString() << " ";
 			}*/
 		}
-		//PrincipalVariation = line;
-		bestmove = line.at(line.size()-1);
+		PrincipalVariation = line;
+		bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
 	}
 	if (print)
 	{
