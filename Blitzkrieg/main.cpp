@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 307;
+const int ENGINEVERSION = 308;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 308 - 24-12-2015 - No longer reduces attack units if opponent has no queen
 // Build 307 - 24-12-2015 - Reduced reduction of attack units if opponent has no queen
 // Build 306 - 24-12-2015 - Reduced king attack units if opponent has no queen
 // Build 305 - 24-12-2015 - Fixed an issue in PV sorting
