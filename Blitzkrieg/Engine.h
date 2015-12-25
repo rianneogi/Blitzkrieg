@@ -35,6 +35,7 @@ class Engine
 	long HistoryScores[64][64];
 	Move Threats[100];
 	bool incheck[100];
+	int Evaluation[100];
 	//int KillerScores[2][100];
 	int ply;
 	int SelectiveDepth;

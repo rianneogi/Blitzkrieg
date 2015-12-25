@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 309;
+const int ENGINEVERSION = 310;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 310 - 26-12-2015 - Lowered reduction where leaf score is improving, added max slope to King Safety Table
 // Build 309 - 25-12-2015 - Undid last change, added maximum slope for King Safety Table
 // Build 308 - 24-12-2015 - No longer reduces attack units if opponent has no queen
 // Build 307 - 24-12-2015 - Reduced reduction of attack units if opponent has no queen

@@ -27,19 +27,20 @@ void Interface::UCI()
 	cout << "uciok" << endl;
 	cout << "info string " << ENGINENAME << " " << ENGINEVERSION << endl;
 	string str = "";
-	char cp[5000];
+	//char cp[5000];
+	cout.setf(ios::unitbuf);// Make sure that the outputs are sent straight away to the GUI
 	while(true)
 	{
 		str = "";
-		fgets(cp,sizeof(cp),stdin);
+		/*fgets(cp,sizeof(cp),stdin);
 		for(int i = 0;cp[i]!='\0' && cp[i]!='\n';i++)
 		{
 			str += cp[i];
-		}
-		//cin >> str;
-		//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}*/
+		getline(cin, str);
+		cout << "we have string " << str << endl;
 		string s = getStringToken(str,' ',1);
-		if(s=="isready")
+		if(s=="isready" || str=="isready")
 		{
 			cout << "readyok" << endl;
 		}
@@ -194,7 +195,14 @@ void Interface::UCI()
 		{
 			info();
 		}
-		fflush(stdin);
+		else if (s == "ping")
+		{
+			int d;
+			cin >> d;
+			cout << "pong " << d << endl;
+		}
+		//fflush(stdin);
+		cout << "done processing " << str << endl;
 	}
 }
 
@@ -252,6 +260,8 @@ void Interface::start()
     string s;
     while(true)
     {
+		UCI();
+		break;
         cout << "System is ready..." << endl;
         if(board.pos.turn == COLOR_WHITE)
         {

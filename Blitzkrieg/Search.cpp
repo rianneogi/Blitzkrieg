@@ -255,22 +255,22 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		}
 	}
 
-	int leafeval = 0;
+	//int leafeval = 0;
 	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
 	if (leafevalprobe != CONS_TTUNKNOWN)
 	{
-		leafeval = probe; //use TT probe as a better leafeval
+		Evaluation[ply] = probe; //use TT probe as a better leafeval
 	}
 	else
 	{
-		leafeval = LeafEval<false>();
+		Evaluation[ply] = LeafEval<false>();
 	}
 
 	if (!dopv && ply != 0 && depth < 4 && !incheck[ply] &&
-		(((leafeval + getRazorMargin(depth)) <= alpha))) //razoring
+		(((Evaluation[ply] + getRazorMargin(depth)) <= alpha))) //razoring
 	{
 		prunednodes++;
-		if (depth <= 1 && (leafeval + getRazorMargin(3)) <= alpha)
+		if (depth <= 1 && (Evaluation[ply] + getRazorMargin(3)) <= alpha)
 			return QuiescenceSearchStandPat(alpha, beta);
 
 		int ralpha = alpha - getRazorMargin(depth);
@@ -279,10 +279,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			return v;
 	}
 
-	if (depth < 5 && ply != 0 && !incheck[ply] && ((leafeval - getFutilityMargin(depth)) >= beta)) //futility pruning
+	if (depth < 5 && ply != 0 && !incheck[ply] && ((Evaluation[ply] - getFutilityMargin(depth)) >= beta)) //futility pruning
 	{
 		futilitynodes++;
-		return (leafeval - getFutilityMargin(depth));
+		return (Evaluation[ply] - getFutilityMargin(depth));
 	}
 
 	int bound = TT_ALPHA;
@@ -306,7 +306,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		)
 	{
 		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
-		int R = ((823 + 67 * depth) / 256 + std::min(max(0, leafeval - beta) / PieceMaterial[PIECE_PAWN], 3));
+		int R = ((823 + 67 * depth) / 256 + std::min(max(0, Evaluation[ply] - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
 		ply++;
 
@@ -389,6 +389,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	{
 		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
 	}	
+
+	bool improving = ply<2 || (Evaluation[ply]>Evaluation[ply - 2]);
 
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
@@ -493,7 +495,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& m!=Threats[ply]
 			)
 		{
-			reductiondepth += min(depth-4,5);
+			if (improving)
+				reductiondepth += min(depth - 4, 4);
+			else
+				reductiondepth += min(depth - 4, 5);
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
