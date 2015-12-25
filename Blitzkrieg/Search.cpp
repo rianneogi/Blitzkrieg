@@ -175,7 +175,7 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 			}*/
 		}
 		PrincipalVariation = line;
-		bestmove = PrincipalVariation.at(PrincipalVariation.size()-1);
+		bestmove = line.at(line.size()-1);
 	}
 	if (print)
 	{

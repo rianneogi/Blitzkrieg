@@ -952,8 +952,8 @@ template<bool Trace> int Engine::LeafEval()
 		cout << endl << "King Attack Evaluation:" << endl;
 	for(int i = 0;i<2;i++)
 	{
-		//if (pos.Pieces[getOpponent(i)][PIECE_QUEEN] == 0)
-		//	KingAttackUnits[i] = (3*KingAttackUnits[i])/4; //reduce attack units if opponent has no queen
+		if (pos.Pieces[getOpponent(i)][PIECE_QUEEN] == 0)
+			KingAttackUnits[i] = (3*KingAttackUnits[i])/4; //reduce attack units if opponent has no queen
 		KingSafety[i] -= SafetyTable[min(511,(int)KingAttackUnits[i])];
 		if (Trace)
 		{
@@ -1241,9 +1241,11 @@ void evalinit()
 				cout << endl;*/
 		}
 	}
+	int t = 0;
 	for (int i = 0;i < 512;i++)
 	{
-		SafetyTable[i] = S(min(512, (int)(0.025*i*i)), 0);
+		t = min(512, (int)min((0.025*i*i), t + 7.5));
+		SafetyTable[i] = S(t, 0);
 	}
 	scaleConstants();
 }
