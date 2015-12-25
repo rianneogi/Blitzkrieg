@@ -19,7 +19,7 @@ int LazyEval1 = 400;
 //int EnemyTerritorySquareBonus = 3;
 
 const Scale KingSafetyFactor(1, 0);
-const Scale PawnStructureFactor(0.35, 0.7);
+const Scale PawnStructureFactor(0.35, 0.35);
 const Scale PassedPawnFactor(0.5, 1);
 const Scale MobilityFactor(1, 1);
 const Scale OutpostFactor(1, 0.5);
@@ -75,7 +75,7 @@ Score RookOpenBonus[8] = { 10,10,15,20,20,15,10,10 };
 Score RookConnectedBonus = S(5, 15);
 
 //Queen
-Score QueenOutEarlyPenalty = S(4,0); //penalty for queens not on back rank for every minor on back rank
+Score QueenOutEarlyPenalty = S(2,0); //penalty for queens not on back rank for every minor on back rank
 
 //extra bonus based on tension between minor pieces
 Score KnightAttacksBishopBonus = S(6, 12);

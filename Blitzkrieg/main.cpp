@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 311;
+const int ENGINEVERSION = 312;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 312 - 26-12-2015 - Reduced Queen out penalty and reduced pawn structure factor in endgame
 // Build 311 - 26-12-2015 - Increased max slope of King Safety Table
 // Build 310 - 26-12-2015 - Lowered reduction where leaf score is improving, added max slope to King Safety Table and increased slope
 // Build 309 - 25-12-2015 - Undid last change, added maximum slope for King Safety Table

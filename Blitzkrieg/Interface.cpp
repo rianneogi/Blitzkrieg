@@ -38,7 +38,6 @@ void Interface::UCI()
 			str += cp[i];
 		}*/
 		getline(cin, str);
-		cout << "we have string " << str << endl;
 		string s = getStringToken(str,' ',1);
 		if(s=="isready" || str=="isready")
 		{
@@ -202,7 +201,6 @@ void Interface::UCI()
 			cout << "pong " << d << endl;
 		}
 		//fflush(stdin);
-		cout << "done processing " << str << endl;
 	}
 }
 
