@@ -1244,7 +1244,7 @@ void evalinit()
 	int t = 0;
 	for (int i = 0;i < 512;i++)
 	{
-		t = min(512, (int)min((0.05*i*i), t + 25.0));
+		t = min(512, (int)min((0.05*i*i), t + 100.0));
 		SafetyTable[i] = S(t, 0);
 	}
 	scaleConstants();
