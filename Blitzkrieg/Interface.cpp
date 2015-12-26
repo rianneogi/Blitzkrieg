@@ -164,14 +164,14 @@ void Interface::UCI()
 				}
 			}
 		}
+		else if (s == "move" || s == "makemove" || s == "playmove")
+		{
+			makeMove(getStringToken(str, ' ', 2));
+		}
 		else if(s=="display")
 		{
 			e1.pos.display(0);
 		}
-		/*else if(s=="debug")
-		{
-			DEBUG = !DEBUG;
-		}*/
 		else if (s == "trace")
 		{
 			cout << e1.LeafEval<true>() << endl;
@@ -221,10 +221,15 @@ void Interface::UCI()
 		{
 			cout << "ply = " << e1.ply << endl;
 			cout << "pv size: " << e1.PrincipalVariation.size() << endl;
-			for (int i = 0;i < e1.PrincipalVariation.size();i++)
+			for (int i = e1.PrincipalVariation.size()-1;i >= 0;i--)
 			{
 				cout << e1.PrincipalVariation.at(i).toString() << endl;
 			}
+		}
+		else if (s == "probe")
+		{
+			cout << Table.Probe(e1.pos.TTKey, 0, CONS_NEGINF, CONS_INF) << endl;
+			cout << Table.getBestMove(e1.pos.TTKey).toString() << endl;
 		}
 		else if (s == "exit" || s == "quit")
 		{
@@ -260,10 +265,12 @@ void Interface::start()
         {
             display(1);
         }
-        else if(s=="move" || s=="makemove" || s=="playmove")
-        {
-            makeMove();
-        }
+		else if (s == "move" || s == "makemove" || s == "playmove")
+		{
+			string m;
+			cin >> m;
+			makeMove(m);
+		}
 		else if(s=="unmakemove" || s=="unmake" || s=="unmove" || s=="undo")
 		{
 			unmakeMove();
@@ -635,11 +642,8 @@ void Interface::think()
 //	cout << "Time taken: " << c.ElapsedMilliseconds() << endl;
 //}
 
-void Interface::makeMove()
+void Interface::makeMove(string s)
 {
-    string s;
-    //cout << "Enter move:" << endl;
-    cin >> s;
 	if(s=="null")
 	{
 		board.makeMove(createNullMove(board.pos.epsquare));

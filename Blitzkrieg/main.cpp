@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 315;
+const int ENGINEVERSION = 316;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 316 - 26-12-2015 - Changed reduction to be dependant on depth
 // Build 315 - 26-12-2015 - Reduced Razor Margin to 256 and increased threat extension to 2 
 // Build 314 - 26-12-2015 - Reduced reduction depth to 4, reverted Backward pawn condition to Build 313
 // Build 313 - 26-12-2015 - Fixed backward pawn condition, optimized code a bit, cleaned up alot of code

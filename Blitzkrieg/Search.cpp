@@ -14,7 +14,7 @@ const unsigned long long CheckupNodeCount = 2048;
 
 inline int getRazorMargin(int depth)
 {
-	return (256 + 32*depth);
+	return (512 + 32*depth);
 }
 
 inline int getFutilityMargin(int depth)
@@ -128,6 +128,7 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 			//line = deque<Move>();
 			ply = 0;
 			//PvSize = -1;
+			line.clear();
 			val = AlphaBeta(i, alpha, beta, &line, true, true);
 			checkup();
 			//cout << "asp. " << alpha << " " << beta << endl;
@@ -243,7 +244,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			tthitcount++;
 			return probe;
 		}
-		else
+		/*else
 		{
 			ttbestmove = Table.getBestMove(pos.TTKey);
 			if (!ttbestmove.isNullMove())
@@ -252,14 +253,13 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				tthitcount++;
 				return probe;
 			}
-		}
+		}*/
 	}
 
-	//int leafeval = 0;
 	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
 	if (leafevalprobe != CONS_TTUNKNOWN)
 	{
-		Evaluation[ply] = probe; //use TT probe as a better leafeval
+		Evaluation[ply] = leafevalprobe; //use TT probe as a better leafeval
 	}
 	else
 	{
@@ -390,7 +390,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
 	}	
 
-	int chaos = ply >= 2 ? Evaluation[ply] - Evaluation[ply - 2] : 0;
+	int evaldiff = ply >= 2 ? Evaluation[ply] - Evaluation[ply - 2] : 0;
 
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
@@ -495,17 +495,17 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& m!=Threats[ply]
 			)
 		{
-			if (chaos>=0)
-				reductiondepth += min(depth - 4, 4);
+			if (evaldiff>0)
+				reductiondepth += min(depth - 4, max(4,depth/2));
 			else
-				reductiondepth += min(depth - 4, 5);
+				reductiondepth += min(depth - 4, max(5,depth/2));
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
 			}
 			if (m == Threats[ply]) //decrease reduction if move is a threat
 			{
-				reductiondepth = max(reductiondepth - 2, 0);
+				reductiondepth = max(reductiondepth - 1, 0);
 			}
 			//if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
 			//{

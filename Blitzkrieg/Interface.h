@@ -21,7 +21,7 @@ class Interface
     ~Interface();
     void start();
     void display(int flip);
-    void makeMove();
+    void makeMove(string s);
 	void unmakeMove();
 	void think();
     void getMoves();
