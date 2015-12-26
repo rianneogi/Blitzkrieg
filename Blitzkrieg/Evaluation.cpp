@@ -262,6 +262,14 @@ int scaleScore(Score s, int mat)
 	return (s.eg + (s.mg - s.eg)*((float)(mat) / TotalMaterialBothSides));
 }
 
+struct EvalStruct
+{
+	Bitset attackedByPiece[2][6];
+	Bitset attackedByColor[2];
+	int KingSquare[2];
+	Bitset KingRing[2];
+};
+
 template<bool Trace> int Engine::LeafEval()
 {
 	nodes++;
@@ -595,7 +603,7 @@ template<bool Trace> int Engine::LeafEval()
 				if (getRank(getColorMirror(i, k)) < 5)
 				{
 					if (getPawnAttacks(i, getPlus8(i,k))&pos.Pieces[getOpponent(i)][PIECE_PAWN]
-						&& !(getPawnAttacks(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])
+						//&& !(getPawnAttacks(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])
 						//&& pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == SQUARE_EMPTY
 						)
 					{

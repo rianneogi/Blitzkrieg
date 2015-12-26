@@ -14,7 +14,7 @@ const unsigned long long CheckupNodeCount = 2048;
 
 inline int getRazorMargin(int depth)
 {
-	return (512 + 32*depth);
+	return (256 + 32*depth);
 }
 
 inline int getFutilityMargin(int depth)
@@ -390,7 +390,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
 	}	
 
-	bool improving = ply<2 || (Evaluation[ply]>Evaluation[ply - 2]);
+	int chaos = ply >= 2 ? Evaluation[ply] - Evaluation[ply - 2] : 0;
 
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
@@ -495,7 +495,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& m!=Threats[ply]
 			)
 		{
-			if (improving)
+			if (chaos>=0)
 				reductiondepth += min(depth - 4, 4);
 			else
 				reductiondepth += min(depth - 4, 5);
@@ -505,7 +505,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			}
 			if (m == Threats[ply]) //decrease reduction if move is a threat
 			{
-				reductiondepth = max(reductiondepth - 1, 0);
+				reductiondepth = max(reductiondepth - 2, 0);
 			}
 			//if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
 			//{

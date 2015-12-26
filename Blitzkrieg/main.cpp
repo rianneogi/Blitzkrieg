@@ -23,11 +23,13 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 313;
+const int ENGINEVERSION = 315;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 315 - 26-12-2015 - Reduced Razor Margin to 256 and increased threat extension to 2 
+// Build 314 - 26-12-2015 - Reduced reduction depth to 4, reverted Backward pawn condition to Build 313
 // Build 313 - 26-12-2015 - Fixed backward pawn condition, optimized code a bit, cleaned up alot of code
 // Build 312 - 26-12-2015 - Reduced Queen out penalty and reduced pawn structure factor in endgame
 // Build 311 - 26-12-2015 - Increased max slope of King Safety Table

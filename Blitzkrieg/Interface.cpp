@@ -180,76 +180,58 @@ void Interface::UCI()
 		{
 			cout << e1.LeafEval<false>() << endl;
 		}
-		else if (s == "see")
-		{
-			string s2;
-			cin >> s2;
-			int m1 = Sq2Int(s2);
-			cin >> s2;
-			int m2 = Sq2Int(s2);
-			cout << m1 << " " << m2 << " " << Square2Piece[board.pos.Squares[m1]] << Square2Piece[board.pos.Squares[m2]] << endl;
-			cout << e1.StaticExchangeEvaluation(m2, m1, Square2Piece[board.pos.Squares[m1]], board.pos.Squares[m2]) << endl;
-		}
 		else if (s == "info" || s == "information")
 		{
 			info();
 		}
 		else if (s == "ping")
 		{
-			int d;
-			cin >> d;
-			cout << "pong " << d << endl;
+			s = getStringToken(str, ' ', 2);
+			cout << "pong " << atoi(s.c_str()) << endl;
 		}
-		//fflush(stdin);
-	}
-}
-
-void Interface::Winboard()
-{
-	OUTPUT = OUTPUT_XBOARD;
-	cout << endl;
-	string s;
-	bool side = COLOR_WHITE;
-	while(true)
-	{
-		cin >> s;
-		if(s=="new")
+		else if (s == "disp" || s == "display")
 		{
-			e1.pos = Position();
+			display(0);
 		}
-		else if(s=="go")
+		else if (s == "dispflip" || s == "displayflip" || s == "displayflipped")
 		{
-			side = e1.pos.turn;
-			Move m = e1.IterativeDeepening(1000, true);
-			cout << "move " << m.toString() << endl;
+			display(1);
 		}
-		else if(s=="quit")
+		else if (s == "unmakemove" || s == "unmake" || s == "unmove" || s == "undo")
 		{
-			break;
+			unmakeMove();
 		}
-		else if(s=="ping")
+		else if (s == "perft")
 		{
-			int d;
-			cin >> d;
-			cout << "pong " << d << endl;
+			s = getStringToken(str, ' ', 2);
+			int pdepth = atoi(s.c_str());
+			cout << e1.perft(pdepth) << endl;
 		}
-		else
+		else if (s == "movesort")
 		{
-			Move m = String2Move(s);
-			if(!m.isNullMove())
+			vector<Move> vec;
+			e1.pos.generateMoves(vec);
+			for (int i = 0;i < vec.size();i++)
 			{
-				vector<Move> moves;
-				moves.reserve(128);
-				e1.pos.generateMoves(moves);
-				for(int i = 0;i<moves.size();i++)
-				{
-					if(m==moves.at(i))
-					{
-						e1.pos.forceMove(m);
-					}
-				}
+				Move bm = e1.getHighestScoringMove(vec, i);
+				cout << bm.toString() << " " << e1.getMoveScore(bm) << endl;
 			}
 		}
+		else if (s == "pv")
+		{
+			cout << "ply = " << e1.ply << endl;
+			cout << "pv size: " << e1.PrincipalVariation.size() << endl;
+			for (int i = 0;i < e1.PrincipalVariation.size();i++)
+			{
+				cout << e1.PrincipalVariation.at(i).toString() << endl;
+			}
+		}
+		else if (s == "exit" || s == "quit")
+		{
+			exit();
+			break;
+		}
+		//fflush(stdin);
 	}
 }
 
