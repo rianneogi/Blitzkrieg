@@ -15,9 +15,9 @@ extern int SquareValues[64];
 
 enum EvalConstants{CONS_INF = 20000,CONS_NEGINF = -20000, CONS_DRAW = 0, CONS_MATED = -10000};
 enum SortPhases{SORTPHASE_NONE,SORTPHASE_PV,SORTPHASE_HASH,SORTPHASE_GOODCAP,SORTPHASE_KILLER,SORTPHASE_HISTORY,SORTPHASE_BADCAP};
+enum TimeMode{MODE_DEFAULT,MODE_MOVETIME,MODE_INF};
 
 extern int EndgameMaterial;
-extern unsigned long long MAXTIME;
 extern int MAXDEPTH;
 extern const unsigned long long CheckupNodeCount;
 
@@ -25,6 +25,8 @@ class Engine
 {
     public:
     Position pos;
+
+	int timeMode;
 
 	int myColor;
 	vector<Move> PrincipalVariation;
@@ -40,6 +42,7 @@ class Engine
 	int ply;
 	int SelectiveDepth;
 	int SortPhase;
+	uint64_t AllocatedTime;
 
 	//stats
 	unsigned long long nodes;
@@ -73,7 +76,7 @@ class Engine
 	void unmakeMove(Move const& m);
 	
 	//Search.cpp
-	Move IterativeDeepening(unsigned long long movetime, bool print);
+	Move IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, bool print);
 	int AlphaBeta(int depth,int alpha,int beta,vector<Move>* variation,bool cannull,bool dopv);
 	Move getHighestScoringMove(vector<Move>& moves,int currentmove);
 	long long getMoveScore(const Move& m);

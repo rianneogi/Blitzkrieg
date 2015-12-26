@@ -49,59 +49,55 @@ void Interface::UCI()
 		}
 		else if(s=="go")
 		{
-			int time = 0;
+			int wtime = 0;
+			int btime = 0;
+			int winc = 0;
+			int binc = 0;
+			int mode = MODE_DEFAULT;
 			for (int i = 2;;i++)
 			{
 				s = getStringToken(str, ' ', i);
 				if (s == "infinite")
 				{
-					time = -1;
+					wtime = -1;
+					mode = MODE_MOVETIME;
 				}
 				if (s == "movetime")
 				{
-					time = atoi(getStringToken(str, ' ', i+1).c_str());
+					wtime = atoi(getStringToken(str, ' ', i+1).c_str());
+					mode = MODE_MOVETIME;
 					i++;
 				}
 				if (s == "wtime")
 				{
-					if (e1.pos.turn == 0)
-					{
-						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/15);
-					}
+					wtime = atoi(getStringToken(str, ' ', i + 1).c_str());
 					i++;
 				}
 				if (s == "btime")
 				{
-					if (e1.pos.turn == 1)
-					{
-						time = max(1,atoi(getStringToken(str, ' ', i + 1).c_str())/15);
-					}
+					btime = atoi(getStringToken(str, ' ', i + 1).c_str());
 					i++;
 				}
-				/*if (s == "winc")
+				if (s == "winc")
 				{
-					if (e1.pos.turn == 0)
-					{
-						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
-					}
+					winc = atoi(getStringToken(str, ' ', i + 1).c_str());
 					i++;
 				}
 				if (s == "binc")
 				{
-					if (e1.pos.turn == 1)
-					{
-						time += (3*atoi(getStringToken(str, ' ', i + 1).c_str()))/4;
-					}
+					binc = atoi(getStringToken(str, ' ', i + 1).c_str());
 					i++;
-				}*/
+				}
 				if (s == "")
 					break;
 			}
 			
-			if(time==0)
-				time = 1000;
+			if (wtime == 0)
+				wtime = 1000;
+			if (btime == 0)
+				btime = 1000;
 
-			Move m = e1.IterativeDeepening(time, true);
+			Move m = e1.IterativeDeepening(mode, wtime, btime, winc, binc, true);
 			cout << "bestmove " << m.toString() << endl;
 			//e1.pos.forceMove(m);
 		}
@@ -625,7 +621,7 @@ void Interface::think()
 {
 	Clock c;
 	c.Start();
-	e1.IterativeDeepening(1000, true);
+	e1.IterativeDeepening(MODE_MOVETIME, 1000, 0, 0, 0, true);
 	c.Stop();
 	cout << "Time taken: " << c.ElapsedMilliseconds() << endl;
 }

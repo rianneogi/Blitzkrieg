@@ -23,12 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 316;
+const int ENGINEVERSION = 318;
 
 // Best Build so far: 233
 
 ///BUILDS
-// Build 316 - 26-12-2015 - Changed reduction to be dependant on depth
+// Build 318 - 27-12-2015 - Added better time management
+// Build 317 - 27-12-2015 - Increased threat extension to 2 
+// Build 316 - 26-12-2015 - Changed reduction to be dependant on depth, reduced threat extension to 1 
 // Build 315 - 26-12-2015 - Reduced Razor Margin to 256 and increased threat extension to 2 
 // Build 314 - 26-12-2015 - Reduced reduction depth to 4, reverted Backward pawn condition to Build 313
 // Build 313 - 26-12-2015 - Fixed backward pawn condition, optimized code a bit, cleaned up alot of code
@@ -492,7 +494,7 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 			continue;
 		}
 		e.pos.loadFromFEN(s);
-		Move m = e.IterativeDeepening(time, false);
+		Move m = e.IterativeDeepening(MODE_MOVETIME, time, 0, 0, 0, false);
 
 		string bm;
 		if (fenformat == 1)

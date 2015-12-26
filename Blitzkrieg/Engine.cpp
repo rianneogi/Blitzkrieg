@@ -37,6 +37,8 @@ void Engine::initialize()
 	myColor = COLOR_WHITE;
 	pos = Position();
 
+	timeMode = MODE_DEFAULT;
+
 	alphafirst_sum = 0;
 	alphalast_sum = 0;
 	alpha_counter = 0;

@@ -8,7 +8,7 @@ jmp_buf env;
 //int ForwardPruningMargin[4] = { 0,1000,1000,1500};
 //int SmallPruningMargin[8] = { 0, 120, 120, 310, 310, 400, 400, 500 };
 
-unsigned long long MAXTIME = 1000;
+unsigned long long AllocatedTime = 1000;
 int MAXDEPTH = 100;
 const unsigned long long CheckupNodeCount = 2048;
 
@@ -22,25 +22,12 @@ inline int getFutilityMargin(int depth)
 	return (150 * depth);
 }
 
-Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
+Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, bool print)
 {
 	int status = pos.getGameStatus();
 	if(status!=STATUS_NOTOVER)
 	{
-		if(status==STATUS_BLACKMATED || status==STATUS_WHITEMATED)
-		{
-			/*if(alpha>CONS_MATED)
-				return alpha;*/
-			return CONS_NULLMOVE;
-		}
-		if(status==STATUS_STALEMATE)
-		{
-			/*if(alpha>=CONS_DRAW)
-				return alpha;
-			if(beta<=CONS_DRAW)
-				return beta;*/
-			return CONS_NULLMOVE;
-		}
+		return CONS_NULLMOVE;
 	}
 
 	vector<Move> moves;
@@ -51,7 +38,18 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 	//init
 	prepareSearch();
 
-	MAXTIME = movetime;
+	timeMode = mode;
+	if (mode == MODE_MOVETIME)
+	{
+		AllocatedTime = wtime;
+	}
+	else
+	{
+		if (pos.turn == COLOR_WHITE)
+			AllocatedTime = max((uint64_t)1, wtime / 15);
+		else
+			AllocatedTime = max((uint64_t)1, btime / 15);
+	}
 
 	vector<Move> line;
 	line.reserve(128);
@@ -60,6 +58,7 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 	//int score = think(1,CONS_NEGINF,CONS_INF,&line);
 	//PrincipalVariation = line;
 	int val = 0;
+	int lastscore = 0;
 	timer.Start();
 	int takeback = 0;
 	int initialmovenumber = pos.movelist.size();
@@ -157,8 +156,8 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 
 			delta += delta / 2;
 		}
+		lastscore = score;
 		score = val;
-		//firstguess = val;
 		timer.Stop();
 		if (print)
 		{
@@ -177,6 +176,13 @@ Move Engine::IterativeDeepening(unsigned long long movetime, bool print)
 		}
 		PrincipalVariation = line;
 		bestmove = line.at(line.size()-1);
+		if (score > lastscore + 100 || score < lastscore - 100) //score changed? allocate more time
+		{
+			if (pos.turn == COLOR_WHITE)
+				AllocatedTime = min(AllocatedTime + wtime / 30, wtime / 4);
+			else
+				AllocatedTime = min(AllocatedTime + btime / 30, btime / 4);
+		}
 	}
 	if (print)
 	{
@@ -505,7 +511,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			}
 			if (m == Threats[ply]) //decrease reduction if move is a threat
 			{
-				reductiondepth = max(reductiondepth - 1, 0);
+				reductiondepth = max(reductiondepth - 2, 0);
 			}
 			//if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
 			//{
@@ -765,7 +771,7 @@ void Engine::prepareSearch()
 void Engine::checkup()
 {
 	timer.Stop();
-	if(timer.time >= MAXTIME && MAXTIME!=-1)
+	if(timer.time >= AllocatedTime && AllocatedTime!=-1)
 	{
 		//cout << "milliseconds: " << seconds << endl;
 		longjmp(env, timer.time);
