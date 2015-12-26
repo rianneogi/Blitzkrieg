@@ -413,9 +413,6 @@ void Position::forceMove(Move const& m)
 		if(special==PIECE_QUEEN || special==PIECE_KNIGHT || special==PIECE_ROOK || special==PIECE_BISHOP) //promotion
 		{
 			OccupiedSq ^= getPos2Bit(from);
-			/*OccupiedSq45 ^= getPos2Bit(getturn45(from));
-			OccupiedSq135 ^= getPos2Bit(getturn135(from));
-			OccupiedSq90 ^= getPos2Bit(getturn90(from));*/
 			Pieces[turn][movingpiece] ^= getPos2Bit(from);
 			Pieces[getOpponent(turn)][getSquare2Piece(capturedpiece)] ^= getPos2Bit(to);
 			Pieces[turn][special] |= getPos2Bit(to);
@@ -428,9 +425,6 @@ void Position::forceMove(Move const& m)
 		else
 		{
 			OccupiedSq ^= getPos2Bit(from);
-			/*OccupiedSq45 ^= getPos2Bit(getturn45(from));
-			OccupiedSq135 ^= getPos2Bit(getturn135(from));
-			OccupiedSq90 ^= getPos2Bit(getturn90(from));*/
 			Pieces[turn][movingpiece] ^= m.getbit();
 			Pieces[getOpponent(turn)][getSquare2Piece(capturedpiece)] ^= getPos2Bit(to);
 			Squares[to] = Squares[from];
@@ -443,9 +437,6 @@ void Position::forceMove(Move const& m)
 	else if(special==PIECE_QUEEN || special==PIECE_KNIGHT || special==PIECE_ROOK || special==PIECE_BISHOP) //promotion
 	{
 		OccupiedSq ^= m.getbit();
-		/*OccupiedSq45 ^= m.getbit45();
-		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();*/
 		Pieces[turn][movingpiece] ^= getPos2Bit(from);
 		Pieces[turn][special] |= getPos2Bit(to);
 		Squares[to] = getPiece2Square(special,turn);
@@ -457,9 +448,6 @@ void Position::forceMove(Move const& m)
 	{
 		Bitset bit = m.getbit();
 		OccupiedSq ^= bit;
-		/*OccupiedSq45 ^= m.getbit45();
-		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();*/
 		Pieces[turn][movingpiece] ^= bit;
 		Squares[to] = Squares[from];
 		Squares[from] = SQUARE_EMPTY;
@@ -503,9 +491,6 @@ void Position::forceMove(Move const& m)
         Bitset cas135 = getPos2Bit(getturn135(f)) | getPos2Bit(getturn135(t));
         Bitset cas90 = getPos2Bit(getturn90(f)) | getPos2Bit(getturn90(t));
         OccupiedSq ^= cas;
-        /*OccupiedSq45 ^= cas45;
-        OccupiedSq135 ^= cas135;
-        OccupiedSq90 ^= cas90;*/
         Pieces[turn][PIECE_ROOK] ^= cas;
         Squares[t] = Squares[f];
         Squares[f] = SQUARE_EMPTY;
@@ -515,23 +500,10 @@ void Position::forceMove(Move const& m)
     }
 	else if(special==PIECE_PAWN) //en passant
     {
-        int x = 0;
-        if(turn==COLOR_WHITE)
-        {
-            x = getMinus8(to);
-			Pieces[COLOR_BLACK][PIECE_PAWN] ^= getPos2Bit(x);
-			TTKey ^= TT_PieceKey[COLOR_BLACK][PIECE_PAWN][x];
-        }
-        else
-        {
-            x = getPlus8(to);
-			Pieces[COLOR_WHITE][PIECE_PAWN] ^= getPos2Bit(x);
-			TTKey ^= TT_PieceKey[COLOR_WHITE][PIECE_PAWN][x];
-        }
+        int x = getMinus8(turn,to);
+		Pieces[getOpponent(turn)][PIECE_PAWN] ^= getPos2Bit(x);
+		TTKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][x];
         OccupiedSq ^= getPos2Bit(x);
-        /*OccupiedSq45 ^= getPos2Bit(getturn45(x));
-        OccupiedSq135 ^= getPos2Bit(getturn135(x));
-        OccupiedSq90 ^= getPos2Bit(getturn90(x));*/
         Squares[x] = SQUARE_EMPTY;
     }
 
@@ -597,13 +569,13 @@ void Position::forceMove(Move const& m)
 		if(turn==COLOR_WHITE && getRank(int(from))==1 && getRank(int(to))==3)
 		{
 			TTKey ^= TT_EPKey[epsquare];
-			epsquare = getPlus8(from);
+			epsquare = getPlus8(COLOR_WHITE,from);
 			TTKey ^= TT_EPKey[epsquare];
 		}
 		else if(turn==COLOR_BLACK && getRank(int(from))==6 && getRank(int(to))==4)
 		{
 			TTKey ^= TT_EPKey[epsquare];
-			epsquare = getPlus8(to);
+			epsquare = getPlus8(COLOR_WHITE,to);
 			TTKey ^= TT_EPKey[epsquare];
 		}
 		else if(epsquare!=0)
@@ -647,10 +619,7 @@ void Position::forceMove(Move const& m)
 	{
 		if (special == PIECE_PAWN)
 		{
-			if(turn==COLOR_WHITE)
-				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getMinus8(to)];
-			else
-				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getPlus8(to)];
+			PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getMinus8(turn,to)];
 		}
 		else
 		{
@@ -703,9 +672,6 @@ void Position::unmakeMove(Move const& m)
 		if(special==PIECE_QUEEN || special==PIECE_KNIGHT || special==PIECE_ROOK || special==PIECE_BISHOP) //promotion
 		{
 			OccupiedSq |= getPos2Bit(from);
-			/*OccupiedSq45 |= getPos2Bit(getturn45(from));
-			OccupiedSq135 |= getPos2Bit(getturn135(from));
-			OccupiedSq90 |= getPos2Bit(getturn90(from));*/
 			Pieces[turn][getSquare2Piece(capturedpiece)] |= getPos2Bit(to);
 
 			TTKey ^= TT_PieceKey[turn][getSquare2Piece(capturedpiece)][to];
@@ -725,9 +691,6 @@ void Position::unmakeMove(Move const& m)
 		else
 		{
 			OccupiedSq |= getPos2Bit(from);
-			/*OccupiedSq45 |= getPos2Bit(getturn45(from));
-			OccupiedSq135 |= getPos2Bit(getturn135(from));
-			OccupiedSq90 |= getPos2Bit(getturn90(from));*/
 			Pieces[turn][getSquare2Piece(capturedpiece)] |= getPos2Bit(to);
 
 			TTKey ^= TT_PieceKey[turn][getSquare2Piece(capturedpiece)][to];
@@ -747,9 +710,6 @@ void Position::unmakeMove(Move const& m)
 	{
 		Bitset bit = m.getbit();
 		OccupiedSq ^= bit;
-		/*OccupiedSq45 ^= m.getbit45();
-		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();*/
 
 		turn = getOpponent(turn);
 		TTKey ^= TT_ColorKey;
@@ -766,9 +726,6 @@ void Position::unmakeMove(Move const& m)
 	else
 	{
 		OccupiedSq ^= bit;
-		/*OccupiedSq45 ^= m.getbit45();
-		OccupiedSq135 ^= m.getbit135();
-		OccupiedSq90 ^= m.getbit90();*/
 
 		turn = getOpponent(turn);
 		TTKey ^= TT_ColorKey;
@@ -816,9 +773,6 @@ void Position::unmakeMove(Move const& m)
         Bitset cas135 = getPos2Bit(getturn135(f)) | getPos2Bit(getturn135(t));
         Bitset cas90 = getPos2Bit(getturn90(f)) | getPos2Bit(getturn90(t));
         OccupiedSq ^= cas;
-        /*OccupiedSq45 ^= cas45;
-        OccupiedSq135 ^= cas135;
-        OccupiedSq90 ^= cas90;*/
         Pieces[turn][PIECE_ROOK] ^= cas;
         Squares[f] = Squares[t];
         Squares[t] = SQUARE_EMPTY;
@@ -828,25 +782,11 @@ void Position::unmakeMove(Move const& m)
     }
 	else if(special==PIECE_PAWN) //en passant
     {
-        int x = 0;
-        if(turn==COLOR_WHITE)
-        {
-            x = getMinus8(to);
-			Pieces[COLOR_BLACK][PIECE_PAWN] ^= getPos2Bit(x);
-			Squares[x] = SQUARE_BLACKPAWN;
-			TTKey ^= TT_PieceKey[COLOR_BLACK][PIECE_PAWN][x];
-        }
-        else
-        {
-            x = getPlus8(to);
-			Pieces[COLOR_WHITE][PIECE_PAWN] ^= getPos2Bit(x);
-			Squares[x] = SQUARE_WHITEPAWN;
-			TTKey ^= TT_PieceKey[COLOR_WHITE][PIECE_PAWN][x];
-        }
+        int x = getMinus8(turn,to);
+		Pieces[getOpponent(turn)][PIECE_PAWN] ^= getPos2Bit(x);
+		Squares[x] = getPiece2Square(PIECE_PAWN,getOpponent(turn));
+		TTKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][x];
         OccupiedSq ^= getPos2Bit(x);
-        /*OccupiedSq45 ^= getPos2Bit(getturn45(x));
-        OccupiedSq135 ^= getPos2Bit(getturn135(x));
-        OccupiedSq90 ^= getPos2Bit(getturn90(x));*/
     }
 
 	int wkc = m.getWKC();
@@ -891,10 +831,7 @@ void Position::unmakeMove(Move const& m)
 	{
 		if (special == PIECE_PAWN)
 		{
-			if (turn == COLOR_WHITE)
-				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getMinus8(to)];
-			else
-				PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getPlus8(to)];
+			PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][getMinus8(turn,to)];
 		}
 		else
 			PawnKey ^= TT_PieceKey[getOpponent(turn)][PIECE_PAWN][to];
@@ -1037,20 +974,6 @@ void Position::generateMoves(vector<Move>& moves) const
 
         //Pawn Attacks
         Bitset x = 0x0;
-        /*if(turn==COLOR_WHITE)
-		{
-			if(epsquare==0)
-				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_BLACK]);
-			else
-				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_BLACK] | getPos2Bit(epsquare));
-		}
-        else
-		{
-			if(epsquare==0)
-				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_WHITE]);
-			else
-				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_WHITE] | getPos2Bit(epsquare));
-		}*/
 		if(epsquare==0)
 			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)]);
 		else
@@ -1079,14 +1002,6 @@ void Position::generateMoves(vector<Move>& moves) const
 				addMove(moves,mov);
 			}
         }
-		/*if(epsquare!=0)
-		{ 
-			if((getPawnAttacks(turn,n)&getPos2Bit(epsquare)))
-			{
-				Move mov(n,epsquare,PIECE_PAWN,SQUARE_EMPTY,PIECE_PAWN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-				addMove(moves,mov);
-			}
-		}*/
     }
     //Knight Moves
     b = Pieces[turn][PIECE_KNIGHT];
@@ -1130,8 +1045,6 @@ void Position::generateMoves(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-        /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
-        m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
 		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
@@ -1170,10 +1083,6 @@ void Position::generateMoves(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-        /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
-        m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
-        m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
-        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
 		Bitset m = getQueenAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
@@ -1214,24 +1123,6 @@ void Position::generateMoves(vector<Move>& moves) const
             addMove(moves,mov);
         }
     }
-
-	//sort
-	/*for(unsigned int i = 0;i<moves.size();i++)
-	{
-		for(unsigned int j = 0; j<moves.size()-1-i;j++)
-		{
-			Move a = moves.at(j);
-			Move b = moves.at(j+1);
-			if(a<b)
-			{
-				moves.at(j) = b;
-				moves.at(j+1) = a;
-			}
-		}
-	}*/
-
-	//sortMoves(moves,turn);
-	//return moves;
 }
 
 void Position::generateCaptures(vector<Move>& moves) const
@@ -1331,8 +1222,6 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-        /*Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
-        m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);*/
 		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
@@ -1352,8 +1241,6 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-        /*Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
-        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);*/
 		Bitset m = getBishopAttacks(n, OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
@@ -1384,24 +1271,6 @@ void Position::generateCaptures(vector<Move>& moves) const
             addMove(moves,mov);
         }
     }
-
-	//sort
-	/*for(unsigned int i = 0;i<moves.size();i++)
-	{
-		for(unsigned int j = 0; j<moves.size()-1-i;j++)
-		{
-			Move a = moves.at(j);
-			Move b = moves.at(j+1);
-			if(a<b)
-			{
-				moves.at(j) = b;
-				moves.at(j+1) = a;
-			}
-		}
-	}*/
-
-	//sortMoves(moves,turn);
-	//return moves;
 }
 
 void Position::addMove(std::vector<Move>& vec,Move const& m) const
@@ -1461,23 +1330,15 @@ int Position::getSmallestAttacker2(int turn,int n)
 		return PIECE_KNIGHT;
 	}
 	b = getBishopAttacks(n, OccupiedSq)&Pieces[turn][PIECE_BISHOP];
-	/*b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&Pieces[turn][PIECE_BISHOP];
-    b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&Pieces[turn][PIECE_BISHOP];*/
 	if(b!=0)
 	{
 		return PIECE_BISHOP;
 	}
 	b = getRookAttacks(n, OccupiedSq)&Pieces[turn][PIECE_ROOK];
-    /*b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&Pieces[turn][PIECE_ROOK];
-    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&Pieces[turn][PIECE_ROOK];*/
 	if(b!=0)
 	{
 		return PIECE_ROOK;
 	}
-	/*b |= BishopA1H8Moves[n][(OccupiedSq135>>Diagonal[turn135[n]])&0xff]&Pieces[turn][PIECE_QUEEN];
-    b |= BishopA8H1Moves[n][(OccupiedSq45>>Diagonal[turn45[n]])&0xff]&Pieces[turn][PIECE_QUEEN];
-	b |= RookRankMoves[n][(OccupiedSq>>(RankOffset[n]))&0xff]&Pieces[turn][PIECE_QUEEN];
-    b |= RookFileMoves[n][(OccupiedSq90>>(FileOffset[n]))&0xff]&Pieces[turn][PIECE_QUEEN];*/
 	b = getQueenAttacks(n, OccupiedSq)&Pieces[turn][PIECE_QUEEN];
 	if(b!=0)
 	{
@@ -1696,382 +1557,3 @@ void Position::display(int flip)
     }
     cout << endl;
 }
-
-//int getSquare2Piece(int sq)
-//{
-//	return ((sq-1)%6);
-//}
-//
-//int getPiece2Square(int p,int color)
-//{
-//	if(color==COLOR_WHITE)
-//	{
-//		return p+1;
-//	}
-//	else
-//	{
-//		return p+7;
-//	}
-//}
-//
-//int getSquare2Color(int sq)
-//{
-//	return ((sq-1)/6);
-//}
-
-///OLD FUNCTIONS
-//std::vector<Move> Position::generateMoves2()
-//{
-//    std::vector<Move> moves(0);
-//
-//    Bitset ColorPieces[2];
-//
-//    ColorPieces[COLOR_WHITE] = Pieces[COLOR_WHITE][PIECE_PAWN] | Pieces[COLOR_WHITE][PIECE_KNIGHT] |
-//                         Pieces[COLOR_WHITE][PIECE_BISHOP] | Pieces[COLOR_WHITE][PIECE_ROOK] |
-//                         Pieces[COLOR_WHITE][PIECE_QUEEN] | Pieces[COLOR_WHITE][PIECE_KING];
-//    ColorPieces[COLOR_BLACK] = Pieces[COLOR_BLACK][PIECE_PAWN] | Pieces[COLOR_BLACK][PIECE_KNIGHT] |
-//                         Pieces[COLOR_BLACK][PIECE_BISHOP] | Pieces[COLOR_BLACK][PIECE_ROOK] |
-//                         Pieces[COLOR_BLACK][PIECE_QUEEN] | Pieces[COLOR_BLACK][PIECE_KING];
-//
-//    Bitset b;
-//    //Pawn Moves
-//    b = Pieces[turn][PIECE_PAWN];
-//    while(b)
-//    {
-//        int n = firstOf(b);
-//        if(n==-1)
-//        {
-//            break;
-//        }
-//        b^=getPos2Bit(n);
-//        Bitset m = getPawnMoves(turn,n)&(getPawnMoves(turn,n)^OccupiedSq);
-//        while(m)
-//        {
-//            int k = firstOf(m);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            m^=getPos2Bit(k);
-//			if(getRank(k)==7 || getRank(k)==0) //promotion
-//			{
-//				Move movq(n,k,PIECE_PAWN,Squares[k],PIECE_QUEEN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movq);
-//				Move movn(n,k,PIECE_PAWN,Squares[k],PIECE_KNIGHT,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movn);
-//				Move movr(n,k,PIECE_PAWN,Squares[k],PIECE_ROOK,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movr);
-//				Move movb(n,k,PIECE_PAWN,Squares[k],PIECE_BISHOP,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movb);
-//			}
-//			else
-//			{
-//				Move mov(n,k,PIECE_PAWN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//        }
-//		//double moves
-//		if(turn==COLOR_WHITE)
-//		{
-//			if(n==8 && Squares[16]==SQUARE_EMPTY && Squares[24]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,24,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==9 && Squares[17]==SQUARE_EMPTY && Squares[25]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,25,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==10 && Squares[18]==SQUARE_EMPTY && Squares[26]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,26,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==11 && Squares[19]==SQUARE_EMPTY && Squares[27]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,27,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==12 && Squares[20]==SQUARE_EMPTY && Squares[28]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,28,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==13 && Squares[21]==SQUARE_EMPTY && Squares[29]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,29,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==14 && Squares[22]==SQUARE_EMPTY && Squares[30]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,30,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==15 && Squares[23]==SQUARE_EMPTY && Squares[31]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,31,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//		}
-//		else
-//		{
-//			if(n==48 && Squares[40]==SQUARE_EMPTY && Squares[32]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,32,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==49 && Squares[41]==SQUARE_EMPTY && Squares[33]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,33,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==50 && Squares[42]==SQUARE_EMPTY && Squares[34]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,34,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==51 && Squares[43]==SQUARE_EMPTY && Squares[35]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,35,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==52 && Squares[44]==SQUARE_EMPTY && Squares[36]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,36,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==53 && Squares[45]==SQUARE_EMPTY && Squares[37]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,37,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==54 && Squares[46]==SQUARE_EMPTY && Squares[38]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,38,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//			else if(n==55 && Squares[47]==SQUARE_EMPTY && Squares[39]==SQUARE_EMPTY)
-//			{
-//				Move mov(n,39,PIECE_PAWN,SQUARE_EMPTY,PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//		}
-//
-//        //Pawn Attacks
-//        Bitset x = 0x0;
-//        if(turn==COLOR_WHITE)
-//		{
-//			if(epsquare==0)
-//				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_BLACK]);
-//			else
-//				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_BLACK] | getPos2Bit(epsquare));
-//		}
-//        else
-//		{
-//			if(epsquare==0)
-//				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_WHITE]);
-//			else
-//				x = getPawnAttacks(turn,n)&(ColorPieces[COLOR_WHITE] | getPos2Bit(epsquare));
-//		}
-//        while(x)
-//        {
-//            int k = firstOf(x);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            x^=getPos2Bit(k);
-//			if(getRank(k)==7 || getRank(k)==0) //promotion
-//			{
-//				Move movq(n,k,PIECE_PAWN,Squares[k],PIECE_QUEEN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movq);
-//				Move movn(n,k,PIECE_PAWN,Squares[k],PIECE_KNIGHT,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movn);
-//				Move movr(n,k,PIECE_PAWN,Squares[k],PIECE_ROOK,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movr);
-//				Move movb(n,k,PIECE_PAWN,Squares[k],PIECE_BISHOP,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,movb);
-//			}
-//			else
-//			{
-//				Move mov(n,k,PIECE_PAWN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				if(k==epsquare && epsquare!=0)
-//					mov = Move(n,k,PIECE_PAWN,Squares[k],PIECE_PAWN,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//				addMove(moves,mov);
-//			}
-//        }
-//    }
-//    //Knight Moves
-//    b = Pieces[turn][PIECE_KNIGHT];
-//    while(b)
-//    {
-//        int n = firstOf(b);
-//        if(n==-1)
-//        {
-//            break;
-//        }
-//        b^=getPos2Bit(n);
-//        Bitset m = getKnightMoves(n)&(getKnightMoves(n)^ColorPieces[turn]);
-//        while(m)
-//        {
-//            int k = firstOf(m);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            m^=getPos2Bit(k);
-//            Move mov(n,k,PIECE_KNIGHT,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//    //King Moves
-//    b = Pieces[turn][PIECE_KING];
-//    while(b)
-//    {
-//        int n = firstOf(b);
-//        if(n==-1)
-//        {
-//            break;
-//        }
-//        b^=getPos2Bit(n);
-//        Bitset m = getKingMoves(n)&(getKingMoves(n)^ColorPieces[turn]);
-//        while(m)
-//        {
-//            int k = firstOf(m);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            m^=getPos2Bit(k);
-//            Move mov(n,k,PIECE_KING,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//
-//    //Rook Moves
-//    b = Pieces[turn][PIECE_ROOK];
-//    while(b)
-//    {
-//        int n = firstOf(b);
-//        if(n==-1)
-//        {
-//            break;
-//        }
-//        b^=getPos2Bit(n);
-//        Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
-//        m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
-//        m &= m^ColorPieces[turn];
-//        while(m)
-//        {
-//            int k = firstOf(m);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            m^=getPos2Bit(k);
-//            Move mov(n,k,PIECE_ROOK,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//
-//    //Bishop Moves
-//    b = Pieces[turn][PIECE_BISHOP];
-//    while(b)
-//    {
-//        int n = firstOf(b);
-//        if(n==-1)
-//        {
-//            break;
-//        }
-//        b^=getPos2Bit(n);
-//        Bitset m = getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
-//        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);
-//        m = m&(m^ColorPieces[turn]);
-//        while(m)
-//        {
-//            int k = firstOf(m);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            m^=getPos2Bit(k);
-//            Move mov(n,k,PIECE_BISHOP,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//
-//    //Queen Moves
-//    b = Pieces[turn][PIECE_QUEEN];
-//    while(b)
-//    {
-//        int n = firstOf(b);
-//        if(n==-1)
-//        {
-//            break;
-//        }
-//        b^=getPos2Bit(n);
-//        Bitset m = getRookRankMoves(n,(OccupiedSq>>(getRankOffset(n)))&0xff);
-//        m |= getRookFileMoves(n,(OccupiedSq90>>(getFileOffset(n)))&0xff);
-//        m |= getBishopA1H8Moves(n,(OccupiedSq135>>getDiag(getturn135(n)))&0xff);
-//        m |= getBishopA8H1Moves(n,(OccupiedSq45>>getDiag(getturn45(n)))&0xff);
-//        m = m&(m^ColorPieces[turn]);
-//        while(m)
-//        {
-//            int k = firstOf(m);
-//            if(k==-1)
-//            {
-//                break;
-//            }
-//            m^=getPos2Bit(k);
-//            Move mov(n,k,PIECE_QUEEN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//
-//    //Castling
-//    if(turn==COLOR_WHITE)
-//    {
-//        if(castling[turn][CASTLE_KINGSIDE] && !isAttacked(turn,3) && !isAttacked(turn,2) && !isAttacked(turn,1) && 
-//			Squares[2]==SQUARE_EMPTY && Squares[1]==SQUARE_EMPTY)
-//        {
-//            Move mov(3,1,PIECE_KING,SQUARE_EMPTY,PIECE_KING,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//        if(castling[turn][CASTLE_QUEENSIDE] && !isAttacked(turn,3) && !isAttacked(turn,4) && !isAttacked(turn,5) && 
-//			Squares[4]==SQUARE_EMPTY && Squares[5]==SQUARE_EMPTY)
-//        {
-//            Move mov(3,5,PIECE_KING,SQUARE_EMPTY,PIECE_KING,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//    else
-//    {
-//        if(castling[turn][CASTLE_KINGSIDE] && !isAttacked(turn,59) && !isAttacked(turn,58) && !isAttacked(turn,57) && Squares[58]==SQUARE_EMPTY && Squares[57]==SQUARE_EMPTY)
-//        {
-//            Move mov(59,57,PIECE_KING,SQUARE_EMPTY,PIECE_KING,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//        if(castling[turn][CASTLE_QUEENSIDE] && !isAttacked(turn,59) && !isAttacked(turn,60) && !isAttacked(turn,61) && Squares[60]==SQUARE_EMPTY && Squares[61]==SQUARE_EMPTY)
-//        {
-//            Move mov(59,61,PIECE_KING,SQUARE_EMPTY,PIECE_KING,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
-//            addMove(moves,mov);
-//        }
-//    }
-//
-//	//sort
-//	/*for(unsigned int i = 0;i<moves.size();i++)
-//	{
-//		for(unsigned int j = 0; j<moves.size()-1-i;j++)
-//		{
-//			Move a = moves.at(j);
-//			Move b = moves.at(j+1);
-//			if(a<b)
-//			{
-//				moves.at(j) = b;
-//				moves.at(j+1) = a;
-//			}
-//		}
-//	}*/
-//	return moves;
-//}

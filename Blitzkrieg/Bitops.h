@@ -63,8 +63,8 @@ extern int Opponent[2];
 extern int Square2Piece[13];
 extern int Square2Color[13];
 extern int Piece2Square[2][7];
-extern int Plus8[64];
-extern int Minus8[64];
+extern int Plus8[2][64];
+extern int Minus8[2][64];
 
 extern int SquareColor[64];
 
@@ -76,11 +76,6 @@ extern Bitset WhitePawnAttacks[64];
 extern Bitset BlackPawnAttacks[64];
 extern Bitset PawnAttacks[2][64];
 extern Bitset KingMoves[64];
-extern Bitset SlidingMoves[8][256];
-extern Bitset RookRankMoves[64][256];
-extern Bitset RookFileMoves[64][256];
-extern Bitset BishopA1H8Moves[64][256];
-extern Bitset BishopA8H1Moves[64][256];
 
 extern Bitset AboveBits[2][64];
 extern Bitset AboveSideBits[2][64];
@@ -151,16 +146,16 @@ inline int getPiece2Square(int n,int turn)
 	return Piece2Square[turn][n];
 }
 
-inline int getPlus8(int n)
+inline int getPlus8(int col, int n)
 {
-	return Plus8[n];
+	return Plus8[col][n];
 	//return n + 8;
 }
 
-inline int getMinus8(int n)
+inline int getMinus8(int col, int n)
 {
 	//return n - 8;
-	return Minus8[n];
+	return Minus8[col][n];
 }
 
 inline int getMirror(int n)
@@ -276,31 +271,6 @@ inline Bitset getBlackPawnMoves(int n)
 inline Bitset getKingMoves(int n)
 {
     return KingMoves[n];
-}
-
-inline Bitset getSlidingMoves(int n,int m)
-{
-    return SlidingMoves[n][m];
-}
-
-inline Bitset getRookRankMoves(int n,int m)
-{
-    return RookRankMoves[n][m];
-}
-
-inline Bitset getRookFileMoves(int n,int m)
-{
-    return RookFileMoves[n][m];
-}
-
-inline Bitset getBishopA1H8Moves(int n,int m)
-{
-    return BishopA1H8Moves[n][m];
-}
-
-inline Bitset getBishopA8H1Moves(int n,int m)
-{
-    return BishopA8H1Moves[n][m];
 }
 
 inline Bitset getAboveBits(int col,int n)

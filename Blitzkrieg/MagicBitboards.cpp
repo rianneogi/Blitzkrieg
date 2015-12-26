@@ -273,26 +273,6 @@ int magictransform(Bitset b, Bitset magic, int bits) {
 
 void attacksinit()
 {
-	Bitset Slides[6][32];
-	//Sliding Moves init
-	for (int i = 0;i < 6;i++)
-	{
-		for (int j = 0;j < 32;j++)
-		{
-			int jr = j&(getPos2Bit(i) - 1);
-			int jl = (j >> i) << (i + 1);
-			int jext = (jr | jl) << 1;
-			jext &= 0xff;
-			Slides[i][j] = SlidingMoves[i + 1][jext];
-		}
-	}
-	Bitset SlidesEnd[2][64];
-	for (int j = 0;j < 64;j++)
-	{
-		int jext = (j << 1);
-		SlidesEnd[0][j] = SlidingMoves[7][jext];
-		SlidesEnd[1][j] = SlidingMoves[0][jext];
-	}
 	for (int i = 0;i < 64;i++)
 	{
 		for (int j = 0;j < 4096;j++)
@@ -306,82 +286,9 @@ void attacksinit()
 		//Rook
 		for (int j = 0;j < 4096;j++)
 		{
-			int rankocc = j >> 5;
-			int fileocc = j & 0x1f;
-			if (getFile(i) == 0 || getFile(i) == 7)
-			{
-				rankocc = j >> 6;
-				fileocc = j & 0x3f;
-			}
-			/*int rankoccext = ((rankocc >> getFile(i)) << (getFile(i) + 1) | getPos2Bit(getFile(i)) | (rankocc&(getPos2Bit(getFile(i)) - 1)))<<1;
-			int fileoccext = ((fileocc >> getRank(i)) << (getRank(i) + 1) | getPos2Bit(getRank(i)) | (fileocc&(getPos2Bit(getRank(i)) - 1)))<<1;
-			Bitset jr = index_to_uint64(rankoccext, popcnt(generateRookMask(i)&RankBits[i]), generateRookMask(i)&RankBits[i]);
-			Bitset jf = index_to_uint64(fileoccext, popcnt(generateRookMask(i)&FileBits[i]), generateRookMask(i)&FileBits[i]);
-			cout << i << " " << j << endl;
-			printBitset(jf | jr);
-			cout << endl;*/
 			Bitset jr = index_to_uint64(j, count_1s(generateRookMask(i)), generateRookMask(i));
-			//int j2 = (int)(((jr)*RookMagic[i]) >> (64-RookBits[i]));
 			int j2 = magictransform(jr, RookMagic[i], RookBits[i]);
-			//int j2 = j;
-
-			
-
-			/*if (RookAttacks[i][j2] != 0)
-				cout << "ERROR" << endl;*/
 			RookAttacks[i][j2] = generateRookAttacks(i, jr);
-
-			////Rank Moves
-			//if (getFile(i) == 0)
-			//{
-			//	RookAttacks[i][j2] |= SlidesEnd[0][rankocc] << (8 * (i / 8));
-			//}
-			//else if (getFile(i) == 7)
-			//{
-			//	RookAttacks[i][j2] |= SlidesEnd[1][rankocc] << (8 * (i / 8));
-			//}
-			//else
-			//{
-			//	RookAttacks[i][j2] |= Slides[(i % 8) - 1][rankocc] << (8 * (i / 8));
-			//}
-
-			////File Moves
-			//if (getRank(i) == 0)
-			//{
-			//	Bitset b = SlidesEnd[1][fileocc];
-			//	Bitset p = index_to_uint64(b, popcnt(FileBits[i]), FileBits[i]);
-			//	RookAttacks[i][j2] |= p;
-			//	/*for (int k = 0;k<8;k++)
-			//	{
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[turn270[k]] * s;
-			//	}*/
-			//	//RookAttacks[i][j2] |= (p >> (getFile(i)));
-			//}
-			//else if (getRank(i) == 7)
-			//{
-			//	Bitset b = SlidesEnd[0][fileocc];
-			//	Bitset p = index_to_uint64(b, popcnt(FileBits[i]), FileBits[i]);
-			//	RookAttacks[i][j2] |= p;
-			//	/*for (int k = 0;k<8;k++)
-			//	{
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[turn270[k]] * s;
-			//	}
-			//	RookAttacks[i][j2] |= (p >> (getFile(i)));*/
-			//}
-			//else
-			//{
-			//	Bitset b = Slides[getRank(i) - 1][fileocc];
-			//	Bitset p = index_to_uint64(b, popcnt(FileBits[i]), FileBits[i]);
-			//	RookAttacks[i][j2] |= p;
-			//	/*for (int k = 0;k<8;k++)
-			//	{
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[turn270[k]] * s;
-			//	}
-			//	RookAttacks[i][j2] |= (p >> (getFile(i)));*/
-			//}
 		}
 
 		//Bishop
@@ -389,141 +296,7 @@ void attacksinit()
 		{
 			Bitset jr = index_to_uint64(j, count_1s(generateBishopMask(i)), generateBishopMask(i));
 			int j2 = magictransform(jr, BishopMagic[i], BishopBits[i]);
-
 			BishopAttacks[i][j2] = generateBishopAttacks(i, jr);
-			//int occ1 = j >> BishopBits[i];
-			//int occ2 = j&(getPos2Bit(BishopBits[i]) - 1);
-
-			////Bishop A1H8 Moves
-			//int flag = 0;
-			//Bitset b;
-			//if ((getFile(i) == 0 || getFile(i) == 7) && (getRank(i) == 0 || getRank(i) == 7))
-			//{
-			//	if (getFile(i) == 0)
-			//		b = SlidesEnd[0][occ1];
-			//	else
-			//		b = SlidesEnd[1][occ1];
-			//}
-			//else if (turn135[i] >= 32)
-			//{
-			//	b = Slides[7 - getRank(i) - 1][occ1];
-			//	flag = 1;
-			//}
-			//else
-			//	b = Slides[7 - getFile(i) - 1][occ1];
-			//Bitset p = 0x0;
-			//int m = i;
-			//if (getFile(m) != 0 && getRank(m) != 0)
-			//{
-			//	while (true)
-			//	{
-			//		m = m - 7;
-			//		if (m<0 || m>63)
-			//		{
-			//			break;
-			//		}
-			//		int k = 0;
-			//		if (flag == 1)
-			//			k = 7 - getRank(m);
-			//		else
-			//			k = 7 - getFile(m);
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[m] * s;
-			//		if (getFile(m) == 0 || getRank(m) == 0)
-			//		{
-			//			break;
-			//		}
-			//	}
-			//}
-			//m = i;
-			//if (getFile(m) != 7 && getRank(m) != 7)
-			//{
-			//	while (true)
-			//	{
-			//		m = m + 7;
-			//		if (m<0 || m>63)
-			//		{
-			//			break;
-			//		}
-			//		int k = 0;
-			//		if (flag == 1)
-			//			k = 7 - getRank(m);
-			//		else
-			//			k = 7 - getFile(m);
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[m] * s;
-			//		if (getFile(m) == 7 || getRank(m) == 7)
-			//		{
-			//			break;
-			//		}
-			//	}
-			//}
-			//BishopAttacks[i][j] = p;
-
-			////Bishop A8H1 Moves
-			//flag = 0;
-			//if ((getFile(i) == 0 || getFile(i) == 7) && (getRank(i) == 0 || getRank(i) == 7))
-			//{
-			//	if (getFile(i) == 0)
-			//		b = SlidesEnd[0][occ2];
-			//	else
-			//		b = SlidesEnd[1][occ2];
-			//}
-			//else if (turn45[i] >= 32)
-			//{
-			//	b = Slides[7 - getFile(i) - 1][occ2];
-			//	flag = 1;
-			//}
-			//else
-			//	b = Slides[getRank(i) - 1][occ2];
-			//p = 0x0;
-			//m = i;
-			//if (getFile(m) != 7 && getRank(m) != 0)
-			//{
-			//	while (true)
-			//	{
-			//		m = m - 9;
-			//		if (m<0 || m>63)
-			//		{
-			//			break;
-			//		}
-			//		int k = 0;
-			//		if (flag == 1)
-			//			k = 7 - getFile(m);
-			//		else
-			//			k = getRank(m);
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[m] * s;
-			//		if (getFile(m) == 7 || getRank(m) == 0)
-			//		{
-			//			break;
-			//		}
-			//	}
-			//}
-			//m = i;
-			//if (getFile(m) != 0 && getRank(m) != 7)
-			//{
-			//	while (true)
-			//	{
-			//		m = m + 9;
-			//		if (m<0 || m>63)
-			//		{
-			//			break;
-			//		}
-			//		int k = 0;
-			//		if (flag == 1)
-			//			k = 7 - getFile(m);
-			//		else
-			//			k = getRank(m);
-			//		Bitset s = (b >> k) % 2;
-			//		p |= Pos2Bit[m] * s;
-			//		if (getFile(m) == 0 || getRank(m) == 7)
-			//		{
-			//			break;
-			//		}
-			//	}
-			//}
-			//BishopAttacks[i][j] |= p;
 		}
 	}
 }
@@ -548,10 +321,6 @@ Bitset find_magic(int sq, int m, int bishop) {
 			j = magictransform(b[i], magic, m);
 			if (used[j] == 0ULL) used[j] = a[i];
 			else if (used[j] != a[i]) fail = 1;
-			/*if (popcnt(j) != popcnt(b[i]))
-			{
-				fail = 1;
-			}*/
 		}
 		if (!fail) return magic;
 	}

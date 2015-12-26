@@ -594,7 +594,8 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				if (getRank(getColorMirror(i, k)) < 5)
 				{
-					if (getPawnAttacks(i, getColorMirror(i, getPlus8(getColorMirror(i, k))))&pos.Pieces[getOpponent(i)][PIECE_PAWN]
+					if (getPawnAttacks(i, getPlus8(i,k))&pos.Pieces[getOpponent(i)][PIECE_PAWN]
+						&& !(getPawnAttacks(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])
 						//&& pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == SQUARE_EMPTY
 						)
 					{

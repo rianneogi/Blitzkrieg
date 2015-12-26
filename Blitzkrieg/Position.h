@@ -42,14 +42,11 @@ public:
 
     void generateMoves(vector<Move>& moves) const;
 	void generateCaptures(vector<Move>& moves) const;
-	void generateMoves2(vector<Move>& moves);
 	bool isLegal(Move const& m);
     void addMove(std::vector<Move>& vec,Move const& m) const;
     void forceMove(Move const& m);
     bool makeMove(Move const& m);
     void unmakeMove(Move const& m);
-    Move* getBestMove();
-    bool checkLegal(Move* m);
     bool isAttacked(int turn,int n) const;
 	Move getSmallestAttacker(int turn,int n);
 	Move getSmallestAttacker(int turn,int n,unsigned long long occ);

@@ -22,11 +22,6 @@ Bitset WhitePawnAttacks[64];
 Bitset BlackPawnAttacks[64];
 Bitset PawnAttacks[2][64];
 Bitset KingMoves[64];
-Bitset SlidingMoves[8][256];
-Bitset RookRankMoves[64][256];
-Bitset RookFileMoves[64][256];
-Bitset BishopA1H8Moves[64][256];
-Bitset BishopA8H1Moves[64][256];
 Bitset AboveBits[2][64];
 Bitset AboveSideBits[2][64];
 Bitset AboveAndAboveSideBits[2][64];
@@ -55,23 +50,10 @@ Bitset CenterBorderBits = 0x00003C24243C0000;
 
 
 
-int Plus8[64] = { 8, 9,10,11,12,13,14,15,
-                 16,17,18,19,20,21,22,23,
-                 24,25,26,27,28,29,30,31,
-                 32,33,34,35,36,37,38,39,
-                 40,41,42,43,44,45,46,47,
-                 48,49,50,51,52,53,54,55,
-                 56,57,58,59,60,61,62,63,
-                 63,63,63,63,63,63,63,63};
+int Plus8[2][64];
 
-int Minus8[64] = { 0, 0, 0, 0, 0, 0, 0, 0,
-                   0, 1, 2, 3, 4, 5, 6, 7,
-                   8, 9,10,11,12,13,14,15,
-                  16,17,18,19,20,21,22,23,
-                  24,25,26,27,28,29,30,31,
-                  32,33,34,35,36,37,38,39,
-                  40,41,42,43,44,45,46,47,
-				  48,49,50,51,52,53,54,55};
+int Minus8[2][64];
+
 int Mirror[64] = {56,57,58,59,60,61,62,63,
                   48,49,50,51,52,53,54,55,
                   40,41,42,43,44,45,46,47,
@@ -247,6 +229,16 @@ int getSquare(int file,int rank)
 
 void datainit()
 {
+	//Plus 8 and Minus 8
+	for (int j = 0;j < 64;j++)
+	{
+		Plus8[COLOR_WHITE][j] = min(j + 8, 63);
+		Minus8[COLOR_BLACK][j] = min(j + 8, 63);
+		Plus8[COLOR_BLACK][j] = max(j - 8, 0);
+		Minus8[COLOR_WHITE][j] = max(j - 8, 0);
+	}
+
+	//Simple Piece Movement
     for(int i = 0;i<64;i++)
     {
         if(i==0)
@@ -374,6 +366,8 @@ void datainit()
                 KnightMoves[i] = (b<<17) | (b<<15) | (b<<10) | (b<<6) | (b>>6) | (b>>10) | (b>>15) | (b>>17);
         }
     }
+
+	//Square Distances
 	for (int i = 0;i < 64;i++)
 	{
 		for (int j = 0;j < 64;j++)
@@ -381,168 +375,8 @@ void datainit()
 			SquareDistance[i][j] = max(abs(getRank(i) - getRank(j)), abs(getFile(i) - getFile(j)));
 		}
 	}
-    //Sliding Moves init
-    for(int i = 0;i<8;i++)
-    {
-        for(int j = 0;j<256;j++)
-        {
-            Bitset b = 0x0;
-            for(int x = 0;x<8-i;x++)
-            {
-                if(i+x+1==8)
-                {
-                    break;
-                }
-                b |= Pos2Bit[i+x+1];
-                if((j>>(i+x+1))%2==1)
-                {
-                    break;
-                }
-            }
-            for(int x = 0;x<i;x++)
-            {
-                b |= Pos2Bit[i-x-1];
-                if((j>>(i-x-1))%2==1)
-                {
-                    break;
-                }
-            }
-            SlidingMoves[i][j] = b;
-        }
-    }
-    for(int i = 0;i<64;i++)
-    {
-         for(int j = 0;j<256;j++)
-         {
-             //Rook Rank Moves
-             RookRankMoves[i][j] = SlidingMoves[i%8][j] << (8*(i/8));
-             //Rook File Moves
-             Bitset b = SlidingMoves[getRank(i)][j];
-             Bitset p = 0x0;
-             for(int k = 0;k<8;k++)
-             {
-                 Bitset s = (b>>k)%2;
-                 p |= Pos2Bit[turn270[k]]*s;
-             }
-             RookFileMoves[i][j] = (p>>(getFile(i)));
 
-             //Bishop A1H8 Moves
-             int flag = 0;
-             if(turn135[i]>=32)
-             {
-                 b = SlidingMoves[7-getRank(i)][j];
-                 flag = 1;
-             }
-             else
-                 b = SlidingMoves[7-getFile(i)][j];
-             p = 0x0;
-             int m = i;
-             if(getFile(m)!=0 && getRank(m)!=0)
-             {
-                 while(true)
-                 {
-                     m = m-7;
-                     if(m<0 || m>63)
-                     {
-                         break;
-                     }
-                     int k = 0;
-                     if(flag==1)
-                         k = 7-getRank(m);
-                     else
-                         k = 7-getFile(m);
-                     Bitset s = (b>>k)%2;
-                     p |= Pos2Bit[m]*s;
-                     if(getFile(m)==0 || getRank(m)==0)
-                     {
-                          break;
-                     }
-                 }
-             }
-             m = i;
-             if(getFile(m)!=7 && getRank(m)!=7)
-             {
-                 while(true)
-                 {
-                     m = m+7;
-                     if(m<0 || m>63)
-                     {
-                         break;
-                     }
-                     int k = 0;
-                     if(flag==1)
-                         k = 7-getRank(m);
-                     else
-                         k = 7-getFile(m);
-                     Bitset s = (b>>k)%2;
-                     p |= Pos2Bit[m]*s;
-                     if(getFile(m)==7 || getRank(m)==7)
-                     {
-                          break;
-                     }
-                 }
-             }
-             BishopA1H8Moves[i][j] = p;
-
-             //Bishop A8H1 Moves
-             flag = 0;
-             if(turn45[i]>=32)
-             {
-                 b = SlidingMoves[7-getFile(i)][j];
-                 flag = 1;
-             }
-             else
-                 b = SlidingMoves[getRank(i)][j];
-             p = 0x0;
-             m = i;
-             if(getFile(m)!=7 && getRank(m)!=0)
-             {
-                 while(true)
-                 {
-                     m = m-9;
-                     if(m<0 || m>63)
-                     {
-                         break;
-                     }
-                     int k = 0;
-                     if(flag==1)
-                         k = 7-getFile(m);
-                     else
-                         k = getRank(m);
-                     Bitset s = (b>>k)%2;
-                     p |= Pos2Bit[m]*s;
-                     if(getFile(m)==7 || getRank(m)==0)
-                     {
-                          break;
-                     }
-                 }
-             }
-             m = i;
-             if(getFile(m)!=0 && getRank(m)!=7)
-             {
-                 while(true)
-                 {
-                     m = m+9;
-                     if(m<0 || m>63)
-                     {
-                         break;
-                     }
-                     int k = 0;
-                     if(flag==1)
-                         k = 7-getFile(m);
-                     else
-                         k = getRank(m);
-                     Bitset s = (b>>k)%2;
-                     p |= Pos2Bit[m]*s;
-                     if(getFile(m)==0 || getRank(m)==7)
-                     {
-                          break;
-                     }
-                 }
-             }
-             BishopA8H1Moves[i][j] = p;
-         }
-    }
+	//Utility BBs
 	for(int col = 0;col < 2;col++)
 	{
 		for(int i = 0;i<64;i++)
@@ -613,9 +447,9 @@ void datainit()
 		}
 	}
 
+	//King Shields
 	int ColorFactor[2] = { 1,-1 };
-
-	for(int col = 0;col<2;col++) //king shields
+	for(int col = 0;col<2;col++) 
 	{
 		for(int i = 0;i<64;i++)
 		{
