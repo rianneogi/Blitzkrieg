@@ -508,7 +508,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			}
 			if (m == Threats[ply]) //decrease reduction if move is a threat
 			{
-				reductiondepth = max(reductiondepth - 2, 0);
+				reductiondepth = max(reductiondepth - 1, 0);
 			}
 			//if (noMaterialGain(m) && !smallestattckr.isNullMove() && evade_see < 0) //decrease reduction if move evades a capture
 			//{

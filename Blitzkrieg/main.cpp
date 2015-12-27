@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 320;
+const int ENGINEVERSION = 321;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 321 - 27-12-2015 - Reduced threat extension to 1
 // Build 320 - 27-12-2015 - Added Check and Contact Check penalties
 // Build 319 - 27-12-2015 - Added Space bonus, improved readability of evaluation code
 // Build 318 - 27-12-2015 - Added better time management
