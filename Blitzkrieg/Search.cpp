@@ -25,7 +25,7 @@ inline int getFutilityMargin(int depth)
 Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64_t winc, uint64_t binc, bool print)
 {
 	int status = pos.getGameStatus();
-	if(status!=STATUS_NOTOVER)
+	if(status==STATUS_WHITEMATED || status == STATUS_BLACKMATED || status == STATUS_STALEMATE)
 	{
 		return CONS_NULLMOVE;
 	}
@@ -39,6 +39,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 	prepareSearch();
 
 	timeMode = mode;
+	AllocatedTime = 1;
 	if (mode == MODE_MOVETIME)
 	{
 		AllocatedTime = wtime;
@@ -62,7 +63,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 	timer.Start();
 	int takeback = 0;
 	int initialmovenumber = pos.movelist.size();
-	Move bestmove = CONS_NULLMOVE;
+	Move bestmove = line.at(line.size()-1);
 
 	PrincipalVariation = vector<Move>();
 	PrincipalVariation.reserve(128);
@@ -179,9 +180,9 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 		if (score > lastscore + 100 || score < lastscore - 100) //score changed? allocate more time
 		{
 			if (pos.turn == COLOR_WHITE)
-				AllocatedTime = min(AllocatedTime + wtime / 30, wtime / 4);
+				AllocatedTime = min(AllocatedTime + wtime / 30, max((uint64_t)1,wtime / 4));
 			else
-				AllocatedTime = min(AllocatedTime + btime / 30, btime / 4);
+				AllocatedTime = min(AllocatedTime + btime / 30, max((uint64_t)1,btime / 4));
 		}
 	}
 	if (print)
@@ -189,7 +190,6 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 		cout << "Nodes: " << nodes << endl;
 		cout << "info string Eval time: " << evaltime.ElapsedMilliseconds() << ", Sort time: " << sorttime.ElapsedMilliseconds() << ", Quisc time: " << quisctime.ElapsedMilliseconds() << ", movegen time: " << movegentime.ElapsedMilliseconds() << endl;
 	}
-	//cout << bestmove.toString() << " " << firstguess << endl;
 	/*if (PvSize < 0)
 	{
 		cout << "info string ERROR: principal variation size is 0\n";
@@ -466,7 +466,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		score = 0;
 
 		int reductiondepth = 1;
-
 		if (pos.underCheck(pos.turn))
 		{
 			incheck[ply] = true;
@@ -476,8 +475,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			incheck[ply] = false;
 		}
-
-		
 
 		//if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
 		//{
@@ -502,9 +499,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			)
 		{
 			if (evaldiff>0)
-				reductiondepth += min(depth - 4, max(4,depth/2));
+				reductiondepth += min(depth - 4, 4);
 			else
-				reductiondepth += min(depth - 4, max(5,depth/2));
+				reductiondepth += min(depth - 4, 5);
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
@@ -564,17 +561,6 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		incheck[ply] = false;
 		ply--;
 		pos.unmakeMove(m);
-		//if (tablekey2 != pos.TTKey)
-		//{
-		//	cout << "info string TT Error at " << m.toString() << " " << ply << " " << PvSize << endl;
-		//	cout << "info string ";
-		//	for (int i = 0;i < PvSize;i++)
-		//	{
-		//		cout << PrincipalVariation[i].toString() << " ";
-		//	}
-		//	cout << endl;
-		//	//_getch();
-		//}
 
 		if(score>=beta)
 		{
@@ -708,10 +694,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 #endif
 	}
 	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
-	/*if (Table.Probe(pos.TTKey, depth, alpha, beta) != alpha)
-	{
-		cout << "TT NO MATCH" << endl;
-	}*/
+
 #ifdef BLITZKRIEG_DEBUG
 	if (pos.PawnKey != tablekey)
 	{
@@ -749,10 +732,11 @@ void Engine::prepareSearch()
 			KillerScores[i][j] = CONS_NEGINF;*/
 		}
 	}
-	for (int j = 0;j<100;j++)
+	for (int i = 0;i<100;i++)
 	{
-		Threats[j] = CONS_NULLMOVE;
-		incheck[j] = false;
+		Threats[i] = CONS_NULLMOVE;
+		incheck[i] = false;
+		Evaluation[i] = 0;
 	}
 	for (unsigned int i = 0;i<64;i++) //ages the history table
 	{
