@@ -93,9 +93,9 @@ Score KingOnRookFilePenalty = 10; //penalty for king being on an opponent semiop
 Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent semiopen file with a rook on it
 Score KingBetweenRooksPenalty = 10; //not implemented
 
-int QueenContactCheckPenalty = 12;
-int RookContactCheckPenalty = 8;
-int CheckPenalty[6] = { 1,3,2,4,5,0 }; //penalty when a piece can check your king safely
+const int QueenContactCheckPenalty = 12;
+const int RookContactCheckPenalty = 5;
+const int CheckPenalty[6] = { 1,3,2,4,5,0 }; //penalty when a piece can check your king safely
 
 const unsigned int AttackWeights[6] = {1,3,2,4,5,0};
 Score KingSafetyScore[512];
@@ -334,6 +334,7 @@ template<bool Trace> int Engine::LeafEval()
 	Score KingSafety[2] = { S(0,0),S(0,0) };
 	Score PawnStructure[2] = { S(0,0),S(0,0) };
 	Score PieceActivity[2] = { S(0,0),S(0,0) };
+	Score Passers[2] = { S(0,0),S(0,0) };
 
 	int currentMaterial = Material[COLOR_WHITE] + Material[COLOR_BLACK];
 	if (Trace)
@@ -543,44 +544,6 @@ template<bool Trace> int Engine::LeafEval()
 				PawnStructure[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
 				if (Trace)
 					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(IsolatedPawnPenalty[getFile(getColorMirror(i, k))]) << endl;
-			}
-
-			//Passer
-			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
-			{
-				Score passerbonus = PassedPawnBonus[getColorMirror(i, k)];
-				if (getAboveBits(i, k)&pos.OccupiedSq) //blocked by a piece
-				{
-					passerbonus /= 2;
-				}
-				if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN]) //protected passer
-				{
-					passerbonus += passerbonus / 2;
-				}
-
-				int sq = (k & 0x7);
-				if (i == COLOR_WHITE)
-					sq = 63 - getFile(k);
-				passerbonus -= S(0,2 * getSquareDistance(e.KingSquare[i], k));
-				passerbonus += S(0,5 * getSquareDistance(e.KingSquare[getOpponent(i)], sq));
-
-				PawnStructure[i] += passerbonus;
-				if (Trace)
-					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(passerbonus) << endl;
-
-				//Rook behind Passer
-				if (getAboveBits(getOpponent(i), k)&pos.Pieces[i][PIECE_ROOK])
-				{
-					PawnStructure[i] += RookBehindPassedPawnBonus;
-					if (Trace)
-						cout << "Bonus for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(RookBehindPassedPawnBonus) << endl;
-				}
-				if (getAboveBits(getOpponent(i), k)&pos.Pieces[getOpponent(i)][PIECE_ROOK])
-				{
-					PawnStructure[i] -= OppRookBehindPassedPawnPenalty;
-					if (Trace)
-						cout << "Penalty for Rook behind Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(OppRookBehindPassedPawnPenalty) << endl;
-				}
 			}
 
 			//Backward
@@ -975,6 +938,90 @@ template<bool Trace> int Engine::LeafEval()
 		}
 	}
 
+	///Passers
+	for (int i = 0;i < 2;i++)
+	{
+		b = pos.Pieces[i][PIECE_PAWN];
+		while (b)
+		{
+			_BitScanForward64(&k, b);
+			b ^= getPos2Bit(k);
+
+			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer
+			{
+				Score passerbonus = PassedPawnBonus[getColorMirror(i, k)];
+
+				Bitset forward = getAboveBits(i, k);
+				Bitset advance = getPawnMoves(i, k);
+				float factor = 1;
+
+				//Blocked path
+				if (forward&e.ColorPieces[getOpponent(i)])
+				{
+					factor -= 0.25;
+				}
+
+				//Unsafe path
+				if (forward&e.attackedByColor[getOpponent(i)])
+				{
+					factor -= 0.25;
+				}
+
+				//Blocked advancement
+				if (advance&e.ColorPieces[getOpponent(i)])
+				{
+					factor -= 0.1;
+				}
+
+				//Unsafe advancement
+				if (advance&e.attackedByColor[getOpponent(i)])
+				{
+					factor -= 0.1;
+				}
+
+				//Protected by pawn
+				if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN]) 
+				{
+					factor += 0.5;
+				}
+
+				//Attacked by enemy
+				else if (getPos2Bit(k)&e.attackedByColor[getOpponent(i)])
+				{
+					factor -= 0.25;
+				}
+
+				//Rook behind Passer
+				if (getAboveBits(getOpponent(i), k)&pos.Pieces[i][PIECE_ROOK])
+				{
+					factor += 0.25;
+				}
+
+				//Opponent Rook behind Passer
+				if (getAboveBits(getOpponent(i), k)&pos.Pieces[getOpponent(i)][PIECE_ROOK])
+				{
+					factor -= 0.25;
+				}
+
+				//King Proximity
+				int sq = (k & 0x7);
+				if (i == COLOR_WHITE)
+					sq = 63 - getFile(k);
+				passerbonus -= S(0, 2 * getSquareDistance(e.KingSquare[i], k));
+				passerbonus += S(0, 5 * getSquareDistance(e.KingSquare[getOpponent(i)], sq));
+
+				if (factor < 0.25)
+					factor = 0.25;
+
+				passerbonus *= factor;
+				Passers[i] += passerbonus;
+				if (Trace)
+					cout << "Bonus for Passed pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(passerbonus) << endl;
+			}
+		}
+	}
+	
+
 	if (Trace)
 	{
 		for (int i = 0;i < 2;i++)
@@ -982,6 +1029,7 @@ template<bool Trace> int Engine::LeafEval()
 			cout << PlayerStrings[i] << " King Safety: " << string(KingSafety[i]) << endl;
 			cout << PlayerStrings[i] << " Pawn Structure: " << string(PawnStructure[i]) << endl;
 			cout << PlayerStrings[i] << " Piece Activity: " << string(PieceActivity[i]) << endl;
+			cout << PlayerStrings[i] << " Passed Pawns: " << string(Passers[i]) << endl;
 			cout << endl;
 		}
 	}
@@ -994,12 +1042,15 @@ template<bool Trace> int Engine::LeafEval()
 			cout << PlayerStrings[i] << " King Safety: " << scaleScore(KingSafety[i],currentMaterial) << endl;
 			cout << PlayerStrings[i] << " Pawn Structure: " << scaleScore(PawnStructure[i], currentMaterial) << endl;
 			cout << PlayerStrings[i] << " Piece Activity: " << scaleScore(PieceActivity[i], currentMaterial) << endl;
+			cout << PlayerStrings[i] << " Passed Pawns: " << scaleScore(Passers[i], currentMaterial) << endl;
 			cout << endl;
 		}
 	}
 
-	TotalEval += Score(Material[COLOR_WHITE]) + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE];
-	TotalEval -= Score(Material[COLOR_BLACK]) + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK];
+	TotalEval += Score(Material[COLOR_WHITE]) + KingSafety[COLOR_WHITE] + PawnStructure[COLOR_WHITE] + PieceActivity[COLOR_WHITE]
+		+ Passers[COLOR_WHITE];
+	TotalEval -= Score(Material[COLOR_BLACK]) + KingSafety[COLOR_BLACK] + PawnStructure[COLOR_BLACK] + PieceActivity[COLOR_BLACK]
+		+ Passers[COLOR_BLACK];
 
 	int finaleval = scaleScore(TotalEval,currentMaterial);
 
