@@ -16,8 +16,10 @@ void Clock::Start()
 
 void Clock::Stop()
 {
-	time = std::chrono::duration_cast<std::chrono::duration<unsigned long long,std::milli>>(std::chrono::high_resolution_clock::now() - begin).count();
-    //begin = std::chrono::high_resolution_clock::now();
+	//std::chrono::high_resolution_clock::time_point tmp = std::chrono::high_resolution_clock::now();
+	time += std::chrono::duration_cast<std::chrono::duration<unsigned long long,std::micro>>(std::chrono::high_resolution_clock::now() - begin).count();
+	//std::cout << std::chrono::duration_cast<std::chrono::duration<unsigned long long, std::micro>>(tmp - begin).count() << std::endl;
+	begin = std::chrono::high_resolution_clock::now();
 }
 
 void Clock::Reset()
@@ -27,11 +29,10 @@ void Clock::Reset()
 
 unsigned long long Clock::ElapsedMilliseconds()
 {
-    return time;
+    return time/1000;
 }
 
 double Clock::ElapsedSeconds()
 {
-    return time/(double)1000;
-
+    return time/(double)1000000;
 }

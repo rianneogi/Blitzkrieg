@@ -2,6 +2,8 @@
 
 #include <chrono>
 #include <sys/timeb.h>
+#include <iostream>
+#include <conio.h>
 
 #pragma warning(disable: 4996) // Function _ftime() may be unsafe
 

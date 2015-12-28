@@ -45,18 +45,19 @@ class Engine
 	uint64_t AllocatedTime;
 
 	//stats
-	unsigned long long nodes;
-	unsigned long long prunednodes;
-	unsigned long long futilitynodes;
-	unsigned long long betacutoff_counter;
-	unsigned long long firstbetacutoffcount;
-	unsigned long long betacutoff_sum;
-	unsigned long long alpha_counter;
-	unsigned long long alphalast_sum;
-	unsigned long long alphafirst_sum;
-	unsigned long long tthitcount;
-	unsigned long long latemoveresearch;
-	unsigned long long pvresearch;
+	uint64_t nodes;
+	uint64_t prunednodes;
+	uint64_t futilitynodes;
+	uint64_t betacutoff_counter;
+	uint64_t firstbetacutoffcount;
+	uint64_t betacutoff_sum;
+	uint64_t alpha_counter;
+	uint64_t alphalast_sum;
+	uint64_t alphafirst_sum;
+	uint64_t tthitcount;
+	uint64_t latemoveresearch;
+	uint64_t pvresearch;
+	uint64_t aspirationresets;
 
 	Clock timer;
 

@@ -84,8 +84,6 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 	int initialmovenumber = pos.movelist.size();
 	Move bestmove = line.at(line.size()-1);
 
-	PrincipalVariation = vector<Move>();
-	PrincipalVariation.reserve(128);
 	/*for (int i = 0;i < 128;i++)
 	{
 		PrincipalVariation[i] = CONS_NULLMOVE;
@@ -109,6 +107,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 			cout << ", First beta: " << ((double)(firstbetacutoffcount*100) / betacutoff_counter) << "%";
 			cout << ", Latemove researches: " << latemoveresearch;
 			cout << ", PV researches: " << pvresearch;
+			cout << ", Aspiration Resets: " << aspirationresets;
 			/*cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);*/
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
@@ -138,7 +137,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 		/*PvSize = -1;
 		PvPly = -1;*/
 
-		int delta = 16;
+		int delta = 32;
 		int alpha = max(score - delta, int(CONS_NEGINF));
 		int beta = min(score + delta, int(CONS_INF));
 
@@ -175,6 +174,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 			else break;
 
 			delta += delta / 2;
+			aspirationresets++;
 		}
 		lastscore = score;
 		score = val;
@@ -350,7 +350,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				fullnullmovesearch = false;
 		}
 		if(fullnullmovesearch)*/
-		score = -AlphaBeta(max(0, depth - R), -beta, -beta + 1, &line, false, false); //make a null-window search (we don't care by how much it fails high, if it does)
+		score = -AlphaBeta(max(0, depth - R), -beta, -beta+1, &line, false, false); //make a null-window search (we don't care by how much it fails high, if it does)
 		ply--;
 		pos.unmakeMove(m);
 		if (line.empty()!=true)
@@ -369,7 +369,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//cout << "Null move cutoff " << beta << endl;
 			return score;
 		}
-		//if (score < CONS_MATED + 1000) //score is so bad, we are in danger, so increase depth
+		//if (score < alpha - 100) //score is so bad, we are in danger, so increase depth
 		//{
 		//	depth++;
 		//}
@@ -755,9 +755,12 @@ void Engine::prepareSearch()
 	alphafirst_sum = 0;
 	latemoveresearch = 0;
 	pvresearch = 0;
+	aspirationresets = 0;
 
 	ply = 0;
 	SelectiveDepth = 0;
+	PrincipalVariation = vector<Move>();
+	PrincipalVariation.reserve(128);
 	for (int i = 0;i<2;i++)
 	{
 		for (int j = 0;j<100;j++)
@@ -790,9 +793,9 @@ void Engine::prepareSearch()
 void Engine::checkup()
 {
 	timer.Stop();
-	if(timer.time >= AllocatedTime && AllocatedTime!=-1)
+	if(timer.ElapsedMilliseconds() >= AllocatedTime && AllocatedTime!=-1)
 	{
-		//cout << "milliseconds: " << seconds << endl;
+		//cout << "milliseconds: " << timer.time << endl;
 		longjmp(env, timer.time);
 	}
 	//cout << (seconds-MAXTIME) << endl;
