@@ -112,9 +112,9 @@ Score BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 	                             1,  1, 10, 16, 16, 10,  1,  1,
 								 0,  0,  0,  4,  4,  0,  0,  0,
 								 0,  0,  0,  0,  0,  0,  0,  0,
-								 2,  2,  2,  2,  2,  2,  2,  2,
-								10, 10, 10, 10, 10, 10, 10, 10,
-								20, 20, 20, 20, 20, 20, 20, 20,
+								 0,  0,  0,  0,  0,  0,  0,  0,
+								 0,  0,  0,  0,  0,  0,  0,  0,
+								 0,  0,  0,  0,  0,  0,  0,  0,
 								 0,  0,  0,  0,  0,  0,  0,  0};
 
 //Passed Pawns
@@ -525,7 +525,7 @@ template<bool Trace> int Engine::LeafEval()
 			b ^= getPos2Bit(k);
 
 			//Weak
-			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[COLOR_WHITE][PIECE_PAWN]) //checks if this pawn is defended by a friendly pawn
+			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN]) //checks if this pawn is defended by a friendly pawn
 			{
 				WeakPawns[i] ^= getPos2Bit(k);
 			}
@@ -958,13 +958,13 @@ template<bool Trace> int Engine::LeafEval()
 				//Blocked path
 				if (forward&e.ColorPieces[getOpponent(i)])
 				{
-					factor -= 0.25;
+					factor -= 0.15;
 				}
 
 				//Unsafe path
 				if (forward&e.attackedByColor[getOpponent(i)])
 				{
-					factor -= 0.25;
+					factor -= 0.15;
 				}
 
 				//Blocked advancement
