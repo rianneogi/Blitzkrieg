@@ -793,7 +793,7 @@ template<bool Trace> int Engine::LeafEval()
 			Bitset m = getBishopAttacks(k, pos.OccupiedSq);
 			m &= m^e.ColorPieces[i];
 
-			//Mobiliy
+			//Mobility
 			PieceActivity[i] += BishopMobility[popcnt(m)];
 			if (Trace)
 				cout << "Bishop on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(BishopMobility[popcnt(m)]) << endl;
@@ -881,9 +881,9 @@ template<bool Trace> int Engine::LeafEval()
 	///Space Bonus
 	for (int i = 0;i < 2;i++)
 	{
-		PieceActivity[i] += S(popcnt(e.attackedByColor[i] & EnemyTerritory[i]),0);
+		PieceActivity[i] += S(popcnt(e.attackedByColor[i] & EnemyTerritory[i])*2,0);
 		if (Trace)
-			cout << "Space bonus for " << PlayerStrings[i] << ": " << string(S(popcnt(e.attackedByColor[i] & EnemyTerritory[i])*4, 0)) << endl;
+			cout << "Space bonus for " << PlayerStrings[i] << ": " << string(S(popcnt(e.attackedByColor[i] & EnemyTerritory[i]), 0)*2) << endl;
 	}
 
 	///King Attack
@@ -1032,14 +1032,13 @@ template<bool Trace> int Engine::LeafEval()
 			cout << PlayerStrings[i] << " Passed Pawns: " << string(Passers[i]) << endl;
 			cout << endl;
 		}
-	}
 
-	if (Trace)
-	{
+		cout << "Scale Factor: " << ((float)currentMaterial / TotalMaterialBothSides) << endl;
+
 		cout << "After scaling:" << endl;
 		for (int i = 0;i < 2;i++)
 		{
-			cout << PlayerStrings[i] << " King Safety: " << scaleScore(KingSafety[i],currentMaterial) << endl;
+			cout << PlayerStrings[i] << " King Safety: " << scaleScore(KingSafety[i], currentMaterial) << endl;
 			cout << PlayerStrings[i] << " Pawn Structure: " << scaleScore(PawnStructure[i], currentMaterial) << endl;
 			cout << PlayerStrings[i] << " Piece Activity: " << scaleScore(PieceActivity[i], currentMaterial) << endl;
 			cout << PlayerStrings[i] << " Passed Pawns: " << scaleScore(Passers[i], currentMaterial) << endl;

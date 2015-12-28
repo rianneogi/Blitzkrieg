@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 323;
+const int ENGINEVERSION = 324;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 324 - 28-12-2015 - Doubled space bonus, now engine takes more time if opponent is in time trouble
 // Build 323 - 28-12-2015 - Fixed a bug in Pawn Pressure evaluation, reduced unsafe path penalty for passers, removed blocked pawn penalty for forward pawns
 // Build 322 - 27-12-2015 - Improved Passed Pawn Evaluation
 // Build 321 - 27-12-2015 - Reduced threat extension to 1
@@ -584,7 +585,7 @@ int main(int argc, char* args[])
 	Interface i = Interface();
 	
 	//testpositions("passedpawnsuite", 0, 0, 6000, i.e1);
-    
+
 	try{
     i.start();
 	}catch(exception e) 

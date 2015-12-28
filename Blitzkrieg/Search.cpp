@@ -17,6 +17,11 @@ inline int getRazorMargin(int depth)
 	return (512 + 32*depth);
 }
 
+inline int getSmallRazorMargin(int depth)
+{
+	return (128 + 32 * depth);
+}
+
 inline int getFutilityMargin(int depth)
 {
 	return (150 * depth);
@@ -40,6 +45,8 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 
 	timeMode = mode;
 	AllocatedTime = 1;
+	uint64_t mytime = 1;
+	uint64_t opptime = 1;
 	if (mode == MODE_MOVETIME)
 	{
 		AllocatedTime = wtime;
@@ -47,10 +54,22 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 	else
 	{
 		if (pos.turn == COLOR_WHITE)
-			AllocatedTime = max((uint64_t)1, wtime / 15);
+		{
+			mytime = wtime;
+			opptime = btime;
+		}
 		else
-			AllocatedTime = max((uint64_t)1, btime / 15);
+		{
+			mytime = btime;
+			opptime = wtime;
+		}
+		AllocatedTime = max((uint64_t)1, mytime / 15);
 	}
+	if (opptime < mytime / 4 && timeMode == MODE_DEFAULT)
+	{
+		AllocatedTime = max((uint64_t)1, mytime / 4); //if opponent is in time trouble lets take our sweet time
+	}
+	cout << "Allocated Time: " << AllocatedTime << endl;
 
 	vector<Move> line;
 	line.reserve(128);
@@ -177,12 +196,12 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 		}
 		PrincipalVariation = line;
 		bestmove = line.at(line.size()-1);
-		if (score > lastscore + 100 || score < lastscore - 100) //score changed? allocate more time
+		if (timeMode == MODE_DEFAULT)
 		{
-			if (pos.turn == COLOR_WHITE)
-				AllocatedTime = min(AllocatedTime + wtime / 30, max((uint64_t)1,wtime / 4));
-			else
-				AllocatedTime = min(AllocatedTime + btime / 30, max((uint64_t)1,btime / 4));
+			if (score > lastscore + 100 || score < lastscore - 100) //score changed? allocate more time
+			{
+				AllocatedTime = min(AllocatedTime + mytime / 30, max((uint64_t)1, mytime / 4));
+			}
 		}
 	}
 	if (print)
@@ -308,7 +327,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK])
 			|| popcnt(pos.Pieces[pos.turn][PIECE_BISHOP] || popcnt(pos.Pieces[pos.turn][PIECE_KNIGHT]))
 			) //side to move does not have only pawns(to avoid zugzwang)
-		//&& leafeval >= beta
+		//&& Evaluation[ply] >= beta
 		)
 	{
 		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
@@ -476,11 +495,27 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			incheck[ply] = false;
 		}
 
-		//if (depth < 8 && ((LeafEval<false>(alpha, beta) + SmallPruningMargin[depth]) <= alpha)) //small forward razoring
+		/*if (depth < 16)
+		{
+			if (!incheck[ply - 1]
+				&& !incheck[ply]
+				&& movingpiece != PIECE_PAWN
+				&& noMaterialGain(m))
+			{
+				if(i > 3 + (1 << (depth-1)))
+				{
+					pos.unmakeMove(m);
+					incheck[ply] = false;
+					ply--;
+					continue;
+				}
+			}
+		}*/
+
+		//if (!dopv && depth < 4 && ((Evaluation[ply] + getSmallRazorMargin(depth)) <= alpha)) //small forward razoring
 		//{
 		//	reductiondepth++;
 		//}
-
 
 		//latemove reduction
 		if (!alpharaised
