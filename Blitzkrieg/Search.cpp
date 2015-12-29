@@ -487,6 +487,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		score = 0;
 
 		int reductiondepth = 1;
+
+		//check extension
 		if (pos.underCheck(pos.turn))
 		{
 			incheck[ply] = true;
@@ -495,6 +497,12 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		else
 		{
 			incheck[ply] = false;
+		}
+
+		//recapture extension
+		if (ply > 1 && m.getTo() == currentVariation[ply - 1].getTo() && iscapture && isCapture(currentVariation[ply - 1]))
+		{
+			reductiondepth--;
 		}
 
 		/*if (depth < 16)

@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 326;
+const int ENGINEVERSION = 327;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 327 - 29-12-2015 - Added Recapture extension, Counter and Followups now check if entire move is same instead of just to,from
 // Build 326 - 29-12-2015 - Added CounterMoves and FollowupMoves, added Trapped Minor penalty
 // Build 325 - 28-12-2015 - Changed timer function, increased Aspiration delta
 // Build 324 - 28-12-2015 - Doubled space bonus, now engine takes more time if opponent is in time trouble

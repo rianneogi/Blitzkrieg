@@ -128,12 +128,15 @@ long long Engine::getMoveScore(const Move& m)
 		if (ply > 1)
 		{
 			Move prev = currentVariation[ply - 1];
-			if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			//if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			if(m==CounterMoves[prev.getMovingPiece()][prev.getTo()][0])
 			{
 				score += 1900000;
+				//cout << "counter hit" << endl;
 				return score;
 			}
-			else if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			//else if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			else if(m == CounterMoves[prev.getMovingPiece()][prev.getTo()][1])
 			{
 				score += 1800000;
 				return score;
@@ -143,12 +146,14 @@ long long Engine::getMoveScore(const Move& m)
 		if (ply > 2)
 		{
 			Move prev = currentVariation[ply - 2];
-			if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			//if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			if (m == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0])
 			{
 				score += 1700000;
 				return score;
 			}
-			else if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			//else if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			else if (m == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1])
 			{
 				score += 1600000;
 				return score;

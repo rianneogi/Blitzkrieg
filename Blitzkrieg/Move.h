@@ -34,18 +34,11 @@ class Move
     Bitset getBKC() const;
     Bitset getBQC() const;
 	Bitset getEP() const;
+	Bitset getRelevant() const; //gets all bits except casting and ep bits
 	string toString() const;
 	bool isNullMove() const;
 };
 
-struct MoveReturn
-{
-	Move move;
-	int moveid;
-	int eval;
-};
-
-void sortMoves(vector<Move>& moves,int turn);
 Move String2Move(const string& s); 
 Move createNullMove(int epsquare);
 bool isDangerous(const Move& m);

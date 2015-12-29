@@ -40,115 +40,6 @@ int MovingPieceBonus[13][6] = {{   2,   5,   5,   3,   4,   1},   //empty
                                { 400, 200, 167,   0,-400, 500},   //black rook
                                { 800, 600, 567, 400,   0, 900},   //black queen
                                {1000,1000,1000,1000,1000,1000}};  //white king
-int SquareBonus[6][64] = 	
-{
-    {   0,   0,   0,   0,   0,   0,   0,   0, //pawn
-	    0,   0, -10, -20, -19, -15,   0,   0,
-	    1,   1,   2,  10,  10,   5,   1,   1,
-	    2,   2,   5,  20,  20,  10,   2,   2,
-	    3,   3,   6,  24,  24,  11,   3,   3,
-	   40,  50,  50,  50,  50,  50,  50,  40,
-	   70,  50,  50,  50,  50,  50,  50,  70,
-	    0,   0,   0,   0,   0,   0,   0,   0},
-
-	{ -20, -18, -15, -10, -10, -15, -18, -20, //knight
-	   -5,   0,   0,   0,   0,   0,   0,  -5,
-	   -5,   0,  10,   3,   3,  10,   0,  -5,
-	   -5,   0,   3,  15,  15,   3,   0,  -5,
-	   -5,   0,   3,  15,  15,   3,   0,  -5,
-	   25,  30,  50,  50,  50,  40,  30,  25,
-	   10,  15,  20,  25,  25,  20,  15,  10,
-	    0,   0,   0,   0,   0,   0,   0,   0},
-
-	{   0,  -5, -10,  -5,  -5, -10,  -5,   0, //bishop
-	    0,  10,   0,   0,   0,   0,  10,   0,
-	    0,   0,  10,   5,   5,  10,   0,   0,
-	    0,   0,   8,  12,  12,   8,   0,   0,
-	    0,   2,   5,  12,  12,   5,   2,   0,
-	    0,   0,  10,   5,   5,  10,   0,   0,
-	    0,  10,   0,   0,   0,   0,  10,   0,
-	    5,   0,   0,   0,   0,   0,   0,   5},
-
-	{  0,  0, 10, 10, 10, 10,  0,  0, //rook
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	   0,  0,  0, 10, 10, 10,  0,  0,
-	  10, 10, 10, 20, 20, 20, 10, 10,
-	  10, 10, 10, 20, 20, 20, 10, 10},
-
-	{  0,  0,  0,  0, -1,  0,  0,  0, //queen
-	   0,  0,  0,  0,  2,  3,  0,  0,
-	   0,  0,  3,  1,  1,  3,  3,  0,
-	   0,  0,  1,  5,  5,  1,  0,  0,
-	   0,  0,  1,  5,  5,  1,  0,  0,
-	   0,  0,  3,  1,  1,  3,  0,  0,
-	   0,  0,  0,  0,  0,  0,  0,  0,
-	   0,  0,  0,  0,  0,  0,  0,  0},
-
-	{  0,  0,  0,  0,  0,  0,  0,  0, //king
-	   0,  0,  0,  0,  0,  0,  0,  0, 
-       0,  0,  0,  0,  0,  0,  0,  0, 
-	   0,  0,  0,  0,  0,  0,  0,  0, 
-	   0,  0,  0,  0,  0,  0,  0,  0, 
-	   0,  0,  0,  0,  0,  0,  0,  0, 
-	   0,  0,  0,  0,  0,  0,  0,  0, 
-	   0,  0,  0,  0,  0,  0,  0,  0}
-	   
-};
-
-void sortMoves(vector<Move>& moves,int turn)
-{
-	vector<int> vals;
-	int val = 0;
-	int capturedpiece = SQUARE_EMPTY;
-	int movingpiece = 0;
-	for(int i = 0;i<moves.size();i++)
-	{
-		val = 0;
-		capturedpiece = moves.at(i).getCapturedPiece();
-		movingpiece = moves.at(i).getMovingPiece();
-		if(capturedpiece)
-		{
-			val += CapturedPieceBonus;
-		}
-		val += MovingPieceBonus[capturedpiece][movingpiece];
-		val += SpecialBonus[moves.at(i).getSpecial()];
-		if(turn==COLOR_WHITE)
-		{
-			val += SquareBonus[movingpiece][moves.at(i).getTo()];
-			val += -SquareBonus[movingpiece][moves.at(i).getFrom()];
-		}
-		else
-		{
-			val += SquareBonus[movingpiece][getturn180(moves.at(i).getTo())];
-			val += -SquareBonus[movingpiece][getturn180(moves.at(i).getFrom())];
-		}
-		vals.push_back(val);
-	}
-
-	/*for(int i = 0;i<vals.size();i++)
-	{
-		cout << vals.at(i) << endl;
-	}*/
-
-	for(unsigned int i = 0;i<moves.size();i++)
-	{
-		for(unsigned int j = 0; j<moves.size()-1-i;j++)
-		{
-			if(vals.at(j)<vals.at(j+1))
-			{
-				Move tmp = moves.at(j);
-				moves.at(j) = moves.at(j+1);
-				moves.at(j+1) = tmp;
-				int x = vals.at(j);
-				vals.at(j) = vals.at(j+1);
-				vals.at(j+1) = x;
-			}
-		}
-	}
-}
 
 Move::Move()
 {
@@ -346,6 +237,10 @@ Bitset Move::getEP() const
 	return ((data>>28) & 0x3f);
 }
 
+Bitset Move::getRelevant() const
+{
+	return (data & 0xffffff);
+}
 
 Bitset Move::getbit() const
 {
