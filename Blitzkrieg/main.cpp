@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 328;
+const int ENGINEVERSION = 329;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 329 - 30-12-2015 - Now returns move instantly in move sort if a PV move is found, made small optimization in generateMoves()
 // Build 328 - 29-12-2015 - Now avoids null search based on TT Probe and prunes all captures in qsearch once and move with SEE<0 is found
 // Build 327 - 29-12-2015 - Added Recapture extension, Counter and Followups now check if entire move is same instead of just to,from
 // Build 326 - 29-12-2015 - Added CounterMoves and FollowupMoves, added Trapped Minor penalty

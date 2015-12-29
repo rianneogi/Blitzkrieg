@@ -205,6 +205,14 @@ Move Engine::getHighestScoringMove(vector<Move>& moves, int currentmove)
 	for (int i = currentmove + 1;i<moves.size();i++)
 	{
 		x = getMoveScore(moves.at(i));
+		if (x >= 5000000) //pv or hash move found
+		{
+			bigscore = x;
+			bigmoveid = i;
+			bigmove = moves.at(i);
+			bigphase = SortPhase;
+			break;
+		}
 		if (x>bigscore)
 		{
 			bigscore = x;

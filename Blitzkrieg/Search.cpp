@@ -851,9 +851,6 @@ unsigned long long Engine::perft(int depth)
 		Move m = vec.at(i);
 		if (pos.makeMove(m))
 		{
-			//cout << "counting " << m.toString() << " at depth " << depth << endl;
-			//pos.display(0);
-			//_getch();
 			count += perft(depth - 1);
 			pos.unmakeMove(m);
 		}
