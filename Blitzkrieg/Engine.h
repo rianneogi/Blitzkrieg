@@ -60,6 +60,8 @@ class Engine
 	uint64_t latemoveresearch;
 	uint64_t pvresearch;
 	uint64_t aspirationresets;
+	uint64_t nullcutoffs;
+	//uint64_t badavoidnull;
 
 	Clock timer;
 

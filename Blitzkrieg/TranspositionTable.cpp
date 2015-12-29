@@ -27,7 +27,9 @@ void TranspositionTable::Save(HashEntry const& entry)
 {
 	HashEntry* hash = &entries[entry.key&SizeMinusOne];
 
-	if(hash->key!=entry.key || entry.depth >= hash->depth)
+	if(hash->key!=entry.key 
+		//|| entry.depth >= hash->depth
+		)
 	{
 		hash->key = entry.key;
 		hash->score = entry.score;
@@ -41,7 +43,9 @@ void TranspositionTable::Save(Bitset key,int depth,int score,int bound,Move best
 {
 	HashEntry* hash = &entries[key&SizeMinusOne];
 
-	if(hash->key!=key || depth >= hash->depth)
+	if(hash->key!=key 
+		//|| depth >= hash->depth
+		)
 	{
 		hash->key = key;
 		hash->score = score;
@@ -51,22 +55,48 @@ void TranspositionTable::Save(Bitset key,int depth,int score,int bound,Move best
 	}
 }
 
-int TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
+ProbeStruct TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
 {
+	ProbeStruct pb;
     HashEntry* hash = &entries[key&SizeMinusOne];
+	pb.found = false;
+	pb.avoidnull = false;
     if(hash->key == key)
     {
+		pb.entry = hash;
         if((hash->depth >= depth))
         {
-            if(hash->bound == TT_EXACT)
-                return hash->score;
-            if(hash->bound == TT_ALPHA && hash->score <= alpha)
-                return hash->score;
-            if(hash->bound == TT_BETA && hash->score >= beta)
-                return hash->score;
+			if (hash->bound == TT_EXACT)
+			{
+				//return hash->score;
+				pb.score = hash->score;
+				pb.found = true;
+			}
+               
+			if (hash->bound == TT_ALPHA && hash->score <= alpha)
+			{
+				//return hash->score;
+				pb.score = hash->score;
+				pb.found = true;
+			}
+               
+			if (hash->bound == TT_BETA && hash->score >= beta)
+			{
+				//return hash->score;
+				pb.score = hash->score;
+				pb.found = true;
+			}
         }
+
+		if (hash->score < beta
+			&& depth >= 3
+			&& hash->bound == TT_ALPHA
+			)
+		{
+			pb.avoidnull = true;
+		}
     }
-    return CONS_TTUNKNOWN;
+    return pb;
 }
 
 Move TranspositionTable::getBestMove(Bitset key)

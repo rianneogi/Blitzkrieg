@@ -107,7 +107,9 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 			cout << ", First beta: " << ((double)(firstbetacutoffcount*100) / betacutoff_counter) << "%";
 			cout << ", Latemove researches: " << latemoveresearch;
 			cout << ", PV researches: " << pvresearch;
+			//cout << ", Bad null: " << badavoidnull;
 			cout << ", Aspiration Resets: " << aspirationresets;
+			cout << ", Nullcutoffs: " << nullcutoffs;
 			/*cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);*/
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
@@ -259,15 +261,15 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		return 0;
 	}
 
-	int probe = Table.Probe(pos.TTKey, depth, alpha, beta);
+	ProbeStruct probe = Table.Probe(pos.TTKey, depth, alpha, beta);
 	Move ttbestmove = createNullMove(pos.epsquare);
-	if (probe != CONS_TTUNKNOWN)
+	if (probe.found)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
 		if (ply != 0)
 		{
 			tthitcount++;
-			return probe;
+			return probe.score;
 		}
 		/*else
 		{
@@ -280,11 +282,12 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			}
 		}*/
 	}
+	if (probe.avoidnull) cannull = false;
 
-	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
-	if (leafevalprobe != CONS_TTUNKNOWN)
+	ProbeStruct leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	if (leafevalprobe.found)
 	{
-		Evaluation[ply] = leafevalprobe; //use TT probe as a better leafeval
+		Evaluation[ply] = leafevalprobe.score; //use TT probe as a better leafeval
 	}
 	else
 	{
@@ -367,6 +370,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		if (score >= beta)
 		{
 			//cout << "Null move cutoff " << beta << endl;
+			/*if (probe.avoidnull)
+				badavoidnull++;*/
+			nullcutoffs++;
 			return score;
 		}
 		//if (score < alpha - 100) //score is so bad, we are in danger, so increase depth
@@ -410,7 +416,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 
-	if (probe == CONS_TTUNKNOWN && dopv && depth>=2) //internal iterative deepening
+	if (!probe.found && dopv && depth>=2) //internal iterative deepening
 	{
 		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
 	}	
@@ -504,6 +510,13 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			reductiondepth--;
 		}
+
+		//extend when capturing the last piece
+		/*if (isCapture(m) && getSquare2Piece(capturedpiece) != PIECE_PAWN
+			&& popcnt(pos.Pieces[COLOR_WHITE][PIECE_PAWN]) + popcnt(pos.Pieces[COLOR_BLACK][PIECE_PAWN]) + 2 == popcnt(pos.OccupiedSq))
+		{
+			reductiondepth -= 3;
+		}*/
 
 		/*if (depth < 16)
 		{
@@ -767,6 +780,8 @@ void Engine::prepareSearch()
 	latemoveresearch = 0;
 	pvresearch = 0;
 	aspirationresets = 0;
+	nullcutoffs = 0;
+	//badavoidnull = 0;
 
 	ply = 0;
 	SelectiveDepth = 0;

@@ -854,10 +854,10 @@ template<bool Trace> int Engine::LeafEval()
 				cout << "Queen on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(QueenMobility[popcnt(m)]) << endl;
 
 			//Pawn Pressure
-			PieceActivity[i] += (PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])])/2; //half bonus for queens
+			PieceActivity[i] += (PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]); //half bonus for queens
 			if (Trace)
 			{
-				cout << "Pawn pressure bonus for queen on " << Int2Sq(k) << ": " << string(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]/2) << endl;
+				cout << "Pawn pressure bonus for queen on " << Int2Sq(k) << ": " << string(PawnPressureBonus[popcnt(m&WeakPawns[getOpponent(i)])]) << endl;
 			}
 
 			//Attack

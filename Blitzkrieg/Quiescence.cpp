@@ -22,10 +22,10 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		return val;
 	}*/
 	int stand_pat = 0;
-	int probe = Table.Probe(pos.TTKey, 0, alpha, beta);
-	if (probe != CONS_TTUNKNOWN)
+	ProbeStruct probe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	if (probe.found)
 	{
-		stand_pat = probe; //use TT probe as leafeval
+		stand_pat = probe.score; //use TT probe as leafeval
 	}
 	else
 	{
@@ -70,8 +70,9 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		{
             continue;
 		}
-		if(StaticExchangeEvaluation(m.getTo(),m.getFrom(),m.getMovingPiece(),captured)<0)
-			continue;
+		if (StaticExchangeEvaluation(m.getTo(), m.getFrom(), m.getMovingPiece(), captured) < 0)
+			//continue;
+			break; //since moves are sorted by SEE, we know remaining moves will also have SEE<0
 		//if (getSquare2Piece(m.getCapturedPiece()) == PIECE_KING) //captured opponent king
 		//	return CONS_INF;
 		if(!pos.makeMove(m))
