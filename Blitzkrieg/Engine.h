@@ -17,7 +17,7 @@ enum EvalConstants{CONS_INF = 20000,CONS_NEGINF = -20000, CONS_DRAW = 0, CONS_MA
 enum SortPhases{SORTPHASE_NONE,SORTPHASE_PV,SORTPHASE_HASH,SORTPHASE_GOODCAP,SORTPHASE_KILLER,SORTPHASE_HISTORY,SORTPHASE_BADCAP};
 enum TimeMode{MODE_DEFAULT,MODE_MOVETIME,MODE_INF};
 
-extern int EndgameMaterial;
+extern const int EndgameMaterial;
 extern int MAXDEPTH;
 extern const unsigned long long CheckupNodeCount;
 
@@ -30,10 +30,12 @@ class Engine
 
 	int myColor;
 	vector<Move> PrincipalVariation;
-	//Move PrincipalVariation[128];
+	Move currentVariation[128];
 	int PvSize;
 	int PvPly;
 	Move KillerMoves[2][100];
+	Move CounterMoves[6][64][2];
+	Move FollowupMoves[6][64][2];
 	long HistoryScores[64][64];
 	Move Threats[100];
 	bool incheck[100];

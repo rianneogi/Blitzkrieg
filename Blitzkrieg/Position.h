@@ -42,6 +42,7 @@ public:
 
     void generateMoves(vector<Move>& moves) const;
 	void generateCaptures(vector<Move>& moves) const;
+	void generatePawnPushes(vector<Move>& moves) const;
 	bool isLegal(Move const& m);
     void addMove(std::vector<Move>& vec,Move const& m) const;
     void forceMove(Move const& m);

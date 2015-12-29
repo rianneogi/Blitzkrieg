@@ -482,6 +482,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//}
 		foundlegal = true;
 		ply++;
+		currentVariation[ply] = m;
+		
 		score = 0;
 
 		int reductiondepth = 1;
@@ -593,6 +595,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 				latemoveresearch++;
 			}
 		}
+		currentVariation[ply] = CONS_NULLMOVE;
 		incheck[ply] = false;
 		ply--;
 		pos.unmakeMove(m);
@@ -770,11 +773,23 @@ void Engine::prepareSearch()
 			KillerScores[i][j] = CONS_NEGINF;*/
 		}
 	}
+	for (int i = 0;i < 6;i++)
+	{
+		for (int j = 0;j < 64;j++)
+		{
+			for (int k = 0;k < 2;k++)
+			{
+				CounterMoves[i][j][k] = CONS_NULLMOVE;
+				FollowupMoves[i][j][k] = CONS_NULLMOVE;
+			}
+		}
+	}
 	for (int i = 0;i<100;i++)
 	{
 		Threats[i] = CONS_NULLMOVE;
 		incheck[i] = false;
 		Evaluation[i] = 0;
+		currentVariation[i] = CONS_NULLMOVE;
 	}
 	for (unsigned int i = 0;i<64;i++) //ages the history table
 	{

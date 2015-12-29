@@ -1003,6 +1003,7 @@ void Position::generateMoves(vector<Move>& moves) const
 			}
         }
     }
+
     //Knight Moves
     b = Pieces[turn][PIECE_KNIGHT];
     while(b)
@@ -1020,6 +1021,7 @@ void Position::generateMoves(vector<Move>& moves) const
             addMove(moves,mov);
         }
     }
+
     //King Moves
     b = Pieces[turn][PIECE_KING];
     while(b)
@@ -1271,6 +1273,42 @@ void Position::generateCaptures(vector<Move>& moves) const
             addMove(moves,mov);
         }
     }
+}
+
+void Position::generatePawnPushes(vector<Move>& moves) const
+{
+	Bitset b = Pieces[turn][PIECE_PAWN];
+	while (b)
+	{
+		unsigned long n = 0;
+		_BitScanForward64(&n, b);
+		b ^= getPos2Bit(n);
+		if (getRank(getColorMirror(turn, n)) < 7)
+			continue;
+		Bitset m = PawnMoves[turn][n] & (PawnMoves[turn][n] ^ OccupiedSq);
+		while (m)
+		{
+			unsigned long k = 0;
+			_BitScanForward64(&k, m);
+			m ^= getPos2Bit(k);
+			if (getRank(k) == 7 || getRank(k) == 0) //promotion
+			{
+				Move movq(n, k, PIECE_PAWN, Squares[k], PIECE_QUEEN, castling[0][0], castling[0][1], castling[1][0], castling[1][1], epsquare);
+				addMove(moves, movq);
+				Move movn(n, k, PIECE_PAWN, Squares[k], PIECE_KNIGHT, castling[0][0], castling[0][1], castling[1][0], castling[1][1], epsquare);
+				addMove(moves, movn);
+				Move movr(n, k, PIECE_PAWN, Squares[k], PIECE_ROOK, castling[0][0], castling[0][1], castling[1][0], castling[1][1], epsquare);
+				addMove(moves, movr);
+				Move movb(n, k, PIECE_PAWN, Squares[k], PIECE_BISHOP, castling[0][0], castling[0][1], castling[1][0], castling[1][1], epsquare);
+				addMove(moves, movb);
+			}
+			else
+			{
+				Move mov(n, k, PIECE_PAWN, Squares[k], PIECE_NONE, castling[0][0], castling[0][1], castling[1][0], castling[1][1], epsquare);
+				addMove(moves, mov);
+			}
+		}
+	}
 }
 
 void Position::addMove(std::vector<Move>& vec,Move const& m) const

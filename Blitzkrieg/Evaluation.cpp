@@ -10,7 +10,7 @@ int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
 int TotalMaterial = (8*PieceMaterial[0] + 2*PieceMaterial[1] + 2*PieceMaterial[2] + 2*PieceMaterial[3] + PieceMaterial[4]);
 int TotalMaterialBothSides = TotalMaterial * 2;
 
-int EndgameMaterial = 3800;
+const int EndgameMaterial = 3800;
 
 int LazyEval1 = 400;
 
@@ -1234,6 +1234,7 @@ void evalinit()
 	int KingRankValues[8] = { 10,0,-20,-30,-40,-50,-60,-70 };
 	int KingFileValues[8] = { 30,40,20,0,0,20,40,30 };
 	int KingCentralizationValues[8] = { -36,-12,0,12,12,0,-12,-36 };
+	int TrappedMinorPenalty = 150;
 	for (int i = 0;i < 64;i++)
 	{
 		int rank = getRank(i);
@@ -1257,6 +1258,11 @@ void evalinit()
 		PieceSqValuesEG[PIECE_QUEEN][i] = QueenCentralizationValues[rank] + QueenCentralizationValues[file];
 		PieceSqValues[PIECE_KING][i] = KingRankValues[rank] + KingFileValues[file];
 		PieceSqValuesEG[PIECE_KING][i] = KingCentralizationValues[rank] + KingCentralizationValues[file];
+
+		if (i == 63 || i == (63 - 7))
+			PieceSqValues[PIECE_KNIGHT][i] = TrappedMinorPenalty;
+		if (i == (63 - 8) || i == (63 - 8 - 7))
+			PieceSqValues[PIECE_BISHOP][i] = TrappedMinorPenalty;
 	}
 	for(int i = 1;i<13;i++)
 	{

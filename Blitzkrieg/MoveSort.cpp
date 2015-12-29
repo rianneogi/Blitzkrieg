@@ -73,7 +73,9 @@ long long Engine::getMoveScore(const Move& m)
 		//{
 		//	score += 200000; 
 		//}
+		//int cap = getSquare2Piece(capturedpiece);
 		int x = StaticExchangeEvaluation(to, from, movingpiece, capturedpiece);
+		//int x = capturedpiece * 8 + movingpiece;
 		//int x = movescore;
 		if (x >= 0) //if it is a good capture
 		{
@@ -91,6 +93,7 @@ long long Engine::getMoveScore(const Move& m)
 	else if (special == PIECE_PAWN) //enpassant are also captures
 	{
 		int x = StaticExchangeEvaluation(to, from, movingpiece, capturedpiece);
+		//int x = 0;
 		if (x >= 0)
 		{
 			SortPhase = SORTPHASE_GOODCAP;
@@ -122,7 +125,36 @@ long long Engine::getMoveScore(const Move& m)
 			score += 1500000;
 			return score;
 		}*/
-		else
+		if (ply > 1)
+		{
+			Move prev = currentVariation[ply - 1];
+			if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			{
+				score += 1900000;
+				return score;
+			}
+			else if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			{
+				score += 1800000;
+				return score;
+			}
+		}
+		
+		if (ply > 2)
+		{
+			Move prev = currentVariation[ply - 2];
+			if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			{
+				score += 1700000;
+				return score;
+			}
+			else if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			{
+				score += 1600000;
+				return score;
+			}
+		}
+		
 		{
 			SortPhase = SORTPHASE_HISTORY;
 			//if (pos.underCheck(pos.turn) == false) //move a threatened piece
@@ -204,6 +236,25 @@ void Engine::setKiller(Move m, int depth, int score)
 	//	KillerMoves[1][ply] = m;
 	//	//KillerScores[1][ply] = score;
 	//}
+
+	if (ply > 0)
+	{
+		Move prev = currentVariation[ply - 1];
+		if (m != CounterMoves[prev.getMovingPiece()][prev.getTo()][0])
+		{
+			CounterMoves[prev.getMovingPiece()][prev.getTo()][1] = CounterMoves[prev.getMovingPiece()][prev.getTo()][0];
+			CounterMoves[prev.getMovingPiece()][prev.getTo()][0] = m;
+		}
+	}
+	if (ply > 1)
+	{
+		Move prev = currentVariation[ply - 2];
+		if (m != FollowupMoves[prev.getMovingPiece()][prev.getTo()][0])
+		{
+			FollowupMoves[prev.getMovingPiece()][prev.getTo()][1] = FollowupMoves[prev.getMovingPiece()][prev.getTo()][0];
+			FollowupMoves[prev.getMovingPiece()][prev.getTo()][0] = m;
+		}
+	}
 }
 
 int Engine::StaticExchangeEvaluation(int to, int from, int movpiece, int capt)

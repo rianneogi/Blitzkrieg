@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 325;
+const int ENGINEVERSION = 326;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 326 - 29-12-2015 - Added CounterMoves and FollowupMoves, added Trapped Minor penalty
 // Build 325 - 28-12-2015 - Changed timer function, increased Aspiration delta
 // Build 324 - 28-12-2015 - Doubled space bonus, now engine takes more time if opponent is in time trouble
 // Build 323 - 28-12-2015 - Fixed a bug in Pawn Pressure evaluation, reduced unsafe path penalty for passers, removed blocked pawn penalty for forward pawns

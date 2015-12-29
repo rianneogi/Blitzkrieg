@@ -50,6 +50,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 	vec.reserve(128);
 	//movegentime.Start();
 	pos.generateCaptures(vec);
+	//pos.generatePawnPushes(vec);
 	//movegentime.Stop();
 
 	//vector<int> scores; //generate move scores
@@ -62,9 +63,10 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		m = getHighestScoringMove(vec,i);
 		int special = m.getSpecial();
 		int captured = m.getCapturedPiece();
-		if((stand_pat + PieceMaterial[getSquare2Piece(captured)] + 200 < alpha) && //delta pruning
-		   (special!=PIECE_QUEEN && special!=PIECE_KNIGHT  && special!=PIECE_ROOK && special!=PIECE_BISHOP) && //not a promotion
-           (material > EndgameMaterial))
+		if ((stand_pat + PieceMaterial[getSquare2Piece(captured)] + 200 < alpha) //delta pruning
+			&& (special != PIECE_QUEEN && special != PIECE_KNIGHT  && special != PIECE_ROOK && special != PIECE_BISHOP) //not a promotion
+			//&& (material > EndgameMaterial)
+			)
 		{
             continue;
 		}
