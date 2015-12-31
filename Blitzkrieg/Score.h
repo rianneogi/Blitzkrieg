@@ -79,3 +79,5 @@ struct Score
 	//operator int() const;
 	operator string() const;
 };
+
+std::ostream& operator<<(std::ostream& os, const Score& s);

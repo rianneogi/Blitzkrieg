@@ -506,10 +506,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		}
 
 		//recapture extension
-		if (ply > 1 && m.getTo() == currentVariation[ply - 1].getTo() && iscapture && isCapture(currentVariation[ply - 1]))
+		/*if (ply > 1 && m.getTo() == currentVariation[ply - 1].getTo() && iscapture && isCapture(currentVariation[ply - 1]))
 		{
 			reductiondepth--;
-		}
+		}*/
 
 		//extend when capturing the last piece
 		/*if (isCapture(m) && getSquare2Piece(capturedpiece) != PIECE_PAWN
@@ -556,7 +556,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& m!=Threats[ply]
 			)
 		{
-			if (evaldiff>0)
+			if (evaldiff > 0)
 				reductiondepth += min(depth - 4, 4);
 			else
 				reductiondepth += min(depth - 4, 5);

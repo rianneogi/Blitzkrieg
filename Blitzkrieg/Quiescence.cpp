@@ -71,8 +71,8 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
             continue;
 		}
 		if (StaticExchangeEvaluation(m.getTo(), m.getFrom(), m.getMovingPiece(), captured) < 0)
-			//continue;
-			break; //since moves are sorted by SEE, we know remaining moves will also have SEE<0
+			continue;
+			//break; //since moves are sorted by SEE, we know remaining moves will also have SEE<0
 		//if (getSquare2Piece(m.getCapturedPiece()) == PIECE_KING) //captured opponent king
 		//	return CONS_INF;
 		if(!pos.makeMove(m))

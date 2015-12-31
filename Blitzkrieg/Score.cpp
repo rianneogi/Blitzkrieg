@@ -289,6 +289,12 @@ Score::operator string() const
 	return (std::to_string(mg) + ", " + std::to_string(eg));
 }
 
+std::ostream& operator<<(std::ostream& os, const Score& s)
+{
+	os << (std::to_string(s.mg) + ", " + std::to_string(s.eg));
+	return os;
+}
+
 //Score Score::operator+(uint64_t s) const
 //{
 //	Score r;

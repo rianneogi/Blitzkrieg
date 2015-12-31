@@ -132,7 +132,6 @@ long long Engine::getMoveScore(const Move& m)
 			if(m==CounterMoves[prev.getMovingPiece()][prev.getTo()][0])
 			{
 				score += 1900000;
-				//cout << "counter hit" << endl;
 				return score;
 			}
 			//else if (from == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == CounterMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())

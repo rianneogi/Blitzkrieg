@@ -22,10 +22,9 @@ Interface::~Interface()
 
 void Interface::UCI()
 {
-	cout << "id name " << ENGINENAME << endl;
+	cout << "id name " << ENGINENAME << " " << ENGINEVERSION << endl;
 	cout << "id author " << ENGINEAUTHOR << endl;
 	cout << "uciok" << endl;
-	cout << "info string " << ENGINENAME << " " << ENGINEVERSION << endl;
 	string str = "";
 	//char cp[5000];
 	cout.setf(ios::unitbuf);// Make sure that the outputs are sent straight away to the GUI
@@ -46,6 +45,12 @@ void Interface::UCI()
 		else if(s=="quit")
 		{
 			break;
+		}
+		else if (s == "uci")
+		{
+			cout << "id name " << ENGINENAME << " " << ENGINEVERSION << endl;
+			cout << "id author " << ENGINEAUTHOR << endl;
+			cout << "uciok" << endl;
 		}
 		else if(s=="go")
 		{
