@@ -145,14 +145,14 @@ long long Engine::getMoveScore(const Move& m)
 		if (ply > 2)
 		{
 			Move prev = currentVariation[ply - 2];
-			//if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
-			if (m == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0])
+			if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0].getTo())
+			//if (m == FollowupMoves[prev.getMovingPiece()][prev.getTo()][0])
 			{
 				score += 1700000;
 				return score;
 			}
-			//else if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
-			else if (m == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1])
+			else if (from == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getFrom() && to == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1].getTo())
+			//else if (m == FollowupMoves[prev.getMovingPiece()][prev.getTo()][1])
 			{
 				score += 1600000;
 				return score;
@@ -177,6 +177,11 @@ long long Engine::getMoveScore(const Move& m)
 			//}
 
 			//if (Threats[ply].getTo() == from && Threats[ply]!=CONS_NULLMOVE) //moving a threatened piece
+			//{
+			//	score += 1000000;
+			//}
+
+			//if (getPawnAttacks(pos.turn, from)&pos.Pieces[getOpponent(pos.turn)][PIECE_PAWN]) //moving a threatened piece
 			//{
 			//	score += 1000000;
 			//}

@@ -165,7 +165,8 @@ inline int getMirror(int n)
 
 inline int getColorMirror(int c,int n)
 {
-	return ColorMirror[c][n];
+	return c ? n ^ 56 : n;
+	//return ColorMirror[c][n];
 }
 
 inline int getturn90(int n)

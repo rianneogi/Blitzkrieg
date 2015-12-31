@@ -23,11 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 330;
+const int ENGINEVERSION = 331;
 
-// Best Build so far: 233
+// Best Build so far: 322
 
 ///BUILDS
+// Build 331 - 01-01-2016 - Increased Rook on 7th bonus, added Pawn on open file penalty, changed color weakness evaluation,
+//							doubled rook file endgame bonus, added extra condition for return exact value in TT Probe,
+//                          using TT probe as leaf eval now checks for exact bound, added extra condition for IID, changed LMR
 // Build 330 - 31-12-2015 - Added Pawn Storm penalty and bonus for defended squares near king
 // Build 329 - 30-12-2015 - Now returns move instantly in move sort if a PV move is found, made small optimization in generateMoves()
 // Build 328 - 29-12-2015 - Now avoids null search based on TT Probe and prunes all captures in qsearch once move with SEE<0 is found
@@ -570,6 +573,42 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 	f2.close();
 }
 
+double ErrorFunction(const vector<int>& p)
+{
+
+	return 0;
+}
+
+vector<int> localOptimize(const vector<int>& initialGuess) {
+	const int nParams = initialGuess.size();
+	double bestE = ErrorFunction(initialGuess);
+	vector<int> bestParValues = initialGuess;
+	bool improved = true;
+	while (improved) {
+		improved = false;
+		for (int pi = 0; pi < nParams; pi++) {
+			vector<int> newParValues = bestParValues;
+			newParValues[pi] += 1;
+			double newE = ErrorFunction(newParValues);
+			if (newE < bestE) {
+				bestE = newE;
+				bestParValues = newParValues;
+				improved = true;
+			}
+			else {
+				newParValues[pi] -= 2;
+				newE = ErrorFunction(newParValues);
+				if (newE < bestE) {
+					bestE = newE;
+					bestParValues = newParValues;
+					improved = true;
+				}
+			}
+		}
+	}
+	return bestParValues;
+}
+
 void initialize()
 {
 	datainit();
@@ -590,7 +629,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("passedpawnsuite", 0, 0, 6000, i.e1);
+	//testpositions("wac", 0, 0, 1000, i.e1);
 
 	try{
     i.start();

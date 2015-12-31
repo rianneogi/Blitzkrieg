@@ -23,7 +23,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 	}*/
 	int stand_pat = 0;
 	ProbeStruct probe = Table.Probe(pos.TTKey, 0, alpha, beta);
-	if (probe.found)
+	if (probe.found && probe.entry->bound == TT_EXACT)
 	{
 		stand_pat = probe.score; //use TT probe as leafeval
 	}

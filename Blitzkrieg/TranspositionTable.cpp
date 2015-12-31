@@ -16,6 +16,7 @@ TranspositionTable::TranspositionTable(unsigned long long s)
 {
 	size = s;
 	entries = new HashEntry[size];
+	hits = 0;
 }
 
 TranspositionTable::~TranspositionTable()
@@ -39,12 +40,14 @@ void TranspositionTable::Save(HashEntry const& entry)
 	}
 }
 
-void TranspositionTable::Save(Bitset key,int depth,int score,int bound,Move bestmove)
+void TranspositionTable::Save(Bitset key, int depth, int score, int bound, Move bestmove)
 {
 	HashEntry* hash = &entries[key&SizeMinusOne];
 
-	if(hash->key!=key 
+	if (hash->key != key
 		//|| depth >= hash->depth
+		//&& ((bound != TT_EXACT && hash->bound != TT_EXACT) || (bound==TT_EXACT && hash->bound==TT_EXACT)
+		//	|| (bound==TT_EXACT && hash->bound!=TT_EXACT))
 		)
 	{
 		hash->key = key;
@@ -64,9 +67,12 @@ ProbeStruct TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
     if(hash->key == key)
     {
 		pb.entry = hash;
+		hits++;
         if((hash->depth >= depth))
         {
-			if (hash->bound == TT_EXACT)
+			if (hash->bound == TT_EXACT 
+				&& hash->score > alpha && hash->score < beta
+				)
 			{
 				//return hash->score;
 				pb.score = hash->score;
@@ -91,6 +97,7 @@ ProbeStruct TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
 		if (hash->score < beta
 			&& depth >= 3
 			&& hash->bound == TT_ALPHA
+			&& pb.found == true
 			)
 		{
 			pb.avoidnull = true;

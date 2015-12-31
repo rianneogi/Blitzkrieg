@@ -70,8 +70,8 @@ Score BishopOppPawnSameColor[9] = { -9,-6,-3,0,3,6,9,12,15 };
 Score RookPairBonus = S(10, 40);
 Score RookPawnAdj[9] = { 15,12, 9, 6, 3, 0,-3,-6,-9 };
 Score RookOppPawnAdj[9] = { -8,-4, 0, 4, 8,12,16,20,24 };
-Score RookHalfOpenBonus[8] = { 5,5,8,10,10,8,5,5 };
-Score RookOpenBonus[8] = { 10,10,15,20,20,15,10,10 };
+Score RookHalfOpenBonus[8] = { S(5,10),S(5,10),S(8,15),S(10,20),S(10,20),S(8,15),S(5,10),S(5,10) };
+Score RookOpenBonus[8] = { S(10,20),S(10,20),S(15,30),S(20,40),S(20,40),S(15,30), S(10,20),S(10,20) };
 Score RookConnectedBonus = S(5, 15);
 
 //Queen
@@ -109,6 +109,7 @@ Score PawnPressureBonus[9] = { 0,3,7,12,18,25,33,42,52 };
 Score DoubledPawnPenalty[8] = { 6,8,10,15,15,10,8,6 };
 Score IsolatedPawnPenalty[8] = { 9,12,18,30,30,18,12,9 };
 Score BackwardPawnPenalty[8] = { 6,8,10,12,12,10,8,6 };
+Score PawnOnOpenFilePenalty[8] = { 6,8,10,12,12,10,8,6 };
 Score BlockedPawnPenalty[64] = {   0,  0,  0,  0,  0,  0,  0,  0,
 	                             1,  1, 10, 16, 16, 10,  1,  1,
 								 0,  0,  0,  4,  4,  0,  0,  0,
@@ -337,8 +338,8 @@ template<bool Trace> int Engine::LeafEval()
 	Score PieceActivity[2] = { S(0,0),S(0,0) };
 	Score Passers[2] = { S(0,0),S(0,0) };
 
-	e.KingAttackUnits[COLOR_WHITE] = 30;
-	e.KingAttackUnits[COLOR_BLACK] = 30;
+	e.KingAttackUnits[COLOR_WHITE] = 20;
+	e.KingAttackUnits[COLOR_BLACK] = 20;
 
 	int currentMaterial = Material[COLOR_WHITE] + Material[COLOR_BLACK];
 	if (Trace)
@@ -355,7 +356,7 @@ template<bool Trace> int Engine::LeafEval()
 			TotalEval.mg += PieceSq[pos.Squares[i]][i];
 			TotalEval.eg += PieceSqEG[pos.Squares[i]][i];
 			if (Trace && pos.Squares[i] != SQUARE_EMPTY)
-				cout << PieceSq[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
+				cout << PieceSq[pos.Squares[i]][i] << ", " << PieceSqEG[pos.Squares[i]][i] << " for piece on " << Int2Sq(i) << endl;
 		}
 	}
 
@@ -424,7 +425,7 @@ template<bool Trace> int Engine::LeafEval()
 		}
 
 		//Pawn Storms
-		int kingrank = getRank(getColorMirror(i, k));
+		/*int kingrank = getRank(getColorMirror(i, k));
 		Bitset storm = getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN];
 		unsigned long enemypawn = 0;
 		while (storm)
@@ -436,7 +437,7 @@ template<bool Trace> int Engine::LeafEval()
 			{
 				cout << "Pawn Storm penalty for pawn on " << Int2Sq(enemypawn) << " for " << PlayerStrings[i] << ": " << PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn))+kingrank] << endl;
 			}
-		}
+		}*/
 
 		if ((getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there arent friendly pawns in the same file
 		{
@@ -544,8 +545,11 @@ template<bool Trace> int Engine::LeafEval()
 			_BitScanForward64(&k, b);
 			b ^= getPos2Bit(k);
 
+			int file = getFile(getColorMirror(i, k));
+
 			//Weak
-			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN]) //checks if this pawn is defended by a friendly pawn
+			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN] //checks if this pawn is defended by a friendly pawn
+				|| getPawnAttacks(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])  //checks if this pawn attacks an enemy pawn
 			{
 				WeakPawns[i] ^= getPos2Bit(k);
 			}
@@ -553,17 +557,17 @@ template<bool Trace> int Engine::LeafEval()
 			//Doubled
 			if (getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) //checks if there are friendly pawns in the same file
 			{
-				PawnStructure[i] -= DoubledPawnPenalty[getFile(getColorMirror(i, k))];
+				PawnStructure[i] -= DoubledPawnPenalty[file];
 				if (Trace)
-					cout << "Penalty for doubled pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(DoubledPawnPenalty[getFile(getColorMirror(i, k))]) << endl;
+					cout << "Penalty for doubled pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(DoubledPawnPenalty[file]) << endl;
 			}
 
 			//Isolated
 			if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
-				PawnStructure[i] -= IsolatedPawnPenalty[getFile(getColorMirror(i, k))];
+				PawnStructure[i] -= IsolatedPawnPenalty[file];
 				if (Trace)
-					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(IsolatedPawnPenalty[getFile(getColorMirror(i, k))]) << endl;
+					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(IsolatedPawnPenalty[file]) << endl;
 			}
 
 			//Backward
@@ -576,11 +580,19 @@ template<bool Trace> int Engine::LeafEval()
 						//&& pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == SQUARE_EMPTY
 						)
 					{
-						PawnStructure[i] -= BackwardPawnPenalty[getFile(k)];
+						PawnStructure[i] -= BackwardPawnPenalty[file];
 						if (Trace)
-							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(BackwardPawnPenalty[getFile(k)]) << endl;
+							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(BackwardPawnPenalty[file]) << endl;
 					}
 				}
+			}
+			
+			//On Open File
+			if (!(getAboveBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]))
+			{
+				PawnStructure[i] -= PawnOnOpenFilePenalty[file];
+				if (Trace)
+					cout << "Penalty for pawn on open file on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PawnOnOpenFilePenalty[file] << endl;
 			}
 
 			//Blocked
@@ -734,7 +746,7 @@ template<bool Trace> int Engine::LeafEval()
 			e.attackedByColor[i] |= m;
 			e.attackedByPiece[i][PIECE_KNIGHT] |= m;
 			m &= m^e.ColorPieces[i];
-			PieceActivity[i] += KnightMobility[popcnt(m)];
+			PieceActivity[i] += KnightMobility[popcnt(m)&(~e.attackedByPiece[getOpponent(i)][PIECE_PAWN])];
 			if (Trace)
 				cout << "Knight on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(KnightMobility[popcnt(m)]) << endl;
 
@@ -919,7 +931,7 @@ template<bool Trace> int Engine::LeafEval()
 		int whiteDef = popcnt(e.attackedByColor[i] & e.KingField[i] & ColoredSquares[COLOR_WHITE]);
 		int blackDef = popcnt(e.attackedByColor[i] & e.KingField[i] & ColoredSquares[COLOR_BLACK]);
 
-		e.KingAttackUnits[i] -= whiteDef*whiteDef + blackDef*blackDef;
+		e.KingAttackUnits[i] -= whiteDef*blackDef;
 		if (Trace)
 			cout << "Safety Bonus for colored squares defended near king for " << PlayerStrings[i] << ": " << whiteDef*whiteDef + blackDef*blackDef << endl;
 
@@ -1266,7 +1278,7 @@ void evalinit()
 	int BishopFileValues[8] = { -6, -2, 0, 2, 2, 0, -2, -6 };
 	int BishopDiagBonus = 4;
 	int RookFileValues[8] = {-6,-3,0,3,3,0,-3,-6};
-	int Rook7thRankBonus = 5;
+	int Rook7thRankBonus = 15;
 	int QueenCentralizationValues[8] = { -12,-4,0,4,4,0,-4,-12 };
 	int KingRankValues[8] = { 10,0,-20,-30,-40,-50,-60,-70 };
 	int KingFileValues[8] = { 30,40,20,0,0,20,40,30 };

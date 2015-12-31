@@ -36,6 +36,8 @@ public:
 	HashEntry* entries;
 	unsigned long long size;
 
+	uint64_t hits;
+
 	TranspositionTable(unsigned long long s);
 	~TranspositionTable();
 

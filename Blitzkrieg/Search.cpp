@@ -112,6 +112,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 			cout << ", Nullcutoffs: " << nullcutoffs;
 			/*cout << ", Avg. alpha first: " << ((double)alphafirst_sum / alpha_counter);
 			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);*/
+			cout << ", Fake Hits: " << ((double)(Table.hits * 100) / nodes);
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
 		}
 		
@@ -285,7 +286,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	if (probe.avoidnull) cannull = false;
 
 	ProbeStruct leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
-	if (leafevalprobe.found)
+	if (leafevalprobe.found && leafevalprobe.entry->bound==TT_EXACT)
 	{
 		Evaluation[ply] = leafevalprobe.score; //use TT probe as a better leafeval
 	}
@@ -416,13 +417,13 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 
-	if (!probe.found && dopv && depth>=2) //internal iterative deepening
+	if (!(probe.found) && (dopv || Evaluation[ply] + 256 >= beta) && depth >= 2) //internal iterative deepening
 	{
 		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
 	}	
 
 	int evaldiff = ply >= 2 ? Evaluation[ply] - Evaluation[ply - 2] : 0;
-
+	
 	vector<Move> quietmoves;
 	quietmoves.reserve(128);
 	int bestscore = CONS_NEGINF;
@@ -494,7 +495,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 		int reductiondepth = 1;
 
-		//check extension
+		///Check Extension
 		if (pos.underCheck(pos.turn))
 		{
 			incheck[ply] = true;
@@ -505,7 +506,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			incheck[ply] = false;
 		}
 
-		//recapture extension
+		///Recapture Extension
 		/*if (ply > 1 && m.getTo() == currentVariation[ply - 1].getTo() && iscapture && isCapture(currentVariation[ply - 1]))
 		{
 			reductiondepth--;
@@ -540,7 +541,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	reductiondepth++;
 		//}
 
-		//latemove reduction
+		///Latemove Reduction
 		if (!alpharaised
 			//&& i >= 4
 			&& depth >= 4
@@ -557,9 +558,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			)
 		{
 			if (evaldiff > 0)
-				reductiondepth += min(depth - 4, 4);
+				reductiondepth += min(depth - 4, min((int)i,7));
 			else
-				reductiondepth += min(depth - 4, 5);
+				reductiondepth += min(depth - 4, min((int)i+1,8));
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
@@ -594,10 +595,11 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//	}*/
 		//}
 		
+		///Search
 		if(dopv && alpharaised && depth>=3) //principal variation search
 		{
 			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, true, false);
-			if(score>alpha && score < beta) //check for failure
+			if(score > alpha && score < beta) //check for failure
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, true); //research
@@ -609,7 +611,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		{
 			score = -AlphaBeta(max(depth - reductiondepth,0), -beta, -alpha, &line, true, dopv);
 			//cout << "latemove" << endl;
-			if(score>alpha && score < beta && reductiondepth>1)
+			if(score > alpha && score < beta && reductiondepth>1)
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, dopv);
@@ -752,7 +754,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		alphafirst_sum += (firstalpha + 1);
 #endif
 	}
-	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
+	Table.Save(pos.TTKey,depth,bestscore,bound,alphamove);
 
 #ifdef BLITZKRIEG_DEBUG
 	if (pos.PawnKey != tablekey)
