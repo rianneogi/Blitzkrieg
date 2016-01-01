@@ -23,11 +23,14 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 331;
+const int ENGINEVERSION = 332;
 
 // Best Build so far: 322
 
 ///BUILDS
+// Build 332 - 01-01-2016 - Changed LMR max reduction, fixed a bug in Knight mobility, reduced Knight mobility,
+//                          now always does PVS after the first move is searched, improved TT replacement scheme,
+//							no longer re-calculates evaluation after a null move
 // Build 331 - 01-01-2016 - Increased Rook on 7th bonus, added Pawn on open file penalty, changed color weakness evaluation,
 //							doubled rook file endgame bonus, added extra condition for return exact value in TT Probe,
 //                          using TT probe as leaf eval now checks for exact bound, added extra condition for IID, changed LMR

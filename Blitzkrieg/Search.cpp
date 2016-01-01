@@ -181,6 +181,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 		}
 		lastscore = score;
 		score = val;
+		assert(score > CONS_NEGINF && score < CONS_INF);
 		timer.Stop();
 		if (print)
 		{
@@ -232,14 +233,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 #endif
 
-	//bool underCheck = pos.underCheck(pos.turn);
-	//if (incheck[ply]) //check extension
-	//{
-	//	depth++;
-	//}
-
 	if (isDraw()) return 0;
 
+	///Quiescence
 	if (depth == 0)
 	{
 		int value = QuiescenceSearchStandPat(alpha, beta); //go to quiescence
@@ -256,12 +252,14 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//nodes = 0;
 	}
 
+	///Repetition
 	if (ply != 0 && pos.isRepetition()) //check for repetition
 	{
 		//Table.Save(pos.TTKey,depth,0,TT_EXACT,CONS_NULLMOVE);
 		return 0;
 	}
 
+	///Probe
 	ProbeStruct probe = Table.Probe(pos.TTKey, depth, alpha, beta);
 	Move ttbestmove = createNullMove(pos.epsquare);
 	if (probe.found)
@@ -292,11 +290,20 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 	else
 	{
-		Evaluation[ply] = LeafEval<false>();
+		if (ply > 0 && currentVariation[ply] == CONS_NULLMOVE) //if last move was a nullmove, just invert score
+		{
+			Evaluation[ply] = -Evaluation[ply-1];
+			assert(!cannull);
+		}
+		else
+		{
+			Evaluation[ply] = LeafEval<false>();
+		}	
 	}
 
+	///Razoring
 	if (!dopv && ply != 0 && depth < 4 && !incheck[ply] &&
-		(((Evaluation[ply] + getRazorMargin(depth)) <= alpha))) //razoring
+		(((Evaluation[ply] + getRazorMargin(depth)) <= alpha)))
 	{
 		prunednodes++;
 		if (depth <= 1 && (Evaluation[ply] + getRazorMargin(3)) <= alpha)
@@ -308,7 +315,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			return v;
 	}
 
-	if (depth < 5 && ply != 0 && !incheck[ply] && ((Evaluation[ply] - getFutilityMargin(depth)) >= beta)) //futility pruning
+	///Futility
+	if (depth < 5 && ply != 0 && !incheck[ply] && ((Evaluation[ply] - getFutilityMargin(depth)) >= beta))
 	{
 		futilitynodes++;
 		return (Evaluation[ply] - getFutilityMargin(depth));
@@ -324,7 +332,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	Move m;
 	int score = 0;
 
-	//adaptive null move pruning
+	///Null Move
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
 	if (cannull && !dopv && depth >= 3 && incheck[ply] == false
@@ -558,14 +566,15 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			)
 		{
 			if (evaldiff > 0)
-				reductiondepth += min(depth - 4, min((int)i,7));
+				reductiondepth += min(depth - 4, min((int)i,4));
 			else
-				reductiondepth += min(depth - 4, min((int)i+1,8));
+				reductiondepth += min(depth - 4, min((int)i+1,5));
+			assert((depth - reductiondepth) >= 3);
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
 			}
-			if (m == Threats[ply]) //decrease reduction if move is a threat
+			if (m == Threats[ply] && reductiondepth > 0) //decrease reduction if move is a threat
 			{
 				reductiondepth = max(reductiondepth - 1, 0);
 			}
@@ -596,13 +605,14 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//}
 		
 		///Search
-		if(dopv && alpharaised && depth>=3) //principal variation search
+		if(dopv && i>0 && depth>=3) //principal variation search
 		{
 			score = -AlphaBeta(max(depth - reductiondepth, 0), -alpha - 1, -alpha, &line, true, false);
 			if(score > alpha && score < beta) //check for failure
 			{
 				line.clear();
 				score = -AlphaBeta(depth - 1, -beta, -alpha, &line, true, true); //research
+				alpharaised = false;
 				pvresearch++;
 				//cout << "pv research" << endl;
 			}
@@ -622,6 +632,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		incheck[ply] = false;
 		ply--;
 		pos.unmakeMove(m);
+
+		assert(score > CONS_NEGINF && score < CONS_INF);
+		assert(score >= CONS_MATED && score <= -CONS_MATED);
 
 		if(score>=beta)
 		{
@@ -755,6 +768,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 #endif
 	}
 	Table.Save(pos.TTKey,depth,bestscore,bound,alphamove);
+	/*if (ply == 0)
+	{
+		cout << "info string Stored: " << alphamove.toString() << " " << bound << " " << depth << endl;
+	}*/
 
 #ifdef BLITZKRIEG_DEBUG
 	if (pos.PawnKey != tablekey)

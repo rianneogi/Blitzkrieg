@@ -32,7 +32,7 @@ const Scale QueenFactor(1, 1);
 //Mobility
 Score BishopMobility[16] = { -24, -8,  0,  4,  6,  8,  10,  12,  14,  16, 18, 20, 24, 28, 32 };
 Score RookMobility[16] = { -16,-8, 0, 4, 4, 4, 8, 8, 8, 12, 12, 12, 16, 16, 16 };
-Score KnightMobility[9] = { -12, -8,  0,  4,  8, 10, 12, 14, 16 };
+Score KnightMobility[9] = { -6, -4,  0,  2,  4, 5, 6, 7, 8 };
 Score QueenMobility[32] = { -10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 };
 
 //Outposts
@@ -746,7 +746,7 @@ template<bool Trace> int Engine::LeafEval()
 			e.attackedByColor[i] |= m;
 			e.attackedByPiece[i][PIECE_KNIGHT] |= m;
 			m &= m^e.ColorPieces[i];
-			PieceActivity[i] += KnightMobility[popcnt(m)&(~e.attackedByPiece[getOpponent(i)][PIECE_PAWN])];
+			PieceActivity[i] += KnightMobility[popcnt(m)];
 			if (Trace)
 				cout << "Knight on " << Int2Sq(k) << " mobility bonus for " << PlayerStrings[i] << ": " << string(KnightMobility[popcnt(m)]) << endl;
 
