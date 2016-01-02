@@ -360,33 +360,30 @@ template<bool Trace> int Engine::LeafEval()
 		}
 	}
 
-	/*if (!isEG)
+	if (pos.Squares[27] == SQUARE_WHITEPAWN && pos.Squares[28] == SQUARE_WHITEPAWN)
 	{
-		if (pos.Squares[27] == SQUARE_WHITEPAWN && pos.Squares[28] == SQUARE_WHITEPAWN)
-		{
-			PieceActivity[COLOR_WHITE] += PawnsE4D4Bonus;
-			if (Trace)
-				cout << "Bonus for E4D4 Pawns for White: " << PawnsE4D4Bonus << endl;
-		}
-		if (pos.Squares[28] == SQUARE_WHITEPAWN && pos.Squares[29] == SQUARE_WHITEPAWN)
-		{
-			PieceActivity[COLOR_WHITE] += PawnsC4D4Bonus;
-			if (Trace)
-				cout << "Bonus for C4D4 Pawns for White: " << PawnsC4D4Bonus << endl;
-		}
-		if (pos.Squares[35] == SQUARE_BLACKPAWN && pos.Squares[36] == SQUARE_BLACKPAWN)
-		{
-			PieceActivity[COLOR_BLACK] += PawnsE4D4Bonus;
-			if (Trace)
-				cout << "Bonus for E4D4 Pawns for Black: " << PawnsE4D4Bonus << endl;
-		}
-		if (pos.Squares[36] == SQUARE_BLACKPAWN && pos.Squares[37] == SQUARE_BLACKPAWN)
-		{
-			PieceActivity[COLOR_BLACK] += PawnsC4D4Bonus;
-			if (Trace)
-				cout << "Bonus for C4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
-		}
-	}*/
+		PieceActivity[COLOR_WHITE] += PawnsE4D4Bonus;
+		if (Trace)
+			cout << "Bonus for E4D4 Pawns for White: " << PawnsE4D4Bonus << endl;
+	}
+	if (pos.Squares[28] == SQUARE_WHITEPAWN && pos.Squares[29] == SQUARE_WHITEPAWN)
+	{
+		PieceActivity[COLOR_WHITE] += PawnsC4D4Bonus;
+		if (Trace)
+			cout << "Bonus for C4D4 Pawns for White: " << PawnsC4D4Bonus << endl;
+	}
+	if (pos.Squares[35] == SQUARE_BLACKPAWN && pos.Squares[36] == SQUARE_BLACKPAWN)
+	{
+		PieceActivity[COLOR_BLACK] += PawnsE4D4Bonus;
+		if (Trace)
+			cout << "Bonus for E4D4 Pawns for Black: " << PawnsE4D4Bonus << endl;
+	}
+	if (pos.Squares[36] == SQUARE_BLACKPAWN && pos.Squares[37] == SQUARE_BLACKPAWN)
+	{
+		PieceActivity[COLOR_BLACK] += PawnsC4D4Bonus;
+		if (Trace)
+			cout << "Bonus for C4D4 Pawns for Black: " << PawnsC4D4Bonus << endl;
+	}
 
 	unsigned long k = 0;
 	Bitset b = 0x0;
@@ -547,6 +544,8 @@ template<bool Trace> int Engine::LeafEval()
 
 			int file = getFile(getColorMirror(i, k));
 
+			bool openfile = !(getAboveBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]);
+
 			//Weak
 			if (getPawnAttacks(getOpponent(i), k)&pos.Pieces[i][PIECE_PAWN] //checks if this pawn is defended by a friendly pawn
 				|| getPawnAttacks(i,k)&pos.Pieces[getOpponent(i)][PIECE_PAWN])  //checks if this pawn attacks an enemy pawn
@@ -565,7 +564,10 @@ template<bool Trace> int Engine::LeafEval()
 			//Isolated
 			if ((getSideBits(k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there are no friendly pawns on the adjacent files
 			{
-				PawnStructure[i] -= IsolatedPawnPenalty[file];
+				if (openfile)
+					PawnStructure[i] -= IsolatedPawnPenalty[file]*2;
+				else
+					PawnStructure[i] -= IsolatedPawnPenalty[file];
 				if (Trace)
 					cout << "Penalty for isolated pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(IsolatedPawnPenalty[file]) << endl;
 			}
@@ -580,19 +582,14 @@ template<bool Trace> int Engine::LeafEval()
 						//&& pos.Squares[getColorMirror(i, getPlus8(getColorMirror(i, k)))] == SQUARE_EMPTY
 						)
 					{
-						PawnStructure[i] -= BackwardPawnPenalty[file];
+						if (openfile)
+							PawnStructure[i] -= BackwardPawnPenalty[file]*2;
+						else
+							PawnStructure[i] -= BackwardPawnPenalty[file];
 						if (Trace)
 							cout << "Penalty for backward pawn on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << string(BackwardPawnPenalty[file]) << endl;
 					}
 				}
-			}
-			
-			//On Open File
-			if (!(getAboveBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]))
-			{
-				PawnStructure[i] -= PawnOnOpenFilePenalty[file];
-				if (Trace)
-					cout << "Penalty for pawn on open file on " << Int2Sq(k) << " for " << PlayerStrings[i] << ": " << PawnOnOpenFilePenalty[file] << endl;
 			}
 
 			//Blocked

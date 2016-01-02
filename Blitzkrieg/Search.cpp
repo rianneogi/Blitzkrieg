@@ -69,7 +69,11 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 	{
 		AllocatedTime = max((uint64_t)1, mytime / 4); //if opponent is in time trouble lets take our sweet time
 	}
-	cout << "Allocated Time: " << AllocatedTime << endl;
+
+#ifdef BLITZKRIEG_DEBUG
+	if(print)
+		cout << "Allocated Time: " << AllocatedTime << endl;
+#endif
 
 	vector<Move> line;
 	line.reserve(128);
@@ -336,9 +340,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
 	if (cannull && !dopv && depth >= 3 && incheck[ply] == false
-		&& (popcnt(pos.Pieces[pos.turn][PIECE_QUEEN]) || popcnt(pos.Pieces[pos.turn][PIECE_ROOK])
-			|| popcnt(pos.Pieces[pos.turn][PIECE_BISHOP] || popcnt(pos.Pieces[pos.turn][PIECE_KNIGHT]))
-			) //side to move does not have only pawns(to avoid zugzwang)
+		&& (pieceCount>2) //side to move does not have only pawns(to avoid zugzwang)
 		//&& Evaluation[ply] >= beta
 		)
 	{

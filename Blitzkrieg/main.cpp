@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 332;
+const int ENGINEVERSION = 333;
 
 // Best Build so far: 322
 
 ///BUILDS
+// Build 333 - 02-01-2016 - Added pawn duo bonus, removed pawn open file penalty, doubled penalty for isolated and backward pawns if they are on an open file
 // Build 332 - 01-01-2016 - Changed LMR max reduction, fixed a bug in Knight mobility, reduced Knight mobility,
 //                          now always does PVS after the first move is searched, improved TT replacement scheme,
 //							no longer re-calculates evaluation after a null move
@@ -632,7 +633,7 @@ int main(int argc, char* args[])
 
 	Interface i = Interface();
 	
-	//testpositions("wac", 0, 0, 1000, i.e1);
+	//testpositions("kaufman", 0, 0, 10000, i.e1);
 
 	try{
     i.start();

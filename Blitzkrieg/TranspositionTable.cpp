@@ -48,6 +48,7 @@ void TranspositionTable::Save(Bitset key, int depth, int score, int bound, Move 
 		//|| depth >= hash->depth
 		|| ((bound != TT_EXACT && hash->bound != TT_EXACT) || (bound==TT_EXACT && hash->bound==TT_EXACT)
 			|| (bound==TT_EXACT && hash->bound!=TT_EXACT))
+		//|| !(!hash->bestmove.isNullMove() && bestmove.isNullMove())
 		)
 	{
 		hash->key = key;
