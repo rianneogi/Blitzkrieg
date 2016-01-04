@@ -422,19 +422,22 @@ template<bool Trace> int Engine::LeafEval()
 		}
 
 		//Pawn Storms
-		/*int kingrank = getRank(getColorMirror(i, k));
+		int kingrank = getRank(getColorMirror(i, k));
 		Bitset storm = getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN];
 		unsigned long enemypawn = 0;
 		while (storm)
 		{
 			_BitScanForward64(&enemypawn, storm);
 			storm ^= getPos2Bit(enemypawn);
-			KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn))+kingrank];
+			if (getAboveBits(getOpponent(i), enemypawn)&pos.Pieces[i][PIECE_PAWN]) //blocked
+				KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank];
+			else
+				KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank]*1.25f;
 			if (Trace)
 			{
 				cout << "Pawn Storm penalty for pawn on " << Int2Sq(enemypawn) << " for " << PlayerStrings[i] << ": " << PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn))+kingrank] << endl;
 			}
-		}*/
+		}
 
 		if ((getAboveBits(i, k)&pos.Pieces[i][PIECE_PAWN]) == 0) //checks if there arent friendly pawns in the same file
 		{
