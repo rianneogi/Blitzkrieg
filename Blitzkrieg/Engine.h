@@ -15,9 +15,8 @@ extern int SquareValues[64];
 
 enum EvalConstants{CONS_INF = 20000,CONS_NEGINF = -20000, CONS_DRAW = 0, CONS_MATED = -10000};
 enum SortPhases{SORTPHASE_NONE,SORTPHASE_PV,SORTPHASE_HASH,SORTPHASE_GOODCAP,SORTPHASE_KILLER,SORTPHASE_HISTORY,SORTPHASE_BADCAP};
-enum TimeMode{MODE_DEFAULT,MODE_MOVETIME,MODE_INF};
+enum TimeMode{MODE_DEFAULT,MODE_MOVETIME,MODE_INF,MODE_DEPTH};
 
-extern const int EndgameMaterial;
 extern int MAXDEPTH;
 extern const unsigned long long CheckupNodeCount;
 

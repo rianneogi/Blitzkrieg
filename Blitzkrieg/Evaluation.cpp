@@ -10,8 +10,6 @@ int PieceMaterial[7] = {100,325,335,500,975,-CONS_MATED,0};
 int TotalMaterial = (8*PieceMaterial[0] + 2*PieceMaterial[1] + 2*PieceMaterial[2] + 2*PieceMaterial[3] + PieceMaterial[4]);
 int TotalMaterialBothSides = TotalMaterial * 2;
 
-const int EndgameMaterial = 3800;
-
 int LazyEval1 = 400;
 
 //int CenterSquareBonus = 4;
@@ -96,9 +94,9 @@ Score PawnStormPenalty[8] = { 0,0,5,10,20,40,60,80 };
 
 const int QueenContactCheckPenalty = 12;
 const int RookContactCheckPenalty = 5;
-const int CheckPenalty[6] = { 1,3,2,4,5,0 }; //penalty when a piece can check your king safely
+const int CheckPenalty[6] = { 1,3,3,4,5,0 }; //penalty when a piece can check your king safely
 
-const int AttackWeights[6] = {1,3,2,4,5,0};
+const int AttackWeights[6] = {1,3,3,4,5,0};
 Score KingSafetyScore[512];
 
 //Pawn Structure
@@ -933,7 +931,13 @@ template<bool Trace> int Engine::LeafEval()
 
 		e.KingAttackUnits[i] -= whiteDef*blackDef;
 		if (Trace)
-			cout << "Safety Bonus for colored squares defended near king for " << PlayerStrings[i] << ": " << whiteDef*whiteDef + blackDef*blackDef << endl;
+			cout << "Safety Bonus for colored squares defended near king for " << PlayerStrings[i] << ": " << whiteDef*blackDef << endl;
+
+		int whiteAttack = popcnt(e.attackedByColor[getOpponent(i)] & e.KingField[i] & ColoredSquares[COLOR_WHITE] & ~e.attackedByColor[i]);
+		int blackAttack = popcnt(e.attackedByColor[getOpponent(i)] & e.KingField[i] & ColoredSquares[COLOR_BLACK] & ~e.attackedByColor[i]);
+		e.KingAttackUnits[i] += whiteAttack*whiteAttack + blackAttack*blackAttack;
+		if (Trace)
+			cout << "Safety Penalty for colored squares attacked near king for " << PlayerStrings[i] << ": " << whiteAttack*whiteAttack + blackAttack*blackAttack << endl;
 
 		//e.KingAttackUnits[i] += (unsigned)popcnt(e.KingAdj[i] & e.attackedByColor[getOpponent(i)] & (~e.attackedByColor[i]))*5;
 
@@ -1190,7 +1194,7 @@ void scaleConstants()
 
 	for (int i = 0;i < 8;i++)
 	{
-		PawnStormPenalty[8] *= KingSafetyFactor;
+		PawnStormPenalty[i] *= KingSafetyFactor;
 	}
 
 	//Pawns

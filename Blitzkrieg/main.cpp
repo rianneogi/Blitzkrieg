@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 334;
+const int ENGINEVERSION = 335;
 
-// Best Build so far: 322
+// Best Build so far: 327
 
 ///BUILDS
+// Build 335 - 02-02-2016 - Added Table probe in quiescence, changed king safety evaluation a bit
 // Build 334 - 04-01-2016 - Readded Pawn Storm penalty, increased pawn storm penalty if enemy pawn isn't blocked
 // Build 333 - 02-01-2016 - Added pawn duo bonus, removed pawn open file penalty, doubled penalty for isolated and backward pawns if they are on an open file
 // Build 332 - 01-01-2016 - Changed LMR max reduction, fixed a bug in Knight mobility, reduced Knight mobility,
@@ -578,31 +579,140 @@ void testpositions(string test, int fenformat, int onlyfailed, int time, Engine&
 	f2.close();
 }
 
-double ErrorFunction(const vector<int>& p)
+double ErrorFunction(const vector<int*>& p, Engine& e)
 {
+	double K = 1.13;
+	int fenformat = 0;
+	fstream f("pgn.pgn", ios::in);
+	if (!f.is_open())
+	{
+		cout << "CANT OPEN" << endl;
+	}
+	string s;
+	double error = 0;
+	enum { SEARCH, PARSE, SQUARE, CURLY };
+	int phase = SEARCH;
+	string movestr = "";
+	int Res = 0;
 
-	return 0;
+	vector<Move> movelist;
+
+	while (!f.eof())
+	{
+		char c = f.get();
+		if (phase == SEARCH)
+		{
+			if (c == '[')
+			{
+				phase = SQUARE;
+				continue;
+			}
+			if (c == '{')
+			{
+				phase = CURLY;
+				continue;
+			}
+			if (c != '.' && c != ' ' && c!='\n')
+			{
+				phase = PARSE;
+				movestr += c;
+			}
+		}
+		else if (phase == PARSE)
+		{
+			if (c != '.' && c != ' ' && c != '\n')
+			{
+				movestr += c;
+			}
+			else
+			{
+				phase = SEARCH;
+
+				if (movestr.at(0) >= '0' && movestr.at(0) <= '9')
+				{
+					int change = 0;
+					if (movestr == "1-0")
+					{
+						Res = 1;
+						change = 1;
+					}
+					if (movestr == "0-1")
+					{
+						Res = -1;
+						change = 1;
+					}
+					if (movestr == "1/2-1/2")
+					{
+						Res = 0;
+						change = 1;
+					}
+
+					if (change == 1)
+					{
+						e.pos.setStartPos();
+						for (int i = 0;i < movelist.size();i++)
+						{
+							e.pos.forceMove(i);
+							int score = e.QuiescenceSearchStandPat(CONS_NEGINF, CONS_INF);
+							error += Res - 1 / (1 + pow(10, (-K*score) / 400));
+						}
+					}
+					
+					continue;
+				}
+				string move = convertMoveNotation(movestr, e.pos);
+				if (move == "error")
+				{
+					cout << "ERROR " << movestr << endl;
+				}
+				movelist.push_back(String2Move(move));
+				
+
+				movestr = "";
+			}
+		}
+		else if (phase == CURLY)
+		{
+			if (c == '}')
+			{
+				phase = SEARCH;
+				continue;
+			}
+		}
+		else if (phase == SQUARE)
+		{
+			if (c == ']')
+			{
+				phase = SEARCH;
+				continue;
+			}
+		}
+	}
+
+	f.close();
+
+	return error;
 }
 
-vector<int> localOptimize(const vector<int>& initialGuess) {
+vector<int*> localOptimize(const vector<int*>& initialGuess, Engine& e) {
 	const int nParams = initialGuess.size();
-	double bestE = ErrorFunction(initialGuess);
-	vector<int> bestParValues = initialGuess;
+	double bestE = ErrorFunction(initialGuess, e);
+	vector<int*> bestParValues = initialGuess;
 	bool improved = true;
 	while (improved) {
 		improved = false;
 		for (int pi = 0; pi < nParams; pi++) {
-			vector<int> newParValues = bestParValues;
-			newParValues[pi] += 1;
-			double newE = ErrorFunction(newParValues);
+			vector<int*> newParValues = bestParValues;
+			*newParValues[pi] += 1;
+			double newE = ErrorFunction(newParValues, e);
 			if (newE < bestE) {
 				bestE = newE;
 				bestParValues = newParValues;
 				improved = true;
 			}
 			else {
-				newParValues[pi] -= 2;
-				newE = ErrorFunction(newParValues);
+				*newParValues[pi] -= 2;
+				newE = ErrorFunction(newParValues, e);
 				if (newE < bestE) {
 					bestE = newE;
 					bestParValues = newParValues;
@@ -635,6 +745,15 @@ int main(int argc, char* args[])
 	Interface i = Interface();
 	
 	//testpositions("kaufman", 0, 0, 10000, i.e1);
+	/*vector<int*> v;
+	for (int i = 0;i < 5;i++)
+		v.push_back(&PieceMaterial[i]);
+	vector<int*> v2 = localOptimize(v, i.e1);
+
+	for (int i = 0;i < v.size();i++)
+	{
+		cout << *v.at(i) << endl;
+	}*/
 
 	try{
     i.start();

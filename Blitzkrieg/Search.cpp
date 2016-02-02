@@ -65,6 +65,14 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 		}
 		AllocatedTime = max((uint64_t)1, mytime / 15);
 	}
+	if(mode==MODE_DEPTH)
+	{
+		MAXDEPTH = wtime;
+	}
+	else
+	{
+		MAXDEPTH = 100;
+	}
 	if (opptime < mytime / 4 && timeMode == MODE_DEFAULT)
 	{
 		AllocatedTime = max((uint64_t)1, mytime / 4); //if opponent is in time trouble lets take our sweet time
@@ -563,7 +571,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			//&& (KillerMoves[1][ply].getTo() != moveto || KillerMoves[1][ply].getFrom() != movefrom)
 			&& !incheck[ply]
 			&& !incheck[ply-1]
-			//&& (movingpiece!=PIECE_PAWN || getRank(getColorMirror(pos.turn, moveto))<6) //dont reduce pawn moves past 6th rank
+			//&& (movingpiece!=PIECE_PAWN || getRank(getColorMirror(getOpponent(pos.turn), moveto))<6) //dont reduce pawn moves past 6th rank
 			//&& m!=Threats[ply]
 			)
 		{

@@ -22,9 +22,10 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		return val;
 	}*/
 	int stand_pat = 0;
-	ProbeStruct probe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	ProbeStruct probe = Table.Probe(pos.TTKey, -1, alpha, beta);
 	if (probe.found && probe.entry->bound == TT_EXACT)
 	{
+		return probe.score;
 		stand_pat = probe.score; //use TT probe as leafeval
 	}
 	else
@@ -58,6 +59,8 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 	//generateCaptureScores(vec, scores);
 
 	int material = getBoardMaterial<COLOR_WHITE>()+getBoardMaterial<COLOR_BLACK>();
+	Move bestmove = CONS_NULLMOVE;
+	int bound = TT_ALPHA;
 	for(int i = 0;i<vec.size();i++)
 	{
 		m = getHighestScoringMove(vec,i);
@@ -88,11 +91,21 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		score = -QuiescenceSearchStandPat(-beta,-alpha);
 		pos.unmakeMove(m);
 		ply--;
-		if(score >= beta)
+		if (score >= beta)
+		{
+			Table.Save(pos.TTKey, -1, score, TT_BETA, m);
 			return score;
-		if(alpha < score)
+		}
+			
+		if (alpha < score)
+		{
 			alpha = score;
+			bestmove = m;
+			bound = TT_EXACT;
+		}
+			
 	}
+	Table.Save(pos.TTKey, -1, alpha, TT_ALPHA, bestmove);
 	//quisctime.Stop();
 	return alpha;
 }
