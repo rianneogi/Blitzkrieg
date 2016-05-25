@@ -91,7 +91,7 @@ class Engine
 	unsigned long long perft(int depth);
 
 	//Quiescence.cpp
-	int QuiescenceSearchStandPat(int alpha,int beta);
+	int QuiescenceSearch(int alpha,int beta);
 	int StaticExchangeEvaluation(int to, int from,int movpiece,int capt);
 
 	//Evaluation.cpp
@@ -110,6 +110,8 @@ template int Engine::LeafEval<true>();
 template int Engine::LeafEval<false>();
 template int Engine::getBoardMaterial<COLOR_WHITE>();
 template int Engine::getBoardMaterial<COLOR_BLACK>();
+vector<int*> getEvalParameters();
+void printEvalParameters();
 
 //int loadFromLua(std::string path);
 #endif // ENGINE_H_INCLUDED

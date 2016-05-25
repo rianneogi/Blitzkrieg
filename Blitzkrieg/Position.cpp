@@ -1031,7 +1031,7 @@ void Position::generateMoves(vector<Move>& moves) const
         //unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-        Bitset m = KingMoves[n]&(KingMoves[n]^ColorPieces[turn]);
+        Bitset m = getKingMoves(n)&(getKingMoves(n)^ColorPieces[turn]);
         while(m)
         {
 			//unsigned long k = 0;
@@ -1184,6 +1184,7 @@ void Position::generateCaptures(vector<Move>& moves) const
 			}
         }
     }
+
     //Knight Moves
     b = Pieces[turn][PIECE_KNIGHT];
     while(b)
@@ -1201,6 +1202,7 @@ void Position::generateCaptures(vector<Move>& moves) const
             addMove(moves,mov);
         }
     }
+
     //King Moves
     b = Pieces[turn][PIECE_KING];
     while(b)
@@ -1208,7 +1210,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
-        Bitset m = KingMoves[n]&ColorPieces[getOpponent(turn)];
+        Bitset m = getKingMoves(n)&ColorPieces[getOpponent(turn)];
         while(m)
         {
 			unsigned long k = 0;

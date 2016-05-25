@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-int Engine::QuiescenceSearchStandPat(int alpha,int beta)
+int Engine::QuiescenceSearch(int alpha,int beta)
 {
 	//quisctime.Start();
 
@@ -22,16 +22,16 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		return val;
 	}*/
 	int stand_pat = 0;
-	ProbeStruct probe = Table.Probe(pos.TTKey, -1, alpha, beta);
-	if (probe.found && probe.entry->bound == TT_EXACT)
-	{
-		return probe.score;
-		stand_pat = probe.score; //use TT probe as leafeval
-	}
-	else
-	{
+	//ProbeStruct probe = Table.Probe(pos.TTKey, -1, alpha, beta);
+	//if (probe.found && probe.entry->bound == TT_EXACT)
+	//{
+	//	return probe.score;
+	//	stand_pat = probe.score; //use TT probe as leafeval
+	//}
+	//else
+	//{
 		stand_pat = LeafEval<false>();
-	} 
+	//} 
 	if(stand_pat >= beta) //standpat
 	{
 		return stand_pat;
@@ -63,7 +63,8 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 	int bound = TT_ALPHA;
 	for(int i = 0;i<vec.size();i++)
 	{
-		m = getHighestScoringMove(vec,i);
+		//m = getHighestScoringMove(vec,i);
+		m = vec[i];
 		int special = m.getSpecial();
 		int captured = m.getCapturedPiece();
 		if ((stand_pat + PieceMaterial[getSquare2Piece(captured)] + 200 < alpha) //delta pruning
@@ -88,12 +89,12 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		{
 			SelectiveDepth = ply;
 		}
-		score = -QuiescenceSearchStandPat(-beta,-alpha);
+		score = -QuiescenceSearch(-beta,-alpha);
 		pos.unmakeMove(m);
 		ply--;
 		if (score >= beta)
 		{
-			Table.Save(pos.TTKey, -1, score, TT_BETA, m);
+			//Table.Save(pos.TTKey, -1, score, TT_BETA, m);
 			return score;
 		}
 			
@@ -105,7 +106,7 @@ int Engine::QuiescenceSearchStandPat(int alpha,int beta)
 		}
 			
 	}
-	Table.Save(pos.TTKey, -1, alpha, TT_ALPHA, bestmove);
+	//Table.Save(pos.TTKey, -1, alpha, TT_ALPHA, bestmove);
 	//quisctime.Stop();
 	return alpha;
 }

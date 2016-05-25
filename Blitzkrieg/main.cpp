@@ -409,7 +409,7 @@ const int ENGINEVERSION = 335;
 //   -Doesn't work because after using unmakeMove() to go back, you don't know the previous move
 ///HISTORY
 
-string convertMoveNotation(string move, const Position& pos) //converts move notation (eg. Nf3 into g1f3) 
+string convertMoveNotation(string move, Position& pos) //converts move notation (eg. Nf3 into g1f3) 
 {
 	vector<Move> moves;
 	pos.generateMoves(moves);
@@ -422,6 +422,37 @@ string convertMoveNotation(string move, const Position& pos) //converts move not
 	if (move.at(move.size() - 1) == '+' || move.at(move.size() - 1) == '#')
 	{
 		move = move.substr(0, move.size() - 1);
+	}
+
+	if (move == "O-O")
+	{
+		if (pos.turn == COLOR_WHITE)
+		{
+			return "e1g1";
+		}
+		else
+		{
+			return "e8g8";
+		}
+	}
+	else if (move == "O-O-O")
+	{
+		if (pos.turn == COLOR_WHITE)
+		{
+			return "e1c1";
+		}
+		else
+		{
+			return "e8c8";
+		}
+	}
+	int prom = 0;
+	char prompiece = ' ';
+	if (move.at(move.size() - 2) == '=') //promotion
+	{
+		prom = 1;
+		prompiece = move.at(move.size() - 1);
+		move = move.substr(0, move.size() - 2);
 	}
 
 	for (int i = 0;i < moves.size();i++)
@@ -437,9 +468,10 @@ string convertMoveNotation(string move, const Position& pos) //converts move not
 					if (move.at(1) >= '1' && move.at(1) <= '8')
 					{
 						int rank = move.at(1) - 49;
-						if (m.getFrom() >= rank && m.getFrom() <= rank + 7)
+						if (m.getFrom() >= 8*rank && m.getFrom() <= 8*rank + 7)
 						{
-							return s;
+							if(pos.isLegal(m))
+								return s;
 						}
 					}
 					else
@@ -447,19 +479,54 @@ string convertMoveNotation(string move, const Position& pos) //converts move not
 						int file = move.at(1) - 97;
 						if (m.getFrom() % 8 == (7 - file))
 						{
-							return s;
+							if (pos.isLegal(m))
+								return s;
 						}
 					}
 				}
 				else
 				{
-					return s;
+					if (pos.isLegal(m))
+						return s;
+				}
+			}
+			else if ((move.at(0) != 'Q' && move.at(0) != 'B' && move.at(0) != 'R' && move.at(0) != 'N' && move.at(0) != 'K' &&
+				(move.size() > 2 && move.at(0) >= 97 && move.at(0) <= 97 + 8 && move.at(1) == 'x'))) //pawn capture
+			{
+				int file = move.at(0) - 97;
+				if (m.getFrom() % 8 == (7 - file))
+				{
+					if (prom)
+					{
+						if (pieceStrings[m.getSpecial() + 1].at(0) == prompiece)
+						{
+							if (pos.isLegal(m))
+								return s;
+						}
+					}
+					else
+					{
+						if (pos.isLegal(m))
+							return s;
+					}
 				}
 			}
 			else if (move.at(0)!='Q' && move.at(0)!='B' && move.at(0)!='R' && move.at(0)!='N' && move.at(0)!='K' &&
 				(move.size() == 2 || (move.size()==4 && move.at(1)=='x'))) //pawn move
 			{
-				return s;
+				if (prom)
+				{
+					if (pieceStrings[m.getSpecial() + 1].at(0) == prompiece)
+					{
+						if (pos.isLegal(m))
+							return s;
+					}
+				}
+				else
+				{
+					if (pos.isLegal(m))
+						return s;
+				}
 			}
 		}
 	}
@@ -593,10 +660,12 @@ double ErrorFunction(const vector<int*>& p, Engine& e)
 	enum { SEARCH, PARSE, SQUARE, CURLY };
 	int phase = SEARCH;
 	string movestr = "";
-	int Res = 0;
+	double Res = 0;
+	int gameno = 1;
+	int poscount = 0;
 
 	vector<Move> movelist;
-
+	e.pos.setStartPos();
 	while (!f.eof())
 	{
 		char c = f.get();
@@ -626,8 +695,12 @@ double ErrorFunction(const vector<int*>& p, Engine& e)
 			}
 			else
 			{
-				phase = SEARCH;
-
+				if (c == '[')
+					phase = SQUARE;
+				else if (c == '{')
+					phase = CURLY;
+				else
+					phase = SEARCH;
 				if (movestr.at(0) >= '0' && movestr.at(0) <= '9')
 				{
 					int change = 0;
@@ -638,12 +711,12 @@ double ErrorFunction(const vector<int*>& p, Engine& e)
 					}
 					if (movestr == "0-1")
 					{
-						Res = -1;
+						Res = 0;
 						change = 1;
 					}
 					if (movestr == "1/2-1/2")
 					{
-						Res = 0;
+						Res = 0.5;
 						change = 1;
 					}
 
@@ -652,22 +725,66 @@ double ErrorFunction(const vector<int*>& p, Engine& e)
 						e.pos.setStartPos();
 						for (int i = 0;i < movelist.size();i++)
 						{
-							e.pos.forceMove(i);
-							int score = e.QuiescenceSearchStandPat(CONS_NEGINF, CONS_INF);
-							error += Res - 1 / (1 + pow(10, (-K*score) / 400));
+							if (!e.pos.makeMove(movelist.at(i)))
+							{
+								//cout << "ILLEGAL MOVE " << movelist.at(i).toString() << " " << i << endl;
+							}
+							//cout << "parsing move " << movelist.at(i).toString() << endl;
+							int score = e.QuiescenceSearch(CONS_NEGINF, CONS_INF);
+							if (score > 20000)
+							{
+								e.pos.display(0);
+								cout << endl;
+							}
+							if (e.pos.turn == COLOR_BLACK)
+								score = -score;
+							double err = Res - (1 / (1 + pow(10, (-K*score) / 400)));
+							err *= err;
+							//cout << score << " " << err << endl;
+							assert(err >= 0 && err <= 1);
+							error += err;
+							poscount++;
 						}
+						e.pos.setStartPos();
+						movelist.clear();
+						gameno++;
+						//cout << "gameno: " << gameno << endl;
 					}
-					
+					//cout << movestr << endl;
+					movestr = "";
 					continue;
 				}
 				string move = convertMoveNotation(movestr, e.pos);
 				if (move == "error")
 				{
-					cout << "ERROR " << movestr << endl;
+					cout << "ERROR " << gameno << " " << movestr << " " << e.pos.movelist.size() << " " << e.pos.turn << endl;
+					e.pos.display(0);
+					cout << endl;
 				}
-				movelist.push_back(String2Move(move));
-				
-
+				else
+				{
+					vector<Move> moves;
+					e.pos.generateMoves(moves);
+					Move theMove = CONS_NULLMOVE;
+					for (int i = 0;i < moves.size();i++)
+					{
+						if (moves.at(i).toString() == move)
+						{
+							theMove = moves.at(i);
+						}
+					}
+					if (theMove.isNullMove())
+					{
+						cout << "the move is null error\n";
+					}
+					else
+					{
+						e.pos.forceMove(theMove);
+						movelist.push_back(theMove);
+						//cout << "added move " << movestr << endl;
+					}
+				}
+				//cout << movestr << endl;
 				movestr = "";
 			}
 		}
@@ -688,35 +805,76 @@ double ErrorFunction(const vector<int*>& p, Engine& e)
 			}
 		}
 	}
-
+	double res = error / poscount;
 	f.close();
-
-	return error;
+	assert(res >= 0 && res <= 1);
+	return res;
+	//return abs(error);
 }
 
-vector<int*> localOptimize(const vector<int*>& initialGuess, Engine& e) {
+vector<int*> localOptimize(const vector<int*>& initialGuess, const vector<int>& minv, const vector<int>& maxv, Engine& e) 
+{
 	const int nParams = initialGuess.size();
 	double bestE = ErrorFunction(initialGuess, e);
+	cout << "init: " << bestE << endl;
 	vector<int*> bestParValues = initialGuess;
+	vector<int> improving;
+	for (int i = 0;i < nParams;i++)
+	{
+		improving.push_back(2);
+	}
 	bool improved = true;
-	while (improved) {
+	while (improved)
+	{
 		improved = false;
-		for (int pi = 0; pi < nParams; pi++) {
+		for (int pi = 0; pi < nParams; pi++) 
+		{
+			if (improving[pi] == 0) continue;
 			vector<int*> newParValues = bestParValues;
-			*newParValues[pi] += 1;
-			double newE = ErrorFunction(newParValues, e);
-			if (newE < bestE) {
-				bestE = newE;
-				bestParValues = newParValues;
-				improved = true;
-			}
-			else {
-				*newParValues[pi] -= 2;
-				newE = ErrorFunction(newParValues, e);
-				if (newE < bestE) {
+			int oldvalue = *newParValues[pi];
+
+			if (improving[pi] == 1 || improving[pi] == 2)
+			{
+				*newParValues[pi] = min(oldvalue + 5, maxv[pi]);
+				cout << "changing " << pi << " to " << *(newParValues[pi]) << endl;
+				double newE = ErrorFunction(newParValues, e);
+				if (newE < bestE)
+				{
 					bestE = newE;
 					bestParValues = newParValues;
 					improved = true;
+					cout << "improved to " << bestE << endl;
+					improving[pi] = 1;
+				}
+				else if (improving[pi] == 2)
+				{
+					improving[pi] = -1;
+				}
+				else if (improving[pi] == 1)
+				{
+					*newParValues[pi] = oldvalue;
+					cout << "Set " << pi << " to " << oldvalue << endl;
+					improving[pi] = 0;
+				}
+			}
+			if (improving[pi] == -1)
+			{
+				*newParValues[pi] = max(oldvalue - 5, minv[pi]);
+				cout << "changing " << pi << " to " << *(newParValues[pi]) << endl;
+				double newE = ErrorFunction(newParValues, e);
+				improving[pi] = -1;
+				if (newE < bestE) 
+				{
+					bestE = newE;
+					bestParValues = newParValues;
+					improved = true;
+					cout << "improved to " << bestE << endl;
+				}
+				else
+				{
+					*newParValues[pi] = oldvalue;
+					cout << "Set " << pi << " to " << oldvalue << endl;
+					improving[pi] = 0;
 				}
 			}
 		}
@@ -745,15 +903,19 @@ int main(int argc, char* args[])
 	Interface i = Interface();
 	
 	//testpositions("kaufman", 0, 0, 10000, i.e1);
-	/*vector<int*> v;
-	for (int i = 0;i < 5;i++)
-		v.push_back(&PieceMaterial[i]);
-	vector<int*> v2 = localOptimize(v, i.e1);
+	vector<int*> v = getEvalParameters();
+	vector<int> minv, maxv;
+	for (int i = 0;i < v.size();i++)
+	{
+		minv.push_back(0);
+		maxv.push_back(2000);
+	}
+	vector<int*> v2 = localOptimize(v, minv, maxv ,i.e1);
 
 	for (int i = 0;i < v.size();i++)
 	{
 		cout << *v.at(i) << endl;
-	}*/
+	}
 
 	try{
     i.start();

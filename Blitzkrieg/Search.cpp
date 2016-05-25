@@ -250,7 +250,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	///Quiescence
 	if (depth == 0)
 	{
-		int value = QuiescenceSearchStandPat(alpha, beta); //go to quiescence
+		int value = QuiescenceSearch(alpha, beta); //go to quiescence
 		/*if (value > alpha && value < beta)
 			PvSize = ply - 1;*/
 		//Table.Save(pos.TTKey,0,value,TT_EXACT,CONS_NULLMOVE);
@@ -319,10 +319,10 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	{
 		prunednodes++;
 		if (depth <= 1 && (Evaluation[ply] + getRazorMargin(3)) <= alpha)
-			return QuiescenceSearchStandPat(alpha, beta);
+			return QuiescenceSearch(alpha, beta);
 
 		int ralpha = alpha - getRazorMargin(depth);
-		int v = QuiescenceSearchStandPat(ralpha, ralpha + 1);
+		int v = QuiescenceSearch(ralpha, ralpha + 1);
 		if (v <= ralpha)
 			return v;
 	}

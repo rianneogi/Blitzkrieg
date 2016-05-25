@@ -181,6 +181,10 @@ void Interface::UCI()
 		{
 			cout << e1.LeafEval<false>() << endl;
 		}
+		else if (s == "qsearch")
+		{
+			cout << e1.QuiescenceSearch(CONS_NEGINF, CONS_INF) << endl;
+		}
 		else if (s == "info" || s == "information")
 		{
 			info();

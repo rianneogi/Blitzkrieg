@@ -92,11 +92,11 @@ Score KingAdjRookFilePenalty = 5; //penalty for king being adjacent an opponent 
 Score KingBetweenRooksPenalty = 10; //not implemented
 Score PawnStormPenalty[8] = { 0,0,5,10,20,40,60,80 };
 
-const int QueenContactCheckPenalty = 12;
-const int RookContactCheckPenalty = 5;
-const int CheckPenalty[6] = { 1,3,3,4,5,0 }; //penalty when a piece can check your king safely
+int QueenContactCheckPenalty = 12;
+int RookContactCheckPenalty = 5;
+int CheckPenalty[6] = { 1,3,3,4,5,0 }; //penalty when a piece can check your king safely
 
-const int AttackWeights[6] = {1,3,3,4,5,0};
+int AttackWeights[6] = {1,3,3,4,5,0};
 Score KingSafetyScore[512];
 
 //Pawn Structure
@@ -1363,4 +1363,70 @@ void evalinit()
 		KingSafetyScore[i] = S(t, 0);
 	}
 	scaleConstants();
+}
+
+vector<int*> getEvalParameters()
+{
+	vector<int*> v;
+	/*for (int i = 1;i < 5;i++)
+	{
+		v.push_back(&PieceMaterial[i]);
+	}*/
+	for (int i = 0;i < 64;i++)
+	{
+		v.push_back(&PassedPawnBonus[i].mg);
+		v.push_back(&PassedPawnBonus[i].eg);
+	}
+	/*for (int i = 0;i < 5;i++)
+	{
+		v.push_back(&AttackWeights[i]);
+	}*/
+	/*for (int i = 0;i < 5;i++)
+	{
+		v.push_back(&CheckPenalty[i]);
+	}*/
+	//v.push_back(&NoPawnsPenalty.mg);
+	//v.push_back(&NoPawnsPenalty.eg);
+	/*v.push_back(&BishopPairBonus.mg);
+	v.push_back(&BishopPairBonus.eg);
+	v.push_back(&RookPairBonus.mg);
+	v.push_back(&RookPairBonus.eg);
+	v.push_back(&KnightPairBonus.mg);
+	v.push_back(&KnightPairBonus.eg);*/
+	//v.push_back(&QueenOutEarlyPenalty.mg);
+	/*for (int i = 0;i < 8;i++)
+		v.push_back(&PawnStormPenalty[i].mg);*/
+	/*v.push_back(&PawnShield1Bonus.mg);
+	v.push_back(&PawnShield2Bonus.mg);
+	v.push_back(&BishopShieldBonus.mg);*/
+	//v.push_back(&KingAdjHalfOpenFilePenalty.mg);
+	//v.push_back(&KingOnHalfOpenFilePenalty.mg);
+	//v.push_back(&KingAdjOpenFilePenalty.mg);
+	//v.push_back(&KingOnOpenFilePenalty.mg);
+	//v.push_back(&KingAdjRookFilePenalty.mg);
+	//v.push_back(&KingOnRookFilePenalty.mg);
+	//v.push_back(&QueenContactCheckPenalty);
+	//v.push_back(&RookContactCheckPenalty);
+	/*for (int i = 0;i < 8;i++)
+	{
+		v.push_back(&BishopPawnSameColor[i].mg);
+		v.push_back(&BishopPawnSameColor[i].eg);
+		v.push_back(&BishopOppPawnSameColor[i].mg);
+		v.push_back(&BishopOppPawnSameColor[i].eg);
+		v.push_back(&KnightPawnAdj[i].mg);
+		v.push_back(&KnightPawnAdj[i].eg);
+		v.push_back(&KnightOppPawnAdj[i].mg);
+		v.push_back(&KnightOppPawnAdj[i].eg);
+		v.push_back(&RookPawnAdj[i].mg);
+		v.push_back(&RookPawnAdj[i].eg);
+		v.push_back(&RookOppPawnAdj[i].mg);
+		v.push_back(&RookOppPawnAdj[i].eg);
+	}*/
+	return v;
+}
+
+void printEvalParameters()
+{
+	for (int i = 0;i < 5;i++)
+		cout << AttackWeights[i] << endl;
 }
