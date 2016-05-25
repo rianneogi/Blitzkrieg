@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 335;
+const int ENGINEVERSION = 336;
 
 // Best Build so far: 327
 
 ///BUILDS
+// Build 336 - 25-05-2016 - No longer sorts in quiescence
 // Build 335 - 02-02-2016 - Added Table probe in quiescence, changed king safety evaluation a bit
 // Build 334 - 04-01-2016 - Readded Pawn Storm penalty, increased pawn storm penalty if enemy pawn isn't blocked
 // Build 333 - 02-01-2016 - Added pawn duo bonus, removed pawn open file penalty, doubled penalty for isolated and backward pawns if they are on an open file
@@ -903,7 +904,7 @@ int main(int argc, char* args[])
 	Interface i = Interface();
 	
 	//testpositions("kaufman", 0, 0, 10000, i.e1);
-	vector<int*> v = getEvalParameters();
+	/*vector<int*> v = getEvalParameters();
 	vector<int> minv, maxv;
 	for (int i = 0;i < v.size();i++)
 	{
@@ -915,7 +916,7 @@ int main(int argc, char* args[])
 	for (int i = 0;i < v.size();i++)
 	{
 		cout << *v.at(i) << endl;
-	}
+	}*/
 
 	try{
     i.start();
