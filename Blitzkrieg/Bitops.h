@@ -13,6 +13,8 @@ using namespace std;
 
 typedef unsigned long long Bitset;
 
+#define USE_SSE
+
 //typedef unsigned long long uint64;
 //typedef long long int64;
 //typedef unsigned long uint32;
@@ -321,7 +323,11 @@ inline Bitset getKingField(int color,int n)
 
 inline unsigned long long popcnt(Bitset b)
 {
+#ifdef USE_SSE
 	return _mm_popcnt_u64(b);
+#else
+	return popcnt2(b)
+#endif
 }
 
 

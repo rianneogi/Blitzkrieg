@@ -540,14 +540,14 @@ int popcnt2(Bitset b)
 		b &= b-1; //clear the last most significant bit
 		c++;
 	}
-	return _mm_popcnt_u64(b);
+	return c;
 }
 
 int firstOf(Bitset b)
 {
     for(int i = 0;i<64;i++)
     {
-        if((b&1)==1)
+        if((b&1)!=0)
         {
             return i;
         }
@@ -560,11 +560,11 @@ int lastOf(Bitset b)
 {
     for(int i = 0;i<64;i++)
     {
-        if((b&0x8000000000000000)==1)
+        if((b&0x8000000000000000)!=0)
         {
             return 63-i;
         }
-        b << 1;
+        b <<= 1;
     }
     return -1;
 }
