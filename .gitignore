@@ -19,7 +19,6 @@ x64/
 x86/
 build/
 bld/
-[Bb]in/
 [Oo]bj/
 
 # Visual Studio 2015 cache/options directory
@@ -248,3 +247,4 @@ ModelManifest.xml
 /.exe files/RetroChess build 40.exe
 /.exe files/RetroChess build 39.exe
 /.exe files/RetroChess build 38.exe
+/.exe files
