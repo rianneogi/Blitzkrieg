@@ -2,8 +2,6 @@
 
 #include "Bitops.h"
 
-
-
 extern Bitset RookAttacks[64][4096];
 extern Bitset BishopAttacks[64][512];
 
