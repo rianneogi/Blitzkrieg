@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 336;
+const int ENGINEVERSION = 337;
 
 // Best Build so far: 327
 
 ///BUILDS
+// Build 337 - 23-08-2016 - Fixed a bug when TTRandom()
 // Build 336 - 25-05-2016 - No longer sorts in quiescence
 // Build 335 - 02-02-2016 - Added Table probe in quiescence, changed king safety evaluation a bit
 // Build 334 - 04-01-2016 - Readded Pawn Storm penalty, increased pawn storm penalty if enemy pawn isn't blocked

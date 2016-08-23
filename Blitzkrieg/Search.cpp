@@ -238,7 +238,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, bool cannull, bool dopv)
 {
 #ifdef BLITZKRIEG_DEBUG
-	int tablekey = pos.PawnKey;
+	Bitset tablekey = pos.PawnKey;
 	if (alpha > beta || alpha < CONS_NEGINF || beta > CONS_INF)
 	{
 		cout << "info string ERROR: alpha > beta" << alpha << " " << beta << " " << ply << endl;
@@ -358,7 +358,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		ply++;
 
 #ifdef BLITZKRIEG_DEBUG
-		int ttkeynull = pos.TTKey;
+		Bitset ttkeynull = pos.TTKey;
 #endif
 
 		pos.forceMove(m);
