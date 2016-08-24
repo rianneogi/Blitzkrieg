@@ -17,6 +17,7 @@ struct HashEntry
 	int depth;
 	int score;
 	int bound;
+	bool avoidnull;
 
 	HashEntry();
 	HashEntry(Bitset k,int d,int s,int b,Move m);
@@ -27,7 +28,6 @@ struct ProbeStruct
 	HashEntry* entry;
 	int score;
 	bool found;
-	bool avoidnull;
 };
 
 class TranspositionTable
@@ -43,7 +43,7 @@ public:
 
 	void Save(HashEntry const& entry);
 	void Save(Bitset key,int depth,int score,int bound,Move bestmove);
-	ProbeStruct Probe(Bitset key,int depth,int alpha,int beta);
+	int Probe(Bitset key,int depth,int alpha,int beta);
 	Move getBestMove(Bitset key);
 };
 

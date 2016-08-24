@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 337;
+const int ENGINEVERSION = 338;
 
 // Best Build so far: 327
 
 ///BUILDS
+// Build 338 - 24-08-2016 - Reverted changes made in Build 328
 // Build 337 - 23-08-2016 - Fixed a bug when TTRandom()
 // Build 336 - 25-05-2016 - No longer sorts in quiescence
 // Build 335 - 02-02-2016 - Added Table probe in quiescence, changed king safety evaluation a bit

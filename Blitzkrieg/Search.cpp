@@ -126,6 +126,7 @@ Move Engine::IterativeDeepening(int mode, uint64_t wtime, uint64_t btime, uint64
 			cout << ", Avg. alpha last: " << ((double)alphalast_sum / alpha_counter);*/
 			cout << ", Fake Hits: " << ((double)(Table.hits * 100) / nodes);
 			cout << ", TT hits: " << tthitcount << ": " << ((double)(tthitcount * 100) / nodes) << "%" << endl;
+			Table.hits = 0;
 		}
 		
 		/*if (PvSize < 0)
@@ -272,15 +273,15 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	}
 
 	///Probe
-	ProbeStruct probe = Table.Probe(pos.TTKey, depth, alpha, beta);
+	int probe = Table.Probe(pos.TTKey, depth, alpha, beta);
 	Move ttbestmove = createNullMove(pos.epsquare);
-	if (probe.found)
+	if (probe != CONS_TTUNKNOWN)
 	{
 		//cout << probe << " found " << pos.TTKey << endl;
 		if (ply != 0)
 		{
 			tthitcount++;
-			return probe.score;
+			return probe;
 		}
 		/*else
 		{
@@ -293,12 +294,14 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			}
 		}*/
 	}
-	if (probe.avoidnull) cannull = false;
+	//if (probe.avoidnull) cannull = false;
 
-	ProbeStruct leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
-	if (leafevalprobe.found && leafevalprobe.entry->bound==TT_EXACT)
+	int leafevalprobe = Table.Probe(pos.TTKey, 0, alpha, beta);
+	if (leafevalprobe!=CONS_TTUNKNOWN 
+		//&& leafevalprobe.entry->bound==TT_EXACT
+		)
 	{
-		Evaluation[ply] = leafevalprobe.score; //use TT probe as a better leafeval
+		Evaluation[ply] = leafevalprobe; //use TT probe as a better leafeval
 	}
 	else
 	{
@@ -345,6 +348,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	int score = 0;
 
 	///Null Move
+	bool madenullmove = false;
 	Bitset Pieces = pos.OccupiedSq ^ pos.Pieces[COLOR_WHITE][PIECE_PAWN] ^ pos.Pieces[COLOR_BLACK][PIECE_PAWN];
 	int pieceCount = popcnt(Pieces);
 	if (cannull && !dopv && depth >= 3 && incheck[ply] == false
@@ -352,6 +356,8 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		//&& Evaluation[ply] >= beta
 		)
 	{
+		madenullmove = true;
+
 		//int R = depth > 5 ? 3 : 2; //dynamic depth-based reduction
 		int R = ((823 + 67 * depth) / 256 + std::min(max(0, Evaluation[ply] - beta) / PieceMaterial[PIECE_PAWN], 3));
 		m = createNullMove(pos.epsquare);
@@ -435,7 +441,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 	scores.reserve(128);
 	generateCaptureScores(vec, scores);*/
 
-	if (!(probe.found) && (dopv || Evaluation[ply] + 256 >= beta) && depth >= 2) //internal iterative deepening
+	if (probe==CONS_TTUNKNOWN && (dopv || Evaluation[ply] + 256 >= beta) && depth >= 2) //internal iterative deepening
 	{
 		int score = AlphaBeta(depth-2, alpha, beta, &line, false, dopv);
 	}	
@@ -777,7 +783,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		alphafirst_sum += (firstalpha + 1);
 #endif
 	}
-	Table.Save(pos.TTKey,depth,bestscore,bound,alphamove);
+	Table.Save(pos.TTKey, depth, bestscore, bound, alphamove);
 	/*if (ply == 0)
 	{
 		cout << "info string Stored: " << alphamove.toString() << " " << bound << " " << depth << endl;

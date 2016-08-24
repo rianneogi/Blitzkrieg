@@ -29,7 +29,7 @@ void TranspositionTable::Save(HashEntry const& entry)
 	HashEntry* hash = &entries[entry.key&SizeMinusOne];
 
 	if(hash->key!=entry.key 
-		//|| entry.depth >= hash->depth
+		|| entry.depth >= hash->depth
 		)
 	{
 		hash->key = entry.key;
@@ -45,9 +45,9 @@ void TranspositionTable::Save(Bitset key, int depth, int score, int bound, Move 
 	HashEntry* hash = &entries[key&SizeMinusOne];
 
 	if (hash->key != key 
-		//|| depth >= hash->depth
-		|| ((bound != TT_EXACT && hash->bound != TT_EXACT) || (bound==TT_EXACT && hash->bound==TT_EXACT)
-			|| (bound==TT_EXACT && hash->bound!=TT_EXACT))
+		|| depth >= hash->depth
+		//|| ((bound != TT_EXACT && hash->bound != TT_EXACT) || (bound==TT_EXACT && hash->bound==TT_EXACT)
+		//	|| (bound==TT_EXACT && hash->bound!=TT_EXACT))
 		//|| !(!hash->bestmove.isNullMove() && bestmove.isNullMove())
 		)
 	{
@@ -59,52 +59,22 @@ void TranspositionTable::Save(Bitset key, int depth, int score, int bound, Move 
 	}
 }
 
-ProbeStruct TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
+int TranspositionTable::Probe(Bitset key,int depth,int alpha,int beta)
 {
-	ProbeStruct pb;
     HashEntry* hash = &entries[key&SizeMinusOne];
-	pb.found = false;
-	pb.avoidnull = false;
     if(hash->key == key)
     {
-		pb.entry = hash;
-		hits++;
-        if((hash->depth >= depth))
-        {
-			if (hash->bound == TT_EXACT 
-				&& hash->score > alpha && hash->score < beta
-				)
-			{
-				//return hash->score;
-				pb.score = hash->score;
-				pb.found = true;
-			}
-               
-			if (hash->bound == TT_ALPHA && hash->score <= alpha)
-			{
-				//return hash->score;
-				pb.score = hash->score;
-				pb.found = true;
-			}
-               
-			if (hash->bound == TT_BETA && hash->score >= beta)
-			{
-				//return hash->score;
-				pb.score = hash->score;
-				pb.found = true;
-			}
-        }
-
-		if (hash->score < beta
-			&& depth >= 3
-			&& hash->bound == TT_ALPHA
-			&& pb.found == true
-			)
+		if ((hash->depth >= depth))
 		{
-			pb.avoidnull = true;
+			if (hash->bound == TT_EXACT)
+				return hash->score;
+			if (hash->bound == TT_ALPHA && hash->score <= alpha)
+				return hash->score;
+			if (hash->bound == TT_BETA && hash->score >= beta)
+				return hash->score;
 		}
     }
-    return pb;
+    return CONS_TTUNKNOWN;
 }
 
 Move TranspositionTable::getBestMove(Bitset key)

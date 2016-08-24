@@ -237,7 +237,7 @@ void Interface::UCI()
 		}
 		else if (s == "probe")
 		{
-			cout << Table.Probe(e1.pos.TTKey, 0, CONS_NEGINF, CONS_INF).score << endl;
+			cout << Table.Probe(e1.pos.TTKey, 0, CONS_NEGINF, CONS_INF) << endl;
 			cout << Table.getBestMove(e1.pos.TTKey).toString() << endl;
 		}
 		else if (s == "exit" || s == "quit")
