@@ -394,7 +394,7 @@ template<bool Trace> int Engine::LeafEval()
 	{
 		b = pos.Pieces[i][PIECE_KING];
 		//unsigned long k = 0;
-		_BitScanForward64(&k, b);
+		BitscanForward(&k, b);
 		e.KingSquare[i] = k;
 		e.KingAdj[i] = getKingMoves(k);
 		e.KingField[i] = getKingField(i, k);
@@ -425,7 +425,7 @@ template<bool Trace> int Engine::LeafEval()
 		unsigned long enemypawn = 0;
 		while (storm)
 		{
-			_BitScanForward64(&enemypawn, storm);
+			BitscanForward(&enemypawn, storm);
 			storm ^= getPos2Bit(enemypawn);
 			if (getAboveBits(getOpponent(i), enemypawn)&pos.Pieces[i][PIECE_PAWN]) //blocked
 				KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank];
@@ -540,7 +540,7 @@ template<bool Trace> int Engine::LeafEval()
 
 		while (b)
 		{
-			_BitScanForward64(&k, b);
+			BitscanForward(&k, b);
 			b ^= getPos2Bit(k);
 
 			int file = getFile(getColorMirror(i, k));
@@ -641,7 +641,7 @@ template<bool Trace> int Engine::LeafEval()
 		while(b)
 		{
 			//unsigned long k = 0;
-			_BitScanForward64(&k,b);
+			BitscanForward(&k,b);
 			b ^= getPos2Bit(k);
 
 			//Open Files
@@ -717,7 +717,7 @@ template<bool Trace> int Engine::LeafEval()
 		while(b)
 		{
 			//unsigned long k = 0;
-			_BitScanForward64(&k,b);
+			BitscanForward(&k,b);
 			b ^= getPos2Bit(k);
 
 			//Outpost
@@ -799,7 +799,7 @@ template<bool Trace> int Engine::LeafEval()
 		while(b)
 		{
 			//unsigned long k = 0;
-			_BitScanForward64(&k,b);
+			BitscanForward(&k,b);
 			b ^= getPos2Bit(k);
 
 			//Outpost
@@ -873,7 +873,7 @@ template<bool Trace> int Engine::LeafEval()
 		while(b)
 		{
 			//unsigned long k = 0;
-			_BitScanForward64(&k,b);
+			BitscanForward(&k,b);
 			b ^= getPos2Bit(k);
 
 			Bitset m = getQueenAttacks(k, pos.OccupiedSq);
@@ -992,7 +992,7 @@ template<bool Trace> int Engine::LeafEval()
 		b = pos.Pieces[i][PIECE_PAWN];
 		while (b)
 		{
-			_BitScanForward64(&k, b);
+			BitscanForward(&k, b);
 			b ^= getPos2Bit(k);
 
 			if ((getAboveAndAboveSideBits(i, k)&pos.Pieces[getOpponent(i)][PIECE_PAWN]) == 0) //checks if the pawn is a passer

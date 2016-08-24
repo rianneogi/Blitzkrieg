@@ -326,7 +326,16 @@ inline unsigned long long popcnt(Bitset b)
 #ifdef USE_SSE
 	return _mm_popcnt_u64(b);
 #else
-	return popcnt2(b)
+	return popcnt2(b);
+#endif
+}
+
+inline void BitscanForward(unsigned long* n, Bitset b)
+{
+#ifdef USE_SSE
+	_BitScanForward64(n, b);
+#else
+	*n = lastOf(b);
 #endif
 }
 

@@ -861,13 +861,13 @@ void Position::generateMoves(vector<Move>& moves) const
     while(b)
     {
         //unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = PawnMoves[turn][n]&(PawnMoves[turn][n]^OccupiedSq);
         while(m)
         {
 			//unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
 			if(getRank(k)==7 || getRank(k)==0) //promotion
 			{
@@ -983,7 +983,7 @@ void Position::generateMoves(vector<Move>& moves) const
         while(x)
         {
             //unsigned long k = 0;
-			_BitScanForward64(&k,x);
+			BitscanForward(&k,x);
 			x ^= getPos2Bit(k);
 			if(getRank(int(k))==7 || getRank(int(k))==0) //promotion
 			{
@@ -1011,13 +1011,13 @@ void Position::generateMoves(vector<Move>& moves) const
     while(b)
     {
         //unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = KnightMoves[n]&(KnightMoves[n]^ColorPieces[turn]);
         while(m)
         {
             //unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KNIGHT,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1029,13 +1029,13 @@ void Position::generateMoves(vector<Move>& moves) const
     while(b)
     {
         //unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = getKingMoves(n)&(getKingMoves(n)^ColorPieces[turn]);
         while(m)
         {
 			//unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KING,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1047,14 +1047,14 @@ void Position::generateMoves(vector<Move>& moves) const
     while(b)
     {
         //unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
             //unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_ROOK,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1066,14 +1066,14 @@ void Position::generateMoves(vector<Move>& moves) const
     while(b)
     {
         //unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getBishopAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
             //unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
             m^=getPos2Bit(k);
             Move mov(n,k,PIECE_BISHOP,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1085,14 +1085,14 @@ void Position::generateMoves(vector<Move>& moves) const
     while(b)
     {
         //unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getQueenAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
             //unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_QUEEN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1150,7 +1150,7 @@ void Position::generateCaptures(vector<Move>& moves) const
     while(b)
     {
         unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 
         //Pawn Attacks
@@ -1162,7 +1162,7 @@ void Position::generateCaptures(vector<Move>& moves) const
         while(x)
         {
             unsigned long k = 0;
-			_BitScanForward64(&k,x);
+			BitscanForward(&k,x);
 			x ^= getPos2Bit(k);
 			if(getRank(k)==7 || getRank(k)==0) //promotion
 			{
@@ -1190,13 +1190,13 @@ void Position::generateCaptures(vector<Move>& moves) const
     while(b)
     {
         unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
         b^=getPos2Bit(n);
         Bitset m = getKnightMoves(n)&ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
             m^=getPos2Bit(k);
             Move mov(n,k,PIECE_KNIGHT,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1208,13 +1208,13 @@ void Position::generateCaptures(vector<Move>& moves) const
     while(b)
     {
         unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = getKingMoves(n)&ColorPieces[getOpponent(turn)];
         while(m)
         {
 			unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KING,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1226,14 +1226,14 @@ void Position::generateCaptures(vector<Move>& moves) const
     while(b)
     {
         unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_ROOK,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1245,14 +1245,14 @@ void Position::generateCaptures(vector<Move>& moves) const
     while(b)
     {
         unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getBishopAttacks(n, OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_BISHOP,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1264,14 +1264,14 @@ void Position::generateCaptures(vector<Move>& moves) const
     while(b)
     {
         unsigned long n = 0;
-		_BitScanForward64(&n,b);
+		BitscanForward(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getQueenAttacks(n, OccupiedSq);
         m &= ColorPieces[getOpponent(turn)];
         while(m)
         {
             unsigned long k = 0;
-			_BitScanForward64(&k,m);
+			BitscanForward(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_QUEEN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
             addMove(moves,mov);
@@ -1285,7 +1285,7 @@ void Position::generatePawnPushes(vector<Move>& moves) const
 	while (b)
 	{
 		unsigned long n = 0;
-		_BitScanForward64(&n, b);
+		BitscanForward(&n, b);
 		b ^= getPos2Bit(n);
 		if (getRank(getColorMirror(turn, n)) < 7)
 			continue;
@@ -1293,7 +1293,7 @@ void Position::generatePawnPushes(vector<Move>& moves) const
 		while (m)
 		{
 			unsigned long k = 0;
-			_BitScanForward64(&k, m);
+			BitscanForward(&k, m);
 			m ^= getPos2Bit(k);
 			if (getRank(k) == 7 || getRank(k) == 0) //promotion
 			{
@@ -1407,7 +1407,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 	if(b!=0)
 	{
 		unsigned long k = 0;
-		_BitScanForward64(&k,b);  //we don't care if this is a promotion or en passant since this function is only going to be called in SEE
+		BitscanForward(&k,b);  //we don't care if this is a promotion or en passant since this function is only going to be called in SEE
 		Move mov(k,n,PIECE_PAWN,Squares[n],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
 		//if(isLegal(mov))
 			return mov;
@@ -1416,7 +1416,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 	if(b!=0)
 	{
 		unsigned long k = 0;
-		_BitScanForward64(&k,b);
+		BitscanForward(&k,b);
 		Move mov(k,n,PIECE_KNIGHT,Squares[n],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
 		//if(isLegal(mov))
 			return mov;
@@ -1426,7 +1426,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 	if(b!=0)
 	{
 		unsigned long k = 0;
-		_BitScanForward64(&k,b);
+		BitscanForward(&k,b);
 		Move mov(k,n,PIECE_BISHOP,Squares[n],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
 		//if(isLegal(mov))
 			return mov;
@@ -1436,7 +1436,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 	if(b!=0)
 	{
 		unsigned long k = 0;
-		_BitScanForward64(&k,b);
+		BitscanForward(&k,b);
 		Move mov(k,n,PIECE_ROOK,Squares[n],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
 		//if(isLegal(mov))
 			return mov;
@@ -1447,7 +1447,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 	if(b!=0)
 	{
 		unsigned long k = 0;
-		_BitScanForward64(&k,b);
+		BitscanForward(&k,b);
 		Move mov(k,n,PIECE_QUEEN,Squares[n],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
 		//if(isLegal(mov))
 			return mov;
@@ -1456,7 +1456,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
     if(b!=0)
 	{
         unsigned long k = 0;
-		_BitScanForward64(&k,b);
+		BitscanForward(&k,b);
 		Move mov(k,n,PIECE_KING,Squares[n],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
 		//if(isLegal(mov))
 			return mov;
@@ -1467,7 +1467,7 @@ Move Position::getSmallestAttacker(int turn,int n,unsigned long long occ)
 bool Position::underCheck(int turn)
 {
 	unsigned long k = 0;
-	_BitScanForward64(&k, Pieces[turn][PIECE_KING]);
+	BitscanForward(&k, Pieces[turn][PIECE_KING]);
     return isAttacked(turn, k);
 }
 
