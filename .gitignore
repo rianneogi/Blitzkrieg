@@ -218,3 +218,6 @@ ModelManifest.xml
 /Blitzkrieg.VC.VC.opendb
 /Blitzkrieg.VC.db
 /copy.bat
+/archives
+
+*.sln

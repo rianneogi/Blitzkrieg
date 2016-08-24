@@ -108,6 +108,12 @@ Score Score::operator/(Scale const & s) const
 	return r;
 }
 
+std::ostream& operator<<(std::ostream& os, const Score& s)
+{
+	os << (std::to_string(s.mg) + ", " + std::to_string(s.eg));
+	return os;
+}
+
 Score Score::operator+=(Score const& s)
 {
 	mg += s.mg;

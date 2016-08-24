@@ -22,7 +22,7 @@ Interface::~Interface()
 
 void Interface::UCI()
 {
-	cout << "id name " << ENGINENAME << endl;
+	cout << "id name " << ENGINENAME << " " << ENGINEVERSION << endl;
 	cout << "id author " << ENGINEAUTHOR << endl;
 	cout << "uciok" << endl;
 	cout << "info string " << ENGINENAME << " " << ENGINEVERSION << endl;
@@ -46,6 +46,12 @@ void Interface::UCI()
 		else if(s=="quit")
 		{
 			break;
+		}
+		else if (s == "uci")
+		{
+			cout << "id name " << ENGINENAME << " " << ENGINEVERSION << endl;
+			cout << "id author " << ENGINEAUTHOR << endl;
+			cout << "uciok" << endl;
 		}
 		else if(s=="go")
 		{
