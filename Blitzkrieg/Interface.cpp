@@ -199,9 +199,13 @@ void Interface::UCI()
 		}
 		else if (s == "perft")
 		{
+			Clock t;
+			t.Start();
 			s = getStringToken(str, ' ', 2);
 			int pdepth = atoi(s.c_str());
-			cout << e1.perft(pdepth) << endl;
+			uint64_t perft = e1.perft(pdepth);
+			t.Stop();
+			cout << "Count: " << perft << ", Time: " << t.ElapsedMilliseconds() << ", NPS: " << ((perft * 1000) / t.ElapsedMilliseconds()) << endl;
 		}
 		else if (s == "movesort")
 		{
