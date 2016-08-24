@@ -249,3 +249,5 @@ ModelManifest.xml
 /.exe files/RetroChess build 38.exe
 /.exe files
 /archives
+
+*.sln
