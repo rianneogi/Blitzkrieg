@@ -210,3 +210,11 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/Blitzkrieg/Test Suites
+/Blitzkrieg/magic.txt
+/Blitzkrieg/fen.txt
+/Blitzkrieg/pgn1.pgn
+/Blitzkrieg/pgn.pgn
+/Blitzkrieg.VC.VC.opendb
+/Blitzkrieg.VC.db
+/copy.bat
