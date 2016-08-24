@@ -854,20 +854,20 @@ void Position::generateMoves(vector<Move>& moves) const
                          Pieces[COLOR_BLACK][PIECE_QUEEN] | Pieces[COLOR_BLACK][PIECE_KING];
 
 	Bitset b; //current piece bitboard
-	unsigned long n = 0; //from square index
-	unsigned long k = 0; //to square index
+	//unsigned long n = 0; //from square index
+	//unsigned long k = 0; //to square index
 
 	//Pawn Moves
 	b = Pieces[turn][PIECE_PAWN];
     while(b)
     {
-        //unsigned long n = 0;
+        unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = PawnMoves[turn][n]&(PawnMoves[turn][n]^OccupiedSq);
         while(m)
         {
-			//unsigned long k = 0;
+			unsigned long k = 0;
 			_BitScanForward64(&k,m);
 			m ^= getPos2Bit(k);
 			if(getRank(k)==7 || getRank(k)==0) //promotion
@@ -983,7 +983,7 @@ void Position::generateMoves(vector<Move>& moves) const
 			x = PawnAttacks[turn][n]&(ColorPieces[getOpponent(turn)] | getPos2Bit(epsquare));
         while(x)
         {
-            //unsigned long k = 0;
+            unsigned long k = 0;
 			_BitScanForward64(&k,x);
 			x ^= getPos2Bit(k);
 			if(getRank(int(k))==7 || getRank(int(k))==0) //promotion
@@ -1011,13 +1011,13 @@ void Position::generateMoves(vector<Move>& moves) const
     b = Pieces[turn][PIECE_KNIGHT];
     while(b)
     {
-        //unsigned long n = 0;
+        unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = KnightMoves[n]&(KnightMoves[n]^ColorPieces[turn]);
         while(m)
         {
-            //unsigned long k = 0;
+            unsigned long k = 0;
 			_BitScanForward64(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KNIGHT,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1029,13 +1029,13 @@ void Position::generateMoves(vector<Move>& moves) const
     b = Pieces[turn][PIECE_KING];
     while(b)
     {
-        //unsigned long n = 0;
+        unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
         Bitset m = KingMoves[n]&(KingMoves[n]^ColorPieces[turn]);
         while(m)
         {
-			//unsigned long k = 0;
+			unsigned long k = 0;
 			_BitScanForward64(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_KING,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1047,14 +1047,14 @@ void Position::generateMoves(vector<Move>& moves) const
     b = Pieces[turn][PIECE_ROOK];
     while(b)
     {
-        //unsigned long n = 0;
+        unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getRookAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
-            //unsigned long k = 0;
+            unsigned long k = 0;
 			_BitScanForward64(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_ROOK,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1066,14 +1066,14 @@ void Position::generateMoves(vector<Move>& moves) const
     b = Pieces[turn][PIECE_BISHOP];
     while(b)
     {
-        //unsigned long n = 0;
+        unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getBishopAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
-            //unsigned long k = 0;
+            unsigned long k = 0;
 			_BitScanForward64(&k,m);
             m^=getPos2Bit(k);
             Move mov(n,k,PIECE_BISHOP,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
@@ -1085,14 +1085,14 @@ void Position::generateMoves(vector<Move>& moves) const
     b = Pieces[turn][PIECE_QUEEN];
     while(b)
     {
-        //unsigned long n = 0;
+        unsigned long n = 0;
 		_BitScanForward64(&n,b);
 		b ^= getPos2Bit(n);
 		Bitset m = getQueenAttacks(n,OccupiedSq);
         m &= m^ColorPieces[turn];
         while(m)
         {
-            //unsigned long k = 0;
+            unsigned long k = 0;
 			_BitScanForward64(&k,m);
 			m ^= getPos2Bit(k);
             Move mov(n,k,PIECE_QUEEN,Squares[k],PIECE_NONE,castling[0][0],castling[0][1],castling[1][0],castling[1][1],epsquare);
