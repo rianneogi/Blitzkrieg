@@ -66,15 +66,13 @@ public:
 
 inline Bitset getRookAttacks(int sq, Bitset occ)
 {
-	Magic* m = &RookMagicTable[sq];
-	occ = ((occ&m->mask)*m->magic) >> m->shift;
+	occ = ((occ&RookMagicTable[sq].mask)*RookMagicTable[sq].magic) >> RookMagicTable[sq].shift;
 	return RookAttacks[sq][occ];
 }
 
 inline Bitset getBishopAttacks(int sq, Bitset occ)
 {
-	Magic* m = &BishopMagicTable[sq];
-	occ = ((occ&m->mask)*m->magic) >> m->shift;
+	occ = ((occ&BishopMagicTable[sq].mask)*BishopMagicTable[sq].magic) >> BishopMagicTable[sq].shift;
 	return BishopAttacks[sq][occ];
 }
 

@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 332;
+const int ENGINEVERSION = 333;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 333 - 24-08-2015 - Undid change in Build 329
 // Build 332 - 24-08-2015 - Undid last change, undid optimization in Build 328
 // Build 331 - 24-08-2015 - No longer returns move instantly in move sort if a PV move is found
 // Build 330 - 24-08-2015 - Added pawn storm penalty
