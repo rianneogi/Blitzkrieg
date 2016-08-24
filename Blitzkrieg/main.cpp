@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 329;
+const int ENGINEVERSION = 330;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 330 - 24-08-2015 - Added pawn storm penalty
 // Build 329 - 24-08-2015 - Made a small optimization in rook and bishop move generation
 // Build 328 - 24-08-2015 - Now returns move instantly in move sort if a PV move is found, made small optimization in generateMoves()
 // Build 327 - 29-12-2015 - Added Recapture extension, Counter and Followups now check if entire move is same instead of just to,from
