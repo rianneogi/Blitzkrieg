@@ -545,9 +545,9 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 			)
 		{
 			if (evaldiff>0)
-				reductiondepth += min(depth - 4, 4);
+				reductiondepth += min(depth - 4, min(int(i),6));
 			else
-				reductiondepth += min(depth - 4, 5);
+				reductiondepth += min(depth - 4, min(int(i),7));
 			if (!dopv && HistoryScores[movingpiece][moveto] < 0) //history reduction
 			{
 				reductiondepth++;
