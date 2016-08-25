@@ -441,6 +441,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		int movefrom = m.getFrom();
 
 		int iscapture = isCapture(m);
+
 		/*int see = 0;
 		int evade_see = 0;
 		Move smallestattckr = pos.getSmallestAttacker(getOpponent(pos.turn), movefrom);
@@ -563,7 +564,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 
 		//if (isCapture(m) && !dopv && see > 400 && depth>=5) //prune really good captures
 		//{
-		//	reductiondepth += 4;
+		//	reductiondepth += 2;
 		//}
 
 		//if (alpha_counter != 0 && (depth-reductiondepth)>=3 && i>((double)alphalast_sum/alpha_counter) && capturedpiece == SQUARE_EMPTY && special == PIECE_NONE
@@ -739,7 +740,7 @@ int Engine::AlphaBeta(int depth, int alpha, int beta, vector<Move>* variation, b
 		alphafirst_sum += (firstalpha + 1);
 #endif
 	}
-	Table.Save(pos.TTKey,depth,alpha,bound,alphamove);
+	Table.Save(pos.TTKey,depth,bestscore,bound,alphamove);
 
 #ifdef BLITZKRIEG_DEBUG
 	if (pos.PawnKey != tablekey)
