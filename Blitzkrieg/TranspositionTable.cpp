@@ -108,7 +108,9 @@ void TTinit()
 
 Bitset TTRandom()
 {
-	return (rand() | (rand()<<16) | (rand()<<32) | (rand()<<48));
+	//return (rand() | (rand()<<16) | (rand()<<32) | (rand()<<48));
+	unsigned long long r0 = rand(), r1 = rand(), r2 = rand(), r3 = rand();
+	return (r0 | (r1 << 16ULL) | (r2 << 32ULL) | (r3 << 48ULL));
 }
 
 HashEntry::HashEntry()
