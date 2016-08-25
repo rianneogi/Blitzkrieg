@@ -431,7 +431,10 @@ template<bool Trace> int Engine::LeafEval()
 		{
 			_BitScanForward64(&enemypawn, storm);
 			storm ^= getPos2Bit(enemypawn);
-			KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank];
+			if (getAboveBits(getOpponent(i), enemypawn)&pos.Pieces[i][PIECE_PAWN]) //blocked
+				KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank];
+			else
+				KingSafety[i] -= PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank] * 1.25f;
 			if (Trace)
 			{
 				cout << "Pawn Storm penalty for pawn on " << Int2Sq(enemypawn) << " for " << PlayerStrings[i] << ": " << PawnStormPenalty[getRank(getColorMirror(getOpponent(i), enemypawn)) + kingrank] << endl;

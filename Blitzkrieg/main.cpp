@@ -23,11 +23,12 @@ using namespace std;
 
 string ENGINENAME = "Blitzkrieg";
 string ENGINEAUTHOR = "Rian Neogi";
-const int ENGINEVERSION = 334;
+const int ENGINEVERSION = 335;
 
 // Best Build so far: 233
 
 ///BUILDS
+// Build 335 - 25-08-2015 - Increased pawn storm penalty if enemy pawn isn't blocked
 // Build 334 - 25-08-2015 - Fixed a bug in TTRandom()
 // Build 333 - 24-08-2015 - Undid change in Build 329
 // Build 332 - 24-08-2015 - Undid last change, undid optimization in Build 328
